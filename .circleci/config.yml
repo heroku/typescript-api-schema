@@ -24,7 +24,7 @@ jobs:
             curl https://api.heroku.com/schema -H "Accept: application/vnd.heroku+json; version=3" > schema.json
             cat schema.json | ./node_modules/.bin/json2ts > lib/index.d.ts
             git add schema.json lib/index.d.ts
-            git commit -m "fix: updated schema"
+            git commit -m "fix: updated schema" || exit 0
             git push origin master
   release:
     <<: *update
