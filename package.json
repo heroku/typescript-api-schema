@@ -1,6 +1,6 @@
 {
   "name": "@heroku-cli/typescript-api-schema",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
@@ -19,5 +19,6 @@
   ],
   "license": "MIT",
   "repository": "heroku/typescript-api-schema",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "scripts": {}
 }
