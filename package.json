@@ -1,5 +1,5 @@
 {
-  "name": "@heroku-cli/typescript-api-schema",
+  "name": "@heroku-cli/schema",
   "version": "0.0.1",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
