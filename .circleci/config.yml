@@ -27,7 +27,7 @@ jobs:
             git commit -m "fix: updated schema"
             git push origin master
   release:
-    <<: *test
+    <<: *update
     steps:
       - add_ssh_keys
       - checkout
