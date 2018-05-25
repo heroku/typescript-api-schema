@@ -1,0 +1,40 @@
+{
+  "name": "@heroku-cli/typescript-api-schema",
+  "version": "0.0.0",
+  "author": "Jeff Dickey @jdxcode",
+  "bugs": "https://github.com/heroku/typescript-api-schema/issues",
+  "dependencies": {
+    "tslib": "^1"
+  },
+  "devDependencies": {
+    "@oclif/tslint": "^1",
+    "@types/chai": "^4",
+    "@types/mocha": "^5",
+    "@types/node": "^10",
+    "chai": "^4",
+    "mocha": "^5",
+    "nyc": "^11",
+    "ts-node": "^6",
+    "tslint": "^5",
+    "typescript": "^2.8"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/lib"
+  ],
+  "homepage": "https://github.com/heroku/typescript-api-schema",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": "heroku/typescript-api-schema",
+  "scripts": {
+    "posttest": "tsc -p test --noEmit && tslint -p test -t stylish",
+    "prepack": "rm -rf lib && tsc",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\""
+  },
+  "types": "lib/index.d.ts"
+}
