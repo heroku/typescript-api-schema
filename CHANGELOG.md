@@ -1,3 +1,16 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/heroku/typescript-api-schema/compare/v0.0.1...v1.0.0) (2018-05-25)
+
+
+### Features
+
+* testing release ([715457f](https://github.com/heroku/typescript-api-schema/commit/715457f))
+
+
+### BREAKING CHANGES
+
+* version 1 release
+
 <a name="0.0.1"></a>
 ## [0.0.1](https://github.com/heroku/typescript-api-schema/compare/v0.0.0...v0.0.1) (2018-05-25)
 
