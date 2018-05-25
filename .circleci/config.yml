@@ -59,6 +59,8 @@ workflows:
           context: org-global
           filters:
             branches: {only: master}
+          requires:
+            - update
   nightly:
     triggers:
       - schedule:
