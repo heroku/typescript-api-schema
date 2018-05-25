@@ -1,3 +1,13 @@
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/heroku/typescript-api-schema/compare/v1.0.2...v1.0.3) (2018-05-25)
+
+
+### Bug Fixes
+
+* linting ([da1222b](https://github.com/heroku/typescript-api-schema/commit/da1222b))
+* make style match linter ([c676b1b](https://github.com/heroku/typescript-api-schema/commit/c676b1b))
+* updated schema ([51ff348](https://github.com/heroku/typescript-api-schema/commit/51ff348))
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/heroku/typescript-api-schema/compare/v1.0.1...v1.0.2) (2018-05-25)
 
