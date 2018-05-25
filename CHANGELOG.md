@@ -1,3 +1,13 @@
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/heroku/typescript-api-schema/compare/v1.0.1...v1.0.2) (2018-05-25)
+
+
+### Bug Fixes
+
+* run update ([12966b8](https://github.com/heroku/typescript-api-schema/commit/12966b8))
+* sed ([9ba393b](https://github.com/heroku/typescript-api-schema/commit/9ba393b))
+* updated schema ([eebba54](https://github.com/heroku/typescript-api-schema/commit/eebba54))
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/heroku/typescript-api-schema/compare/v1.0.0...v1.0.1) (2018-05-25)
 
