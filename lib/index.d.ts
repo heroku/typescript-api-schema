@@ -8,94 +8,94 @@
  * The platform API empowers developers to automate, extend and combine Heroku with other services.
  */
 export interface HerokuPlatformApi {
-  "account-feature"?: HerokuPlatformApiAccountFeature;
-  account?: HerokuPlatformApiAccount;
-  "add-on-action"?: HerokuPlatformApiAddOnAction;
-  "add-on-attachment"?: HerokuPlatformApiAddOnAttachment;
-  "add-on-config"?: HerokuPlatformApiAddOnConfig;
-  "add-on-plan-action"?: HerokuPlatformApiAddOnPlanAction;
-  "add-on-region-capability"?: HerokuPlatformApiAddOnRegionCapability;
-  "add-on-service"?: HerokuPlatformApiAddOnService;
-  "add-on-webhook-delivery"?: HerokuPlatformApiAddOnWebhookDelivery;
-  "add-on-webhook-event"?: HerokuPlatformApiAddOnWebhookEvent;
-  "add-on-webhook"?: HerokuPlatformApiAddOnWebhook;
-  "add-on"?: HerokuPlatformApiAddOn;
-  "app-feature"?: HerokuPlatformApiAppFeature;
-  "app-formation-set"?: HerokuPlatformApiApplicationFormationSet;
-  "app-setup"?: HerokuSetupApiAppSetup;
-  "app-transfer"?: HerokuPlatformApiAppTransfer;
-  "app-webhook-delivery"?: HerokuPlatformApiAppWebhookDelivery;
-  "app-webhook-event"?: HerokuPlatformApiAppWebhookEvent;
-  "app-webhook"?: HerokuPlatformApiAppWebhook;
-  app?: HerokuPlatformApiApp;
-  "build-result"?: HerokuBuildApiBuildResult;
-  build?: HerokuBuildApiBuild;
-  "buildpack-installation"?: HerokuPlatformApiBuildpackInstallations;
-  collaborator?: HerokuPlatformApiCollaborator;
-  "config-var"?: HerokuPlatformApiConfigVars;
-  credit?: HerokuPlatformApiCredit;
-  domain?: HerokuPlatformApiDomain;
-  "dyno-size"?: HerokuPlatformApiDynoSize;
-  dyno?: HerokuPlatformApiDyno;
-  "filter-apps"?: HerokuPlatformApiFilters;
-  formation?: HerokuPlatformApiFormation;
-  "identity-provider"?: HerokuPlatformApiIdentityProvider;
-  "inbound-ruleset"?: HerokuPlatformApiInboundRuleset;
-  "invoice-address"?: HerokuVaultApiInvoiceAddress;
-  invoice?: HerokuPlatformApiInvoice;
-  key?: HerokuPlatformApiKey;
-  "log-drain"?: HerokuPlatformApiLogDrain;
-  "log-session"?: HerokuPlatformApiLogSession;
-  "oauth-authorization"?: HerokuPlatformApiOAuthAuthorization;
-  "oauth-client"?: HerokuPlatformApiOAuthClient;
-  "oauth-grant"?: HerokuPlatformApiOAuthGrant;
-  "oauth-token"?: HerokuPlatformApiOAuthToken;
-  "organization-add-on"?: HerokuPlatformApiOrganizationAddOn;
-  "organization-app-collaborator"?: HerokuPlatformApiOrganizationAppCollaborator;
-  "organization-app"?: HerokuPlatformApiOrganizationApp;
-  "organization-feature"?: HerokuPlatformApiOrganizationFeature;
-  "organization-invitation"?: HerokuPlatformApiOrganizationInvitation;
-  "organization-invoice"?: HerokuPlatformApiOrganizationInvoice;
-  "organization-member"?: HerokuPlatformApiOrganizationMember;
-  "organization-preferences"?: HerokuPlatformApiOrganizationPreferences;
-  organization?: HerokuPlatformApiOrganization;
-  "outbound-ruleset"?: HerokuPlatformApiOutboundRuleset;
-  "password-reset"?: HerokuPlatformApiPasswordReset;
-  "organization-app-permission"?: HerokuPlatformApiOrganizationAppPermission;
-  "pipeline-coupling"?: HerokuPlatformApiPipelineCoupling;
-  "pipeline-promotion-target"?: HerokuPlatformApiPipelinePromotionTarget;
-  "pipeline-promotion"?: HerokuPlatformApiPipelinePromotion;
-  pipeline?: HerokuPlatformApiPipeline;
-  plan?: HerokuPlatformApiPlan;
-  "rate-limit"?: HerokuPlatformApiRateLimit;
-  region?: HerokuPlatformApiRegion;
-  release?: HerokuPlatformApiRelease;
-  slug?: HerokuPlatformApiSlug;
-  "sms-number"?: HerokuPlatformApiSmsNumber;
-  "sni-endpoint"?: HerokuPlatformApiSniEndpoint;
-  source?: HerokuPlatformApiSource;
-  "space-app-access"?: HerokuPlatformApiSpaceAccess;
-  "space-nat"?: HerokuPlatformApiSpaceNetworkAddressTranslation;
-  space?: HerokuPlatformApiSpace;
-  "ssl-endpoint"?: HerokuPlatformApiSslEndpoint;
-  stack?: HerokuPlatformApiStack;
-  "team-app-collaborator"?: HerokuPlatformApiTeamAppCollaborator;
-  "team-app-permission"?: HerokuPlatformApiTeamAppPermission;
-  "team-app"?: HerokuPlatformApiTeamApp;
-  "team-feature"?: HerokuPlatformApiTeamFeature;
-  "team-invitation"?: HerokuPlatformApiTeamInvitation;
-  "team-invoice"?: HerokuPlatformApiTeamInvoice;
-  "team-member"?: HerokuPlatformApiTeamMember;
-  "team-preferences"?: HerokuPlatformApiTeamPreferences;
-  team?: HerokuPlatformApiTeam;
-  "user-preferences"?: HerokuPlatformApiUserPreferences;
-  "whitelisted-add-on-service"?: HerokuPlatformApiWhitelistedEntity;
+  "account-feature"?: AccountFeature;
+  account?: Account;
+  "add-on-action"?: AddOnAction;
+  "add-on-attachment"?: AddOnAttachment;
+  "add-on-config"?: AddOnConfig;
+  "add-on-plan-action"?: AddOnPlanAction;
+  "add-on-region-capability"?: AddOnRegionCapability;
+  "add-on-service"?: AddOnService;
+  "add-on-webhook-delivery"?: AddOnWebhookDelivery;
+  "add-on-webhook-event"?: AddOnWebhookEvent;
+  "add-on-webhook"?: AddOnWebhook;
+  "add-on"?: AddOn;
+  "app-feature"?: AppFeature;
+  "app-formation-set"?: ApplicationFormationSet;
+  "app-setup"?: AppSetup;
+  "app-transfer"?: AppTransfer;
+  "app-webhook-delivery"?: AppWebhookDelivery;
+  "app-webhook-event"?: AppWebhookEvent;
+  "app-webhook"?: AppWebhook;
+  app?: App;
+  "build-result"?: BuildResult;
+  build?: Build;
+  "buildpack-installation"?: BuildpackInstallations;
+  collaborator?: Collaborator;
+  "config-var"?: ConfigVars;
+  credit?: Credit;
+  domain?: Domain;
+  "dyno-size"?: DynoSize;
+  dyno?: Dyno;
+  "filter-apps"?: Filters;
+  formation?: Formation;
+  "identity-provider"?: IdentityProvider;
+  "inbound-ruleset"?: InboundRuleset;
+  "invoice-address"?: InvoiceAddress;
+  invoice?: Invoice;
+  key?: Key;
+  "log-drain"?: LogDrain;
+  "log-session"?: LogSession;
+  "oauth-authorization"?: OAuthAuthorization;
+  "oauth-client"?: OAuthClient;
+  "oauth-grant"?: OAuthGrant;
+  "oauth-token"?: OAuthToken;
+  "organization-add-on"?: OrganizationAddOn;
+  "organization-app-collaborator"?: OrganizationAppCollaborator;
+  "organization-app"?: OrganizationApp;
+  "organization-feature"?: OrganizationFeature;
+  "organization-invitation"?: OrganizationInvitation;
+  "organization-invoice"?: OrganizationInvoice;
+  "organization-member"?: OrganizationMember;
+  "organization-preferences"?: OrganizationPreferences;
+  organization?: Organization;
+  "outbound-ruleset"?: OutboundRuleset;
+  "password-reset"?: PasswordReset;
+  "organization-app-permission"?: OrganizationAppPermission;
+  "pipeline-coupling"?: PipelineCoupling;
+  "pipeline-promotion-target"?: PipelinePromotionTarget;
+  "pipeline-promotion"?: PipelinePromotion;
+  pipeline?: Pipeline;
+  plan?: Plan;
+  "rate-limit"?: RateLimit;
+  region?: Region;
+  release?: Release;
+  slug?: Slug;
+  "sms-number"?: SmsNumber;
+  "sni-endpoint"?: SniEndpoint;
+  source?: Source;
+  "space-app-access"?: SpaceAccess;
+  "space-nat"?: SpaceNetworkAddressTranslation;
+  space?: Space;
+  "ssl-endpoint"?: SslEndpoint;
+  stack?: Stack;
+  "team-app-collaborator"?: TeamAppCollaborator;
+  "team-app-permission"?: TeamAppPermission;
+  "team-app"?: TeamApp;
+  "team-feature"?: TeamFeature;
+  "team-invitation"?: TeamInvitation;
+  "team-invoice"?: TeamInvoice;
+  "team-member"?: TeamMember;
+  "team-preferences"?: TeamPreferences;
+  team?: Team;
+  "user-preferences"?: UserPreferences;
+  "whitelisted-add-on-service"?: WhitelistedEntity;
   [k: string]: any;
 }
 /**
  * An account feature represents a Heroku labs capability that can be enabled or disabled for an account on Heroku.
  */
-export interface HerokuPlatformApiAccountFeature {
+export interface AccountFeature {
   /**
    * when account feature was created
    */
@@ -141,7 +141,7 @@ export interface HerokuPlatformApiAccountFeature {
 /**
  * An account represents an individual signed up to use the Heroku platform.
  */
-export interface HerokuPlatformApiAccount {
+export interface Account {
   /**
    * whether to allow third party web activity tracking
    */
@@ -215,13 +215,13 @@ export interface HerokuPlatformApiAccount {
 /**
  * Add-on Actions are lifecycle operations for add-on provisioning and deprovisioning. They allow whitelisted add-on providers to (de)provision add-ons in the background and then report back when (de)provisioning is complete.
  */
-export interface HerokuPlatformApiAddOnAction {
+export interface AddOnAction {
   [k: string]: any;
 }
 /**
  * An add-on attachment represents a connection between an app and an add-on that it has been given access to.
  */
-export interface HerokuPlatformApiAddOnAttachment {
+export interface AddOnAttachment {
   /**
    * identity of add-on
    */
@@ -292,7 +292,7 @@ export interface HerokuPlatformApiAddOnAttachment {
 /**
  * Configuration of an Add-on
  */
-export interface HerokuPlatformApiAddOnConfig {
+export interface AddOnConfig {
   /**
    * unique name of the config
    */
@@ -306,7 +306,7 @@ export interface HerokuPlatformApiAddOnConfig {
 /**
  * Add-on Plan Actions are Provider functionality for specific add-on installations
  */
-export interface HerokuPlatformApiAddOnPlanAction {
+export interface AddOnPlanAction {
   /**
    * a unique identifier
    */
@@ -332,7 +332,7 @@ export interface HerokuPlatformApiAddOnPlanAction {
 /**
  * Add-on region capabilities represent the relationship between an Add-on Service and a specific Region. Only Beta and GA add-ons are returned by these endpoints.
  */
-export interface HerokuPlatformApiAddOnRegionCapability {
+export interface AddOnRegionCapability {
   /**
    * unique identifier of this add-on-region-capability
    */
@@ -341,14 +341,14 @@ export interface HerokuPlatformApiAddOnRegionCapability {
    * whether the add-on can be installed to a Space
    */
   supports_private_networking?: boolean;
-  addon_service?: HerokuPlatformApiAddOnService;
-  region?: HerokuPlatformApiRegion;
+  addon_service?: AddOnService;
+  region?: Region;
   [k: string]: any;
 }
 /**
  * Add-on services represent add-ons that may be provisioned for apps. Endpoints under add-on services can be accessed without authentication.
  */
-export interface HerokuPlatformApiAddOnService {
+export interface AddOnService {
   /**
    * npm package name of the add-on service's Heroku CLI plugin
    */
@@ -390,7 +390,7 @@ export interface HerokuPlatformApiAddOnService {
 /**
  * A region represents a geographic location in which your application may run.
  */
-export interface HerokuPlatformApiRegion {
+export interface Region {
   /**
    * country where the region exists
    */
@@ -442,19 +442,19 @@ export interface HerokuPlatformApiRegion {
 /**
  * Represents the delivery of a webhook notification, including its current status.
  */
-export interface HerokuPlatformApiAddOnWebhookDelivery {
+export interface AddOnWebhookDelivery {
   [k: string]: any;
 }
 /**
  * Represents a webhook event that occurred.
  */
-export interface HerokuPlatformApiAddOnWebhookEvent {
+export interface AddOnWebhookEvent {
   [k: string]: any;
 }
 /**
  * Represents the details of a webhook subscription
  */
-export interface HerokuPlatformApiAddOnWebhook {
+export interface AddOnWebhook {
   /**
    * when the webhook was created
    */
@@ -483,7 +483,7 @@ export interface HerokuPlatformApiAddOnWebhook {
 /**
  * Add-ons represent add-ons that have been provisioned and attached to one or more apps.
  */
-export interface HerokuPlatformApiAddOn {
+export interface AddOn {
   /**
    * provider actions for this specific add-on
    */
@@ -575,7 +575,7 @@ export interface HerokuPlatformApiAddOn {
 /**
  * An app feature represents a Heroku labs capability that can be enabled or disabled for an app on Heroku.
  */
-export interface HerokuPlatformApiAppFeature {
+export interface AppFeature {
   /**
    * when app feature was created
    */
@@ -621,7 +621,7 @@ export interface HerokuPlatformApiAppFeature {
 /**
  * App formation set describes the combination of process types with their quantities and sizes as well as application process tier
  */
-export interface HerokuPlatformApiApplicationFormationSet {
+export interface ApplicationFormationSet {
   /**
    * a string representation of the formation set
    */
@@ -653,7 +653,7 @@ export interface HerokuPlatformApiApplicationFormationSet {
 /**
  * An app setup represents an app on Heroku that is setup using an environment, addons, and scripts described in an app.json manifest file.
  */
-export interface HerokuSetupApiAppSetup {
+export interface AppSetup {
   /**
    * unique identifier of app setup
    */
@@ -713,7 +713,7 @@ export interface HerokuSetupApiAppSetup {
 /**
  * An app transfer represents a two party interaction for transferring ownership of an app.
  */
-export interface HerokuPlatformApiAppTransfer {
+export interface AppTransfer {
   /**
    * app involved in the transfer
    */
@@ -777,7 +777,7 @@ export interface HerokuPlatformApiAppTransfer {
 /**
  * Represents the delivery of a webhook notification, including its current status.
  */
-export interface HerokuPlatformApiAppWebhookDelivery {
+export interface AppWebhookDelivery {
   /**
    * when the delivery was created
    */
@@ -841,7 +841,7 @@ export interface HerokuPlatformApiAppWebhookDelivery {
 /**
  * Represents a webhook event that occurred.
  */
-export interface HerokuPlatformApiAppWebhookEvent {
+export interface AppWebhookEvent {
   /**
    * when event was created
    */
@@ -907,11 +907,11 @@ export interface HerokuPlatformApiAppWebhookEvent {
 /**
  * Represents the details of a webhook subscription
  */
-export interface HerokuPlatformApiAppWebhook {}
+export interface AppWebhook {}
 /**
  * An app represents the program that you would like to deploy and run on Heroku.
  */
-export interface HerokuPlatformApiApp {
+export interface App {
   /**
    * ACM status of this app
    */
@@ -1043,7 +1043,7 @@ export interface HerokuPlatformApiApp {
 /**
  * A build result contains the output from a build.
  */
-export interface HerokuBuildApiBuildResult {
+export interface BuildResult {
   /**
    * identity of build
    */
@@ -1085,7 +1085,7 @@ export interface HerokuBuildApiBuildResult {
 /**
  * A build represents the process of transforming a code tarball into a slug
  */
-export interface HerokuBuildApiBuild {
+export interface Build {
   /**
    * app that the build belongs to
    */
@@ -1179,7 +1179,7 @@ export interface HerokuBuildApiBuild {
 /**
  * A buildpack installation represents a buildpack that will be run against an app.
  */
-export interface HerokuPlatformApiBuildpackInstallations {
+export interface BuildpackInstallations {
   /**
    * determines the order in which the buildpacks will execute
    */
@@ -1203,7 +1203,7 @@ export interface HerokuPlatformApiBuildpackInstallations {
 /**
  * A collaborator represents an account that has been given access to an app on Heroku.
  */
-export interface HerokuPlatformApiCollaborator {
+export interface Collaborator {
   /**
    * app collaborator belongs to
    */
@@ -1226,7 +1226,7 @@ export interface HerokuPlatformApiCollaborator {
    * unique identifier of collaborator
    */
   id: string;
-  permissions?: HerokuPlatformApiTeamAppPermission[];
+  permissions?: TeamAppPermission[];
   /**
    * role in the team
    */
@@ -1257,7 +1257,7 @@ export interface HerokuPlatformApiCollaborator {
 /**
  * A team app permission is a behavior that is assigned to a user in a team app.
  */
-export interface HerokuPlatformApiTeamAppPermission {
+export interface TeamAppPermission {
   /**
    * The name of the app permission.
    */
@@ -1271,9 +1271,9 @@ export interface HerokuPlatformApiTeamAppPermission {
 /**
  * Config Vars allow you to manage the configuration information provided to an app on Heroku.
  */
-export interface HerokuPlatformApiConfigVars {
+export interface ConfigVars {
   /**
-   * This interface was referenced by `HerokuPlatformApiConfigVars`'s JSON-Schema definition
+   * This interface was referenced by `ConfigVars`'s JSON-Schema definition
    * via the `patternProperty` "^\w+$".
    */
   [k: string]: string;
@@ -1281,7 +1281,7 @@ export interface HerokuPlatformApiConfigVars {
 /**
  * A credit represents value that will be used up before further charges are assigned to an account.
  */
-export interface HerokuPlatformApiCredit {
+export interface Credit {
   /**
    * total value of credit in cents
    */
@@ -1315,7 +1315,7 @@ export interface HerokuPlatformApiCredit {
 /**
  * Domains define what web routes should be routed to an app on Heroku.
  */
-export interface HerokuPlatformApiDomain {
+export interface Domain {
   /**
    * status of this record's ACM
    */
@@ -1371,7 +1371,7 @@ export interface HerokuPlatformApiDomain {
 /**
  * Dyno sizes are the values and details of sizes that can be assigned to dynos. This information can also be found at : [https://devcenter.heroku.com/articles/dyno-types](https://devcenter.heroku.com/articles/dyno-types).
  */
-export interface HerokuPlatformApiDynoSize {
+export interface DynoSize {
   /**
    * minimum vCPUs, non-dedicated may get more depending on load
    */
@@ -1411,7 +1411,7 @@ export interface HerokuPlatformApiDynoSize {
 /**
  * Dynos encapsulate running processes of an app on Heroku. Detailed information about dyno sizes can be found at: [https://devcenter.heroku.com/articles/dyno-types](https://devcenter.heroku.com/articles/dyno-types).
  */
-export interface HerokuPlatformApiDyno {
+export interface Dyno {
   /**
    * a URL to stream output from for attached processes or null for non-attached processes
    */
@@ -1481,13 +1481,13 @@ export interface HerokuPlatformApiDyno {
 /**
  * Filters are special endpoints to allow for API consumers to specify a subset of resources to consume in order to reduce the number of requests that are performed.  Each filter endpoint endpoint is responsible for determining its supported request format.  The endpoints are over POST in order to handle large request bodies without hitting request uri query length limitations, but the requests themselves are idempotent and will not have side effects.
  */
-export interface HerokuPlatformApiFilters {
+export interface Filters {
   [k: string]: any;
 }
 /**
  * The formation of processes that should be maintained for an app. Update the formation to scale processes or change dyno sizes. Available process type names and commands are defined by the `process_types` attribute for the [slug](#slug) currently released on an app.
  */
-export interface HerokuPlatformApiFormation {
+export interface Formation {
   /**
    * app formation belongs to
    */
@@ -1535,7 +1535,7 @@ export interface HerokuPlatformApiFormation {
 /**
  * Identity Providers represent the SAML configuration of an Organization.
  */
-export interface HerokuPlatformApiIdentityProvider {
+export interface IdentityProvider {
   /**
    * raw contents of the public certificate (eg: .crt or .pem file)
    */
@@ -1575,7 +1575,7 @@ export interface HerokuPlatformApiIdentityProvider {
 /**
  * An inbound-ruleset is a collection of rules that specify what hosts can or cannot connect to an application.
  */
-export interface HerokuPlatformApiInboundRuleset {
+export interface InboundRuleset {
   /**
    * unique identifier of an inbound-ruleset
    */
@@ -1618,7 +1618,7 @@ export interface HerokuPlatformApiInboundRuleset {
 /**
  * An invoice address represents the address that should be listed on an invoice.
  */
-export interface HerokuVaultApiInvoiceAddress {
+export interface InvoiceAddress {
   /**
    * invoice street address line 1
    */
@@ -1657,7 +1657,7 @@ export interface HerokuVaultApiInvoiceAddress {
 /**
  * An invoice is an itemized bill of goods for an account which includes pricing and charges.
  */
-export interface HerokuPlatformApiInvoice {
+export interface Invoice {
   /**
    * total charges on this invoice
    */
@@ -1703,7 +1703,7 @@ export interface HerokuPlatformApiInvoice {
 /**
  * Keys represent public SSH keys associated with an account and are used to authorize accounts as they are performing git operations.
  */
-export interface HerokuPlatformApiKey {
+export interface Key {
   /**
    * comment on the key
    */
@@ -1737,7 +1737,7 @@ export interface HerokuPlatformApiKey {
 /**
  * [Log drains](https://devcenter.heroku.com/articles/log-drains) provide a way to forward your Heroku logs to an external syslog server for long-term archiving. This external service must be configured to receive syslog packets from Heroku, whereupon its URL can be added to an app using this API. Some add-ons will add a log drain when they are provisioned to an app. These drains can only be removed by removing the add-on.
  */
-export interface HerokuPlatformApiLogDrain {
+export interface LogDrain {
   /**
    * add-on that created the drain
    */
@@ -1769,7 +1769,7 @@ export interface HerokuPlatformApiLogDrain {
 /**
  * A log session is a reference to the http based log stream for an app.
  */
-export interface HerokuPlatformApiLogSession {
+export interface LogSession {
   /**
    * when log connection was created
    */
@@ -1791,7 +1791,7 @@ export interface HerokuPlatformApiLogSession {
 /**
  * OAuth authorizations represent clients that a Heroku user has authorized to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth)
  */
-export interface HerokuPlatformApiOAuthAuthorization {
+export interface OAuthAuthorization {
   /**
    * access token for this authorization
    */
@@ -1855,7 +1855,7 @@ export interface HerokuPlatformApiOAuthAuthorization {
 /**
  * OAuth clients are applications that Heroku users can authorize to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth).
  */
-export interface HerokuPlatformApiOAuthClient {
+export interface OAuthClient {
   /**
    * when OAuth client was created
    */
@@ -1889,13 +1889,13 @@ export interface HerokuPlatformApiOAuthClient {
 /**
  * OAuth grants are used to obtain authorizations on behalf of a user. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth)
  */
-export interface HerokuPlatformApiOAuthGrant {
+export interface OAuthGrant {
   [k: string]: any;
 }
 /**
  * OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth)
  */
-export interface HerokuPlatformApiOAuthToken {
+export interface OAuthToken {
   /**
    * current access token
    */
@@ -1999,13 +1999,13 @@ export interface HerokuPlatformApiOAuthToken {
 /**
  * Deprecated: A list of add-ons the Organization uses across all apps
  */
-export interface HerokuPlatformApiOrganizationAddOn {
+export interface OrganizationAddOn {
   [k: string]: any;
 }
 /**
  * Deprecated: An organization collaborator represents an account that has been given access to an organization app on Heroku.
  */
-export interface HerokuPlatformApiOrganizationAppCollaborator {
+export interface OrganizationAppCollaborator {
   /**
    * app collaborator belongs to
    */
@@ -2059,7 +2059,7 @@ export interface HerokuPlatformApiOrganizationAppCollaborator {
 /**
  * Deprecated: An organization app encapsulates the organization specific functionality of Heroku apps.
  */
-export interface HerokuPlatformApiOrganizationApp {
+export interface OrganizationApp {
   /**
    * when app was archived
    */
@@ -2181,7 +2181,7 @@ export interface HerokuPlatformApiOrganizationApp {
 /**
  * Deprecated: An organization feature represents a feature enabled on an organization account.
  */
-export interface HerokuPlatformApiOrganizationFeature {
+export interface OrganizationFeature {
   /**
    * when organization feature was created
    */
@@ -2227,7 +2227,7 @@ export interface HerokuPlatformApiOrganizationFeature {
 /**
  * Deprecated: An organization invitation represents an invite to an organization.
  */
-export interface HerokuPlatformApiOrganizationInvitation {
+export interface OrganizationInvitation {
   /**
    * when invitation was created
    */
@@ -2290,7 +2290,7 @@ export interface HerokuPlatformApiOrganizationInvitation {
 /**
  * Deprecated: An organization invoice is an itemized bill of goods for an organization which includes pricing and charges.
  */
-export interface HerokuPlatformApiOrganizationInvoice {
+export interface OrganizationInvoice {
   /**
    * total add-ons charges in on this invoice
    */
@@ -2360,7 +2360,7 @@ export interface HerokuPlatformApiOrganizationInvoice {
 /**
  * Deprecated: An organization member is an individual with access to an organization.
  */
-export interface HerokuPlatformApiOrganizationMember {
+export interface OrganizationMember {
   /**
    * when the membership record was created
    */
@@ -2411,7 +2411,7 @@ export interface HerokuPlatformApiOrganizationMember {
 /**
  * Deprecated: Tracks an organization's preferences
  */
-export interface HerokuPlatformApiOrganizationPreferences {
+export interface OrganizationPreferences {
   /**
    * The default permission used when adding new members to the organization
    */
@@ -2425,7 +2425,7 @@ export interface HerokuPlatformApiOrganizationPreferences {
 /**
  * Deprecated: Organizations allow you to manage access to a shared group of applications across your development team.
  */
-export interface HerokuPlatformApiOrganization {
+export interface Organization {
   /**
    * unique identifier of organization
    */
@@ -2471,7 +2471,7 @@ export interface HerokuPlatformApiOrganization {
 /**
  * An outbound-ruleset is a collection of rules that specify what hosts Dynos are allowed to communicate with.
  */
-export interface HerokuPlatformApiOutboundRuleset {
+export interface OutboundRuleset {
   /**
    * unique identifier of an outbound-ruleset
    */
@@ -2522,7 +2522,7 @@ export interface HerokuPlatformApiOutboundRuleset {
 /**
  * A password reset represents a in-process password reset attempt.
  */
-export interface HerokuPlatformApiPasswordReset {
+export interface PasswordReset {
   /**
    * when password reset was created
    */
@@ -2543,7 +2543,7 @@ export interface HerokuPlatformApiPasswordReset {
 /**
  * Deprecated: An organization app permission is a behavior that is assigned to a user in an organization app.
  */
-export interface HerokuPlatformApiOrganizationAppPermission {
+export interface OrganizationAppPermission {
   /**
    * The name of the app permission.
    */
@@ -2557,7 +2557,7 @@ export interface HerokuPlatformApiOrganizationAppPermission {
 /**
  * Information about an app's coupling to a pipeline
  */
-export interface HerokuPlatformApiPipelineCoupling {
+export interface PipelineCoupling {
   /**
    * app involved in the pipeline coupling
    */
@@ -2599,7 +2599,7 @@ export interface HerokuPlatformApiPipelineCoupling {
 /**
  * Promotion targets represent an individual app being promoted to
  */
-export interface HerokuPlatformApiPipelinePromotionTarget {
+export interface PipelinePromotionTarget {
   /**
    * the app which was promoted to
    */
@@ -2643,7 +2643,7 @@ export interface HerokuPlatformApiPipelinePromotionTarget {
 /**
  * Promotions allow you to move code from an app in a pipeline to all targets
  */
-export interface HerokuPlatformApiPipelinePromotion {
+export interface PipelinePromotion {
   /**
    * when promotion was created
    */
@@ -2701,7 +2701,7 @@ export interface HerokuPlatformApiPipelinePromotion {
 /**
  * A pipeline allows grouping of apps into different stages.
  */
-export interface HerokuPlatformApiPipeline {
+export interface Pipeline {
   /**
    * when pipeline was created
    */
@@ -2723,7 +2723,7 @@ export interface HerokuPlatformApiPipeline {
 /**
  * Plans represent different configurations of add-ons that may be added to apps. Endpoints under add-on services can be accessed without authentication.
  */
-export interface HerokuPlatformApiPlan {
+export interface Plan {
   /**
    * identity of add-on service
    */
@@ -2809,7 +2809,7 @@ export interface HerokuPlatformApiPlan {
 /**
  * Rate Limit represents the number of request tokens each account holds. Requests to this endpoint do not count towards the rate limit.
  */
-export interface HerokuPlatformApiRateLimit {
+export interface RateLimit {
   /**
    * allowed requests remaining in current interval
    */
@@ -2819,7 +2819,7 @@ export interface HerokuPlatformApiRateLimit {
 /**
  * A release represents a combination of code, config vars and add-ons for an app on Heroku.
  */
-export interface HerokuPlatformApiRelease {
+export interface Release {
   /**
    * add-on plans installed on the app for this release
    */
@@ -2895,7 +2895,7 @@ export interface HerokuPlatformApiRelease {
 /**
  * A slug is a snapshot of your application code that is ready to run on the platform.
  */
-export interface HerokuPlatformApiSlug {
+export interface Slug {
   /**
    * pointer to the url where clients can fetch or store the actual release binary
    */
@@ -2971,7 +2971,7 @@ export interface HerokuPlatformApiSlug {
 /**
  * SMS numbers are used for recovery on accounts with two-factor authentication enabled.
  */
-export interface HerokuPlatformApiSmsNumber {
+export interface SmsNumber {
   /**
    * SMS number of account
    */
@@ -2981,7 +2981,7 @@ export interface HerokuPlatformApiSmsNumber {
 /**
  * SNI Endpoint is a public address serving a custom SSL cert for HTTPS traffic, using the SNI TLS extension, to a Heroku app.
  */
-export interface HerokuPlatformApiSniEndpoint {
+export interface SniEndpoint {
   /**
    * raw contents of the public certificate chain (eg: .crt or .pem file)
    */
@@ -3011,7 +3011,7 @@ export interface HerokuPlatformApiSniEndpoint {
 /**
  * A source is a location for uploading and downloading an application's source code.
  */
-export interface HerokuPlatformApiSource {
+export interface Source {
   /**
    * pointer to the URL where clients can fetch or store the source
    */
@@ -3031,7 +3031,7 @@ export interface HerokuPlatformApiSource {
 /**
  * Space access represents the permissions a particular user has on a particular space.
  */
-export interface HerokuPlatformApiSpaceAccess {
+export interface SpaceAccess {
   /**
    * space user belongs to
    */
@@ -3085,7 +3085,7 @@ export interface HerokuPlatformApiSpaceAccess {
 /**
  * Network address translation (NAT) for stable outbound IP addresses from a space
  */
-export interface HerokuPlatformApiSpaceNetworkAddressTranslation {
+export interface SpaceNetworkAddressTranslation {
   /**
    * when network address translation for a space was created
    */
@@ -3107,7 +3107,7 @@ export interface HerokuPlatformApiSpaceNetworkAddressTranslation {
 /**
  * A space is an isolated, highly available, secure app execution environments, running in the modern VPC substrate.
  */
-export interface HerokuPlatformApiSpace {
+export interface Space {
   /**
    * when space was created
    */
@@ -3175,7 +3175,7 @@ export interface HerokuPlatformApiSpace {
 /**
  * [SSL Endpoint](https://devcenter.heroku.com/articles/ssl-endpoint) is a public address serving custom SSL cert for HTTPS traffic to a Heroku app. Note that an app must have the `ssl:endpoint` add-on installed before it can provision an SSL Endpoint using these APIs.
  */
-export interface HerokuPlatformApiSslEndpoint {
+export interface SslEndpoint {
   /**
    * application associated with this ssl-endpoint
    */
@@ -3219,7 +3219,7 @@ export interface HerokuPlatformApiSslEndpoint {
 /**
  * Stacks are the different application execution environments available in the Heroku platform.
  */
-export interface HerokuPlatformApiStack {
+export interface Stack {
   /**
    * when stack was introduced
    */
@@ -3245,7 +3245,7 @@ export interface HerokuPlatformApiStack {
 /**
  * A team collaborator represents an account that has been given access to a team app on Heroku.
  */
-export interface HerokuPlatformApiTeamAppCollaborator {
+export interface TeamAppCollaborator {
   /**
    * app collaborator belongs to
    */
@@ -3299,7 +3299,7 @@ export interface HerokuPlatformApiTeamAppCollaborator {
 /**
  * A team app encapsulates the team specific functionality of Heroku apps.
  */
-export interface HerokuPlatformApiTeamApp {
+export interface TeamApp {
   /**
    * when app was archived
    */
@@ -3421,7 +3421,7 @@ export interface HerokuPlatformApiTeamApp {
 /**
  * A team feature represents a feature enabled on a team account.
  */
-export interface HerokuPlatformApiTeamFeature {
+export interface TeamFeature {
   /**
    * when team feature was created
    */
@@ -3467,7 +3467,7 @@ export interface HerokuPlatformApiTeamFeature {
 /**
  * A team invitation represents an invite to a team.
  */
-export interface HerokuPlatformApiTeamInvitation {
+export interface TeamInvitation {
   /**
    * when invitation was created
    */
@@ -3530,7 +3530,7 @@ export interface HerokuPlatformApiTeamInvitation {
 /**
  * A Team Invoice is an itemized bill of goods for a team which includes pricing and charges.
  */
-export interface HerokuPlatformApiTeamInvoice {
+export interface TeamInvoice {
   /**
    * total add-ons charges in on this invoice
    */
@@ -3600,7 +3600,7 @@ export interface HerokuPlatformApiTeamInvoice {
 /**
  * A team member is an individual with access to a team.
  */
-export interface HerokuPlatformApiTeamMember {
+export interface TeamMember {
   /**
    * when the membership record was created
    */
@@ -3651,7 +3651,7 @@ export interface HerokuPlatformApiTeamMember {
 /**
  * Tracks a Team's Preferences
  */
-export interface HerokuPlatformApiTeamPreferences {
+export interface TeamPreferences {
   /**
    * The default permission used when adding new members to the team
    */
@@ -3665,7 +3665,7 @@ export interface HerokuPlatformApiTeamPreferences {
 /**
  * Teams allow you to manage access to a shared group of applications and other resources.
  */
-export interface HerokuPlatformApiTeam {
+export interface Team {
   /**
    * unique identifier of team
    */
@@ -3711,7 +3711,7 @@ export interface HerokuPlatformApiTeam {
 /**
  * Tracks a user's preferences and message dismissals
  */
-export interface HerokuPlatformApiUserPreferences {
+export interface UserPreferences {
   /**
    * User's default timezone
    */
@@ -3757,7 +3757,7 @@ export interface HerokuPlatformApiUserPreferences {
 /**
  * Entities that have been whitelisted to be used by an Organization
  */
-export interface HerokuPlatformApiWhitelistedEntity {
+export interface WhitelistedEntity {
   /**
    * when the add-on service was whitelisted
    */
