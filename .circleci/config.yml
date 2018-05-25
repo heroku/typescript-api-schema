@@ -54,6 +54,7 @@ workflows:
   version: 2
   "@heroku-cli/typescript-api-schema":
     jobs:
+      - update
       - release:
           context: org-global
           filters:
