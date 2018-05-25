@@ -4,6 +4,7 @@
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "dependencies": {
+    "json-schema-to-typescript": "^5.5.0",
     "tslib": "^1"
   },
   "devDependencies": {
@@ -29,12 +30,6 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
   "repository": "heroku/typescript-api-schema",
-  "scripts": {
-    "posttest": "tsc -p test --noEmit && tslint -p test -t stylish",
-    "prepack": "rm -rf lib && tsc",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\""
-  },
   "types": "lib/index.d.ts"
 }

@@ -1,11 +1,12 @@
 ---
 version: 2
 jobs:
-  node-latest: &test
+  update: &update
     docker:
       - image: node:latest
     working_directory: ~/cli
     steps:
+      - add_ssh_keys
       - checkout
       - restore_cache: &restore_cache
           keys:
@@ -15,17 +16,16 @@ jobs:
           name: Install dependencies
           command: .circleci/greenkeeper
       - run:
-          name: Testing
-          command: yarn test
-      - run:
-          name: Submitting code coverage to codecov
+          name: Updating schema
           command: |
-            ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
-            curl -s https://codecov.io/bash | bash
-  node-8:
-    <<: *test
-    docker:
-      - image: node:8
+            git config --global push.default simple
+            git config --global user.name "$GIT_AUTHOR_NAME"
+            git config --global user.email "$GIT_AUTHOR_EMAIL"
+            curl https://api.heroku.com/schema -H "Accept: application/vnd.heroku+json; version=3" > schema.json
+            cat schema.json | json2ts > lib/index.d.ts
+            git add schema.json lib/index.d.ts
+            git commit -m "fix: updated schema"
+            git push origin master
   release:
     <<: *test
     steps:
@@ -53,12 +53,18 @@ workflows:
   version: 2
   "@heroku-cli/typescript-api-schema":
     jobs:
-      - node-latest
-      - node-8
+      - update
       - release:
           context: org-global
           filters:
             branches: {only: master}
-          requires:
-            - node-latest
-            - node-8
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 11 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - update
