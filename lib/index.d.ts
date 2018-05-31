@@ -61,6 +61,8 @@ export interface HerokuPlatformApi {
   organization?: Organization
   'outbound-ruleset'?: OutboundRuleset
   'password-reset'?: PasswordReset
+  'peering-info'?: PeeringInfo
+  peering?: Peering
   'organization-app-permission'?: OrganizationAppPermission
   'pipeline-coupling'?: PipelineCoupling
   'pipeline-promotion-target'?: PipelinePromotionTarget
@@ -430,7 +432,18 @@ export interface Region {
     /**
      * region name used by provider
      */
-    region?: string
+    region?:
+      | 'ap-south-1'
+      | 'eu-west-1'
+      | 'ap-southeast-1'
+      | 'ap-southeast-2'
+      | 'eu-central-1'
+      | 'ap-northeast-2'
+      | 'ap-northeast-1'
+      | 'us-east-1'
+      | 'sa-east-1'
+      | 'us-west-1'
+      | 'us-west-2'
     [k: string]: any
   }
   /**
@@ -2538,6 +2551,89 @@ export interface PasswordReset {
     id?: string
     [k: string]: any
   }
+  [k: string]: any
+}
+/**
+ * [Peering Info](https://devcenter.heroku.com/articles/private-space-vpc-peering) gives you the information necessary to peer an AWS VPC to a Private Space.
+ */
+export interface PeeringInfo {
+  /**
+   * The AWS account ID of your Private Space.
+   */
+  aws_account_id?: string
+  /**
+   * region name used by provider
+   */
+  aws_region?:
+    | 'ap-south-1'
+    | 'eu-west-1'
+    | 'ap-southeast-1'
+    | 'ap-southeast-2'
+    | 'eu-central-1'
+    | 'ap-northeast-2'
+    | 'ap-northeast-1'
+    | 'us-east-1'
+    | 'sa-east-1'
+    | 'us-west-1'
+    | 'us-west-2'
+  /**
+   * The AWS VPC ID of the peer.
+   */
+  vpc_id?: string
+  /**
+   * The CIDR range of the Private Space VPC
+   */
+  vpc_cidr?: string
+  /**
+   * The CIDR ranges that should be routed to the Private Space VPC.
+   */
+  dyno_cidr_blocks?: string[]
+  /**
+   * The CIDR ranges that you must not conflict with.
+   */
+  unavailable_cidr_blocks?: string[]
+  [k: string]: any
+}
+/**
+ * [Peering](https://devcenter.heroku.com/articles/private-space-vpc-peering) provides a way to peer your Private Space VPC to another AWS VPC.
+ */
+export interface Peering {
+  /**
+   * The type of peering connection.
+   */
+  type?: 'heroku-managed' | 'customer-managed' | 'unknown'
+  /**
+   * The AWS VPC Peering Connection ID of the peering.
+   */
+  pcx_id?: string
+  /**
+   * The CIDR blocks of the peer.
+   */
+  cidr_blocks?: string[]
+  /**
+   * The status of the peering connection.
+   */
+  status?:
+    | 'initiating-request'
+    | 'pending-acceptance'
+    | 'provisioning'
+    | 'active'
+    | 'failed'
+    | 'expired'
+    | 'rejected'
+    | 'deleted'
+  /**
+   * The AWS VPC ID of the peer.
+   */
+  aws_vpc_id?: string
+  /**
+   * The AWS account ID of your Private Space.
+   */
+  aws_account_id?: string
+  /**
+   * When a peering connection will expire.
+   */
+  expires?: string
   [k: string]: any
 }
 /**
