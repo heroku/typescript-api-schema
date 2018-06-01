@@ -2879,6 +2879,10 @@ export interface Plan {
      */
     cents?: number
     /**
+     * price is negotiated in a contract outside of monthly add-on billing
+     */
+    contract?: boolean
+    /**
      * unit of price for plan
      */
     unit?: string

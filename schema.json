@@ -1890,6 +1890,9 @@
             "cents": {
               "$ref": "#/definitions/plan/definitions/cents"
             },
+            "contract": {
+              "$ref": "#/definitions/plan/definitions/contract"
+            },
             "unit": {
               "$ref": "#/definitions/plan/definitions/unit"
             }
@@ -9871,9 +9874,7 @@
           "description": "Provides the necessary information to establish an AWS VPC Peering with your private space.",
           "href": "/spaces/{(%23%2Fdefinitions%2Fspace%2Fdefinitions%2Fidentity)}/peering-info",
           "method": "GET",
-          "rel": {
-            "$ref": "#/definitions/peering-info"
-          },
+          "rel": "self",
           "targetSchema": {
             "$ref": "#/definitions/peering-info"
           },
@@ -10890,6 +10891,14 @@
             "integer"
           ]
         },
+        "contract": {
+          "description": "price is negotiated in a contract outside of monthly add-on billing",
+          "example": false,
+          "readOnly": true,
+          "type": [
+            "boolean"
+          ]
+        },
         "unit": {
           "description": "unit of price for plan",
           "example": "month",
@@ -11017,6 +11026,9 @@
           "properties": {
             "cents": {
               "$ref": "#/definitions/plan/definitions/cents"
+            },
+            "contract": {
+              "$ref": "#/definitions/plan/definitions/contract"
             },
             "unit": {
               "$ref": "#/definitions/plan/definitions/unit"
