@@ -964,6 +964,10 @@ export interface App {
    */
   id?: string
   /**
+   * describes whether a Private Spaces app is externally routable or not
+   */
+  internal_routing?: boolean | null
+  /**
    * maintenance status of app
    */
   maintenance?: boolean
@@ -3434,6 +3438,10 @@ export interface TeamApp {
    * unique identifier of app
    */
   id?: string
+  /**
+   * describes whether a Private Spaces app is externally routable or not
+   */
+  internal_routing?: boolean | null
   /**
    * is the current member a collaborator on this app.
    */
