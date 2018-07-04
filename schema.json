@@ -12141,6 +12141,9 @@
             "type": [
               "object"
             ],
+            "required": [
+              "permissions"
+            ],
             "properties": {
               "permissions": {
                 "type": [
