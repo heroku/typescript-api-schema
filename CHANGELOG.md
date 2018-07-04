@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/heroku/typescript-api-schema/compare/v1.0.6...v1.0.7) (2018-07-04)
+
+
+### Bug Fixes
+
+* updated schema ([ea707e3](https://github.com/heroku/typescript-api-schema/commit/ea707e3))
+
 ## [1.0.6](https://github.com/heroku/typescript-api-schema/compare/v1.0.5...v1.0.6) (2018-06-19)
 
 
