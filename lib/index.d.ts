@@ -91,6 +91,7 @@ export interface HerokuPlatformApi {
   'team-preferences'?: TeamPreferences
   team?: Team
   'user-preferences'?: UserPreferences
+  'vpn-connection'?: PrivateSpacesVpn
   'whitelisted-add-on-service'?: WhitelistedEntity
   [k: string]: any
 }
@@ -3860,6 +3861,71 @@ export interface UserPreferences {
    * Whether the user has dismissed the 2FA SMS banner
    */
   'dismissed-sms-banner'?: boolean | null
+  [k: string]: any
+}
+/**
+ * [VPN](https://devcenter.heroku.com/articles/private-spaces-vpn?preview=1) provides a way to connect your Private Spaces to your network via VPN.
+ */
+export interface PrivateSpacesVpn {
+  /**
+   * VPN ID
+   */
+  id?: string
+  /**
+   * VPN Name
+   */
+  name?: string
+  /**
+   * Public IP of VPN customer gateway
+   */
+  public_ip?: string
+  /**
+   * Routable CIDRs of VPN
+   */
+  routable_cidrs?: string[]
+  /**
+   * CIDR Block of the Private Space
+   */
+  space_cidr_block?: string
+  tunnels?: {
+    /**
+     * Timestamp of last status changed
+     */
+    last_status_change?: string
+    /**
+     * Public IP address for the tunnel
+     */
+    ip?: string
+    /**
+     * Public IP address for the customer side of the tunnel
+     */
+    customer_ip?: string
+    /**
+     * Pre-shared key
+     */
+    pre_shared_key?: string
+    /**
+     * Status of the tunnel
+     */
+    status?: string
+    /**
+     * Details of the status
+     */
+    status_message?: string
+    [k: string]: any
+  }[]
+  /**
+   * IKE Version
+   */
+  ike_version?: number
+  /**
+   * Status of the VPN
+   */
+  status?: string
+  /**
+   * Details of the status
+   */
+  status_message?: string
   [k: string]: any
 }
 /**
