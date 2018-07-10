@@ -15097,7 +15097,19 @@
         "status_message": {
           "$ref": "#/definitions/vpn-connection/definitions/status_message"
         }
-      }
+      },
+      "links": [
+        {
+          "description": "Create a new VPN connection in a private space.",
+          "href": "/spaces/{(%23%2Fdefinitions%2Fspace%2Fdefinitions%2Fidentity)}/vpn-connections",
+          "rel": "create",
+          "targetSchema": {
+            "$ref": "#/definitions/vpn-connection"
+          },
+          "method": "POST",
+          "title": "Create"
+        }
+      ]
     },
     "whitelisted-add-on-service": {
       "description": "Entities that have been whitelisted to be used by an Organization",
