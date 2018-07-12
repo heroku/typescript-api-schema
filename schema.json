@@ -14980,6 +14980,16 @@
             "string"
           ]
         },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/vpn-connection/definitions/id"
+            },
+            {
+              "$ref": "#/definitions/vpn-connection/definitions/name"
+            }
+          ]
+        },
         "space_cidr_block": {
           "description": "CIDR Block of the Private Space",
           "example": "10.0.0.0/16",
@@ -15033,6 +15043,10 @@
             },
             "status": {
               "description": "Status of the tunnel",
+              "enum": [
+                "UP",
+                "DOWN"
+              ],
               "example": "UP",
               "type": [
                 "string"
@@ -15049,6 +15063,14 @@
         },
         "status": {
           "description": "Status of the VPN",
+          "enum": [
+            "pending",
+            "provisioning",
+            "active",
+            "deprovisioning",
+            "complete",
+            "failed"
+          ],
           "example": "active",
           "readOnly": true,
           "type": [
@@ -15108,6 +15130,28 @@
           },
           "method": "POST",
           "title": "Create"
+        },
+        {
+          "description": "Destroy existing VPN Connection",
+          "href": "/spaces/{(%23%2Fdefinitions%2Fspace%2Fdefinitions%2Fidentity)}/vpn-connections/{(%23%2Fdefinitions%2Fvpn-connection%2Fdefinitions%2Fidentity)}",
+          "rel": "empty",
+          "method": "DELETE",
+          "title": "Destroy"
+        },
+        {
+          "description": "List VPN connections for a space.",
+          "href": "/spaces/{(%23%2Fdefinitions%2Fspace%2Fdefinitions%2Fidentity)}/vpn-connections",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/vpn-connection"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
         }
       ]
     },

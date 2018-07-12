@@ -3907,7 +3907,7 @@ export interface PrivateSpacesVpn {
     /**
      * Status of the tunnel
      */
-    status?: string
+    status?: 'UP' | 'DOWN'
     /**
      * Details of the status
      */
@@ -3921,7 +3921,7 @@ export interface PrivateSpacesVpn {
   /**
    * Status of the VPN
    */
-  status?: string
+  status?: 'pending' | 'provisioning' | 'active' | 'deprovisioning' | 'complete' | 'failed'
   /**
    * Details of the status
    */
