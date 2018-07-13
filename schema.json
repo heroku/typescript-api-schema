@@ -15152,6 +15152,16 @@
             ]
           },
           "title": "List"
+        },
+        {
+          "description": "Info for an existing vpn-connection.",
+          "href": "/spaces/{(%23%2Fdefinitions%2Fspace%2Fdefinitions%2Fidentity)}/vpn-connections/{(%23%2Fdefinitions%2Fvpn-connection%2Fdefinitions%2Fidentity)}",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/vpn-connection"
+          },
+          "title": "Info"
         }
       ]
     },
