@@ -173,8 +173,37 @@ export interface Account {
    * Identity Provider details for federated users.
    */
   identity_provider?: {
+    /**
+     * unique identifier of this identity provider
+     */
+    id?: string
+    organization?: {
+      /**
+       * unique name of organization
+       */
+      name?: string
+      [k: string]: any
+    }
+    /**
+     * entity that owns this identity provider
+     */
+    owner?: {
+      /**
+       * unique identifier of the owner
+       */
+      id: string
+      /**
+       * name of the owner
+       */
+      name?: string
+      /**
+       * type of the owner
+       */
+      type: 'team' | 'enterprise-account'
+      [k: string]: any
+    }
     [k: string]: any
-  } | null
+  }
   /**
    * when account last authorized with Heroku
    */
@@ -1588,6 +1617,24 @@ export interface IdentityProvider {
    * when the identity provider record was updated
    */
   updated_at?: string
+  /**
+   * entity that owns this identity provider
+   */
+  owner?: {
+    /**
+     * unique identifier of the owner
+     */
+    id: string
+    /**
+     * name of the owner
+     */
+    name?: string
+    /**
+     * type of the owner
+     */
+    type: 'team' | 'enterprise-account'
+    [k: string]: any
+  }
   [k: string]: any
 }
 /**
@@ -2597,6 +2644,10 @@ export interface PeeringInfo {
    * The CIDR ranges that you must not conflict with.
    */
   unavailable_cidr_blocks?: string[]
+  /**
+   * The CIDR ranges that should be routed to the Private Space VPC.
+   */
+  space_cidr_blocks?: string[]
   [k: string]: any
 }
 /**
