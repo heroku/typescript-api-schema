@@ -90,6 +90,9 @@ export interface HerokuPlatformApi {
   'team-member'?: TeamMember
   'team-preferences'?: TeamPreferences
   team?: Team
+  'test-case'?: TestCase
+  'test-node'?: TestNode
+  'test-run'?: TestRun
   'user-preferences'?: UserPreferences
   'vpn-connection'?: PrivateSpacesVpn
   'whitelisted-add-on-service'?: WhitelistedEntity
@@ -3866,6 +3869,209 @@ export interface Team {
    * when the team was updated
    */
   updated_at?: string
+  [k: string]: any
+}
+/**
+ * A single test case belonging to a test run
+ */
+export interface TestCase {
+  /**
+   * unique identifier of a test case
+   */
+  id?: string
+  /**
+   * when test case was created
+   */
+  created_at?: string
+  /**
+   * when test case was updated
+   */
+  updated_at?: string
+  /**
+   * description of the test case
+   */
+  description?: string
+  /**
+   * meta information about the test case
+   */
+  diagnostic?: string
+  /**
+   * special note about the test case e.g. skipped, todo
+   */
+  directive?: string
+  /**
+   * whether the test case was successful
+   */
+  passed?: boolean
+  /**
+   * the test number
+   */
+  number?: number
+  /**
+   * the test node which executed this test case
+   */
+  test_node?: {
+    id?: string
+    [k: string]: any
+  }
+  /**
+   * the test run which owns this test case
+   */
+  test_run?: {
+    id?: string
+    [k: string]: any
+  }
+  [k: string]: any
+}
+/**
+ * A single test node belonging to a test run
+ */
+export interface TestNode {
+  /**
+   * when test node was created
+   */
+  created_at?: string
+  /**
+   * the dyno which belongs to this test node
+   */
+  dyno?: {
+    [k: string]: any
+  } | null
+  /**
+   * the status of the test run when the error occured
+   */
+  error_status?: string | null
+  /**
+   * the exit code of the test script
+   */
+  exit_code?: number | null
+  id?: string
+  /**
+   * The index of the test node
+   */
+  index?: number
+  /**
+   * human friendly message indicating reason for an error
+   */
+  message?: string | null
+  /**
+   * the streaming output for the test node
+   */
+  output_stream_url?: string
+  /**
+   * the pipeline which owns this test node
+   */
+  pipeline?: {
+    id?: string
+    [k: string]: any
+  }
+  /**
+   * the streaming test setup output for the test node
+   */
+  setup_stream_url?: string
+  /**
+   * current state of the test run
+   */
+  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored'
+  /**
+   * when test node was updated
+   */
+  updated_at?: string
+  /**
+   * the test run which owns this test node
+   */
+  test_run?: {
+    id?: string
+    [k: string]: any
+  }
+  [k: string]: any
+}
+/**
+ * An execution or trial of one or more tests
+ */
+export interface TestRun {
+  /**
+   * the email of the actor triggering the test run
+   */
+  actor_email?: string
+  /**
+   * whether the test was run with an empty cache
+   */
+  clear_cache?: boolean | null
+  /**
+   * the branch of the repository that the test run concerns
+   */
+  commit_branch?: string
+  /**
+   * the message for the commit under test
+   */
+  commit_message?: string
+  /**
+   * the SHA hash of the commit under test
+   */
+  commit_sha?: string
+  /**
+   * whether the test run was started for interactive debugging
+   */
+  debug?: boolean
+  /**
+   * the app setup for the test run
+   */
+  app_setup?: null | {
+    [k: string]: any
+  }
+  /**
+   * when test run was created
+   */
+  created_at?: string
+  /**
+   * the type of dynos used for this test-run
+   */
+  dyno?: null | {
+    [k: string]: any
+  }
+  /**
+   * unique identifier of a test run
+   */
+  id?: string
+  /**
+   * human friendly message indicating reason for an error
+   */
+  message?: string | null
+  /**
+   * the auto incrementing test run number
+   */
+  number?: number
+  /**
+   * the organization that owns this test-run
+   */
+  organization?: null | {
+    [k: string]: any
+  }
+  /**
+   * the pipeline which owns this test-run
+   */
+  pipeline?: {
+    id?: string
+    [k: string]: any
+  }
+  /**
+   * current state of the test run
+   */
+  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored'
+  /**
+   * The download location for the source code to be tested
+   */
+  source_blob_url?: string
+  /**
+   * when test-run was updated
+   */
+  updated_at?: string
+  user?: Account
+  /**
+   * human friently warning emitted during the test run
+   */
+  warning_message?: string | null
   [k: string]: any
 }
 /**
