@@ -15673,7 +15673,7 @@
     "vpn-connection": {
       "description": "[VPN](https://devcenter.heroku.com/articles/private-spaces-vpn?preview=1) provides a way to connect your Private Spaces to your network via VPN.",
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
-      "stability": "prototype",
+      "stability": "development",
       "strictProperties": true,
       "title": "Heroku Platform API - Private Spaces VPN",
       "type": [
