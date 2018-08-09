@@ -3972,7 +3972,16 @@ export interface TestNode {
   /**
    * current state of the test run
    */
-  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored'
+  status?:
+    | 'pending'
+    | 'cancelled'
+    | 'creating'
+    | 'building'
+    | 'running'
+    | 'succeeded'
+    | 'failed'
+    | 'errored'
+    | 'debugging'
   /**
    * when test node was updated
    */
@@ -4058,7 +4067,16 @@ export interface TestRun {
   /**
    * current state of the test run
    */
-  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored'
+  status?:
+    | 'pending'
+    | 'cancelled'
+    | 'creating'
+    | 'building'
+    | 'running'
+    | 'succeeded'
+    | 'failed'
+    | 'errored'
+    | 'debugging'
   /**
    * The download location for the source code to be tested
    */
@@ -4178,7 +4196,7 @@ export interface PrivateSpacesVpn {
   /**
    * Status of the VPN
    */
-  status?: 'pending' | 'provisioning' | 'active' | 'deprovisioning' | 'complete' | 'failed'
+  status?: 'pending' | 'provisioning' | 'active' | 'deprovisioning' | 'failed'
   /**
    * Details of the status
    */

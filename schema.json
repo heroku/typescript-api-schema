@@ -15044,7 +15044,8 @@
             "running",
             "succeeded",
             "failed",
-            "errored"
+            "errored",
+            "debugging"
           ],
           "readOnly": true,
           "type": [
@@ -15251,7 +15252,8 @@
             "running",
             "succeeded",
             "failed",
-            "errored"
+            "errored",
+            "debugging"
           ],
           "readOnly": true,
           "type": [
@@ -15802,7 +15804,6 @@
             "provisioning",
             "active",
             "deprovisioning",
-            "complete",
             "failed"
           ],
           "example": "active",
