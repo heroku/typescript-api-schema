@@ -2686,6 +2686,10 @@ export interface Peering {
    */
   aws_vpc_id?: string
   /**
+   * The AWS region of the peer connection.
+   */
+  aws_region?: string
+  /**
    * The AWS account ID of your Private Space.
    */
   aws_account_id?: string

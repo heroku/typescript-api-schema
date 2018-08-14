@@ -9995,6 +9995,14 @@
             "string"
           ]
         },
+        "aws_region": {
+          "description": "The AWS region of the peer connection.",
+          "example": "us-east-1",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
         "vpc_id": {
           "description": "The AWS VPC ID of the peer.",
           "example": "vpc-1234567890",
@@ -10079,6 +10087,9 @@
         },
         "aws_vpc_id": {
           "$ref": "#/definitions/peering/definitions/vpc_id"
+        },
+        "aws_region": {
+          "$ref": "#/definitions/peering/definitions/aws_region"
         },
         "aws_account_id": {
           "$ref": "#/definitions/peering/definitions/aws_account_id"
