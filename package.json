@@ -5,13 +5,9 @@
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
     "@oclif/tslint": "^2.0.0",
-    "@semantic-release/changelog": "^3.0.0",
-    "@semantic-release/git": "^7.0.1",
-    "@semantic-release/npm": "^5.0.2",
     "http-call": "^5.2.0",
     "json-schema-to-typescript": "^5.5.0",
     "jsonwebtoken": "^8.3.0",
-    "semantic-release": "^15.9.8",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"
   },

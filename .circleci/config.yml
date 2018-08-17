@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yarn global add semantic-release@15
+            yarn global add @oclif/semantic-release@3 semantic-release@15
             yarn --frozen-lockfile
       - run:
           name: Cutting release
@@ -49,7 +49,7 @@ jobs:
             export PATH=/usr/local/share/.config/yarn/global/node_modules/.bin:$PATH
             export GH_TOKEN=$(./scripts/github_token.js 290530)
             git remote set-url origin "https://x-access-token:$GH_TOKEN@github.com/heroku/typescript-api-schema.git"
-            semantic-release
+            semantic-release -e @oclif/semantic-release
       - save_cache:
           key: v2-yarn-{{checksum ".circleci/config.yml"}}-{{checksum "yarn.lock"}}
           paths:
