@@ -1,3 +1,10 @@
+## [1.0.15](https://github.com/heroku/typescript-api-schema/compare/v1.0.14...v1.0.15) (2018-08-17)
+
+
+### Bug Fixes
+
+* base64 encode PEM ([6aab173](https://github.com/heroku/typescript-api-schema/commit/6aab173))
+
 ## [1.0.14](https://github.com/heroku/typescript-api-schema/compare/v1.0.13...v1.0.14) (2018-08-17)
 
 
