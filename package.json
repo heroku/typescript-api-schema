@@ -1,6 +1,6 @@
 {
   "name": "@heroku-cli/schema",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {

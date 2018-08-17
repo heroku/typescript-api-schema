@@ -1,3 +1,13 @@
+## [1.0.14](https://github.com/heroku/typescript-api-schema/compare/v1.0.13...v1.0.14) (2018-08-17)
+
+
+### Bug Fixes
+
+* add http-call ([9b1f614](https://github.com/heroku/typescript-api-schema/commit/9b1f614))
+* add jsonwebtoken ([27417e9](https://github.com/heroku/typescript-api-schema/commit/27417e9))
+* run yarn ([cd8115d](https://github.com/heroku/typescript-api-schema/commit/cd8115d))
+* set context ([d2eec19](https://github.com/heroku/typescript-api-schema/commit/d2eec19))
+
 ## [1.0.13](https://github.com/heroku/typescript-api-schema/compare/v1.0.12...v1.0.13) (2018-08-14)
 
 
