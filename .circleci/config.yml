@@ -18,6 +18,8 @@ jobs:
       - run:
           name: Updating schema
           command: |
+            git clone "https://x-access-token:$(./scripts/github_token.js 290530)@github.com/heroku/typescript-api-schema.git" repo
+            cd repo
             git config --global push.default simple
             git config --global user.name "$GIT_AUTHOR_NAME"
             git config --global user.email "$GIT_AUTHOR_EMAIL"
