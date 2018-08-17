@@ -31,7 +31,7 @@ jobs:
             sed -i -r "s/Heroku(Platform|Build|Setup|Vault)Api([^ ])/\2/" lib/index.d.ts
             git add schema.json lib/index.d.ts
             git commit -m "fix: updated schema" || exit 0
-            git push origin master
+            git push -q origin master
   release:
     <<: *update
     steps:
