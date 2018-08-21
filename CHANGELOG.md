@@ -1,3 +1,19 @@
+## [1.0.16](https://github.com/heroku/typescript-api-schema/compare/v1.0.15...v1.0.16) (2018-08-21)
+
+
+### Bug Fixes
+
+* buffer deprecation warning ([fddece6](https://github.com/heroku/typescript-api-schema/commit/fddece6))
+* quiet git push ([95a3a19](https://github.com/heroku/typescript-api-schema/commit/95a3a19))
+* set GH_TOKEN to app token ([b67a79c](https://github.com/heroku/typescript-api-schema/commit/b67a79c))
+* set url ([f84aef3](https://github.com/heroku/typescript-api-schema/commit/f84aef3))
+* testing release ([6bd35a6](https://github.com/heroku/typescript-api-schema/commit/6bd35a6))
+* typescript 3.0 ([2e90fe0](https://github.com/heroku/typescript-api-schema/commit/2e90fe0))
+* updated schema ([c099df5](https://github.com/heroku/typescript-api-schema/commit/c099df5))
+* updated schema ([99b4a70](https://github.com/heroku/typescript-api-schema/commit/99b4a70))
+* updated schema ([02951ec](https://github.com/heroku/typescript-api-schema/commit/02951ec))
+* use GH_TOKEN ([f964a89](https://github.com/heroku/typescript-api-schema/commit/f964a89))
+
 ## [1.0.15](https://github.com/heroku/typescript-api-schema/compare/v1.0.14...v1.0.15) (2018-08-17)
 
 
