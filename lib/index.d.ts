@@ -551,6 +551,21 @@ export interface AddOn {
     [k: string]: any
   }
   /**
+   * billing entity associated with this add-on
+   */
+  billing_entity?: {
+    /**
+     * unique identifier of the billing entity
+     */
+    id?: string
+    name?: string
+    /**
+     * type of Object of the billing entity, new types allowed at any time
+     */
+    type?: 'app' | 'team'
+    [k: string]: any
+  }
+  /**
    * billing application associated with this add-on
    */
   app?: {

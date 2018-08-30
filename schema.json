@@ -812,6 +812,37 @@
             "$ref": "#/definitions/add-on-attachment"
           },
           "title": "Info by App"
+        },
+        {
+          "description": "Resolve an add-on attachment from a name, optionally passing an app name. If there are matches it returns at least one add-on attachment (exact match) or many.",
+          "href": "/actions/addon-attachments/resolve",
+          "method": "POST",
+          "rel": "resolve",
+          "schema": {
+            "properties": {
+              "addon_attachment": {
+                "$ref": "#/definitions/add-on-attachment/definitions/name"
+              },
+              "app": {
+                "$ref": "#/definitions/app/definitions/name"
+              },
+              "addon_service": {
+                "$ref": "#/definitions/add-on-service/definitions/name"
+              }
+            },
+            "required": [
+              "addon_attachment"
+            ]
+          },
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/add-on-attachment"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "Resolution"
         }
       ],
       "properties": {
@@ -1629,7 +1660,7 @@
           ]
         },
         "confirm": {
-          "description": "name of owning app for confirmation",
+          "description": "name of billing entity for confirmation",
           "example": "example",
           "type": [
             "string"
@@ -1886,6 +1917,37 @@
             ]
           },
           "title": "List By Team"
+        },
+        {
+          "description": "Resolve an add-on from a name, optionally passing an app name. If there are matches it returns at least one add-on (exact match) or many.",
+          "href": "/actions/addons/resolve",
+          "method": "POST",
+          "rel": "resolve",
+          "schema": {
+            "properties": {
+              "addon": {
+                "$ref": "#/definitions/add-on/definitions/name"
+              },
+              "app": {
+                "$ref": "#/definitions/app/definitions/name"
+              },
+              "addon_service": {
+                "$ref": "#/definitions/add-on-service/definitions/name"
+              }
+            },
+            "required": [
+              "addon"
+            ]
+          },
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/add-on"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "Resolution"
         }
       ],
       "properties": {
@@ -1906,6 +1968,44 @@
           "type": [
             "object"
           ]
+        },
+        "billing_entity": {
+          "description": "billing entity associated with this add-on",
+          "type": [
+            "object"
+          ],
+          "properties": {
+            "id": {
+              "description": "unique identifier of the billing entity",
+              "example": "01234567-89ab-cdef-0123-456789abcdef",
+              "format": "uuid",
+              "readOnly": true,
+              "type": [
+                "string"
+              ]
+            },
+            "name": {
+              "desrciption": "name of the billing entity",
+              "example": "acme_corp",
+              "readOnly": true,
+              "type": [
+                "string"
+              ]
+            },
+            "type": {
+              "description": "type of Object of the billing entity, new types allowed at any time",
+              "enum": [
+                "app",
+                "team"
+              ],
+              "example": "team",
+              "readOnly": true,
+              "type": [
+                "string"
+              ]
+            }
+          },
+          "strictProperties": true
         },
         "app": {
           "description": "billing application associated with this add-on",
