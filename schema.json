@@ -532,7 +532,11 @@
                 "object"
               ]
             }
-          }
+          },
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "last_login": {
           "$ref": "#/definitions/account/definitions/last_login"
@@ -1790,8 +1794,10 @@
                 "example": {
                   "name": "DATABASE_FOLLOWER"
                 },
-                "name": {
-                  "$ref": "#/definitions/add-on-attachment/definitions/name"
+                "properties": {
+                  "name": {
+                    "$ref": "#/definitions/add-on-attachment/definitions/name"
+                  }
                 },
                 "type": [
                   "object"
@@ -1819,6 +1825,9 @@
               },
               "plan": {
                 "$ref": "#/definitions/plan/definitions/identity"
+              },
+              "name": {
+                "$ref": "#/definitions/add-on/definitions/name"
               }
             },
             "required": [
@@ -1985,7 +1994,7 @@
               ]
             },
             "name": {
-              "desrciption": "name of the billing entity",
+              "description": "name of the billing entity",
               "example": "acme_corp",
               "readOnly": true,
               "type": [
@@ -1993,7 +2002,7 @@
               ]
             },
             "type": {
-              "description": "type of Object of the billing entity, new types allowed at any time",
+              "description": "type of Object of the billing entity; new types allowed at any time.",
               "enum": [
                 "app",
                 "team"
@@ -15232,7 +15241,10 @@
             "id": {
               "$ref": "#/definitions/pipeline/definitions/identity"
             }
-          }
+          },
+          "type": [
+            "object"
+          ]
         },
         "setup_stream_url": {
           "$ref": "#/definitions/test-node/definitions/setup_stream_url"
@@ -15453,11 +15465,11 @@
           "title": "List"
         },
         {
-          "description": "Info for existing test-run.",
+          "description": "Info for existing test-run by Pipeline",
           "href": "/pipelines/{(%23%2Fdefinitions%2Fpipeline%2Fdefinitions%2Fid)}/test-runs/{(%23%2Fdefinitions%2Ftest-run%2Fdefinitions%2Fnumber)}",
           "method": "GET",
           "rel": "self",
-          "title": "Info"
+          "title": "Info By Pipeline"
         },
         {
           "description": "Update a test-run's status.",
@@ -15548,7 +15560,10 @@
             "id": {
               "$ref": "#/definitions/pipeline/definitions/identity"
             }
-          }
+          },
+          "type": [
+            "object"
+          ]
         },
         "status": {
           "$ref": "#/definitions/test-run/definitions/status"

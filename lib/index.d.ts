@@ -176,37 +176,8 @@ export interface Account {
    * Identity Provider details for federated users.
    */
   identity_provider?: {
-    /**
-     * unique identifier of this identity provider
-     */
-    id?: string
-    organization?: {
-      /**
-       * unique name of organization
-       */
-      name?: string
-      [k: string]: any
-    }
-    /**
-     * entity that owns this identity provider
-     */
-    owner?: {
-      /**
-       * unique identifier of the owner
-       */
-      id: string
-      /**
-       * name of the owner
-       */
-      name?: string
-      /**
-       * type of the owner
-       */
-      type: 'team' | 'enterprise-account'
-      [k: string]: any
-    }
     [k: string]: any
-  }
+  } | null
   /**
    * when account last authorized with Heroku
    */
@@ -558,9 +529,12 @@ export interface AddOn {
      * unique identifier of the billing entity
      */
     id?: string
+    /**
+     * name of the billing entity
+     */
     name?: string
     /**
-     * type of Object of the billing entity, new types allowed at any time
+     * type of Object of the billing entity; new types allowed at any time.
      */
     type?: 'app' | 'team'
     [k: string]: any
