@@ -1995,7 +1995,7 @@
             },
             "name": {
               "description": "name of the billing entity",
-              "example": "acme_corp",
+              "example": "example",
               "readOnly": true,
               "type": [
                 "string"
@@ -2007,7 +2007,7 @@
                 "app",
                 "team"
               ],
-              "example": "team",
+              "example": "app",
               "readOnly": true,
               "type": [
                 "string"
