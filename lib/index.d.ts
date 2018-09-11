@@ -3322,6 +3322,14 @@ export interface Space {
    * when space was updated
    */
   updated_at?: string
+  /**
+   * The RFC-1918 CIDR the Private Space will use. It must be a /16 in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16
+   */
+  cidr?: string
+  /**
+   * The RFC-1918 CIDR that the Private Space will use for the Heroku-managed peering connection that's automatically created when using Heroku Data add-ons. It must be between a /16 and a /20
+   */
+  data_cidr?: string
   [k: string]: any
 }
 /**

@@ -12625,6 +12625,24 @@
           "type": [
             "string"
           ]
+        },
+        "cidr": {
+          "description": "The RFC-1918 CIDR the Private Space will use. It must be a /16 in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16",
+          "example": "172.20.20.30/16",
+          "default": "10.0.0.0/16",
+          "pattern": "^((?:10|172\\.(?:1[6-9]|2[0-9]|3[01])|192\\.168)\\..*.+\\/16)$",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
+        },
+        "data_cidr": {
+          "description": "The RFC-1918 CIDR that the Private Space will use for the Heroku-managed peering connection that's automatically created when using Heroku Data add-ons. It must be between a /16 and a /20",
+          "example": "10.2.0.0/16",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
         }
       },
       "links": [
@@ -12701,6 +12719,12 @@
               },
               "shield": {
                 "$ref": "#/definitions/space/definitions/shield"
+              },
+              "cidr": {
+                "$ref": "#/definitions/space/definitions/cidr"
+              },
+              "data_cidr": {
+                "$ref": "#/definitions/space/definitions/data_cidr"
               }
             },
             "required": [
@@ -12775,6 +12799,12 @@
         },
         "updated_at": {
           "$ref": "#/definitions/space/definitions/updated_at"
+        },
+        "cidr": {
+          "$ref": "#/definitions/space/definitions/cidr"
+        },
+        "data_cidr": {
+          "$ref": "#/definitions/space/definitions/data_cidr"
         }
       }
     },
