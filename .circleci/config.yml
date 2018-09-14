@@ -14,7 +14,7 @@ jobs:
             - v2-npm-{{checksum ".circleci/config.yml"}}
       - run:
           name: Install dependencies
-          command: .circleci/greenkeeper
+          command: yarn
       - run:
           name: Updating schema
           command: |
