@@ -703,6 +703,15 @@
             "null",
             "string"
           ]
+        },
+        "log_input_url": {
+          "description": "URL for add-on partners to write to an add-on's logs",
+          "example": "https://token:t.abcdef12-3456-7890-abcd-ef1234567890@1.us.logplex.io/logs",
+          "type": [
+            "null",
+            "string"
+          ],
+          "readOnly": true
         }
       },
       "links": [
@@ -917,6 +926,9 @@
         },
         "web_url": {
           "$ref": "#/definitions/add-on-attachment/definitions/web_url"
+        },
+        "log_input_url": {
+          "$ref": "#/definitions/add-on-attachment/definitions/log_input_url"
         }
       }
     },

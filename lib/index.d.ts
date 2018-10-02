@@ -293,6 +293,10 @@ export interface AddOnAttachment {
    * URL for logging into web interface of add-on in attached app context
    */
   web_url?: null | string
+  /**
+   * URL for add-on partners to write to an add-on's logs
+   */
+  log_input_url?: null | string
   [k: string]: any
 }
 /**
