@@ -3433,6 +3433,10 @@ export interface TeamAppCollaborator {
    */
   id?: string
   /**
+   * array of permissions for the collaborator (only applicable if the app is on a team)
+   */
+  permissions?: TeamAppPermission[]
+  /**
    * role in the team
    */
   role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
