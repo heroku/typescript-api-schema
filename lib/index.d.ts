@@ -1665,7 +1665,7 @@ export interface InboundRuleset {
      */
     action: 'allow' | 'deny'
     /**
-     * is the request’s source in CIDR notation
+     * is the request’s source in CIDR notation. Only non-RFC1918 sources are supported.
      */
     source: string
     [k: string]: any
