@@ -3385,6 +3385,10 @@ export interface SslEndpoint {
  */
 export interface Stack {
   /**
+   * indicates this stack is the default for new apps
+   */
+  default?: boolean
+  /**
    * when stack was introduced
    */
   created_at?: string

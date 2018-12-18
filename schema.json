@@ -10399,6 +10399,21 @@
           "title": "List By Pipeline"
         },
         {
+          "description": "List pipeline couplings for the current user.",
+          "href": "/users/~/pipeline-couplings",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/pipeline-coupling"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
+        },
+        {
           "description": "List pipeline couplings.",
           "href": "/pipeline-couplings",
           "method": "GET",
@@ -13073,6 +13088,14 @@
             "string"
           ]
         },
+        "default": {
+          "description": "indicates this stack is the default for new apps",
+          "example": true,
+          "readOnly": true,
+          "type": [
+            "boolean"
+          ]
+        },
         "id": {
           "description": "unique identifier of stack",
           "example": "01234567-89ab-cdef-0123-456789abcdef",
@@ -13146,6 +13169,9 @@
         }
       ],
       "properties": {
+        "default": {
+          "$ref": "#/definitions/stack/definitions/default"
+        },
         "created_at": {
           "$ref": "#/definitions/stack/definitions/created_at"
         },
