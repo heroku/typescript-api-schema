@@ -1147,6 +1147,10 @@ export interface Build {
      * location of the buildpack for the app. Either a url (unofficial buildpacks) or an internal urn (heroku official buildpacks).
      */
     url?: string
+    /**
+     * either the shorthand name (heroku official buildpacks) or url (unofficial buildpacks) of the buildpack for the app
+     */
+    name?: string
     [k: string]: any
   }[]
   /**

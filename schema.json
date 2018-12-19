@@ -4128,6 +4128,9 @@
             "properties": {
               "url": {
                 "$ref": "#/definitions/buildpack-installation/definitions/url"
+              },
+              "name": {
+                "$ref": "#/definitions/buildpack-installation/definitions/name"
               }
             }
           }
