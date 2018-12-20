@@ -4127,10 +4127,20 @@
             ],
             "properties": {
               "url": {
-                "$ref": "#/definitions/buildpack-installation/definitions/url"
+                "description": "the URL of the buildpack for the app",
+                "example": "https://github.com/heroku/heroku-buildpack-ruby",
+                "readOnly": false,
+                "type": [
+                  "string"
+                ]
               },
               "name": {
-                "$ref": "#/definitions/buildpack-installation/definitions/name"
+                "description": "Buildpack Registry name of the buildpack for the app",
+                "example": "heroku/ruby",
+                "readOnly": false,
+                "type": [
+                  "string"
+                ]
               }
             }
           }
@@ -4437,7 +4447,7 @@
           ]
         },
         "name": {
-          "description": "either the shorthand name (heroku official buildpacks) or url (unofficial buildpacks) of the buildpack for the app",
+          "description": "either the Buildpack Registry name or a URL of the buildpack for the app",
           "example": "heroku/ruby",
           "readOnly": false,
           "type": [
