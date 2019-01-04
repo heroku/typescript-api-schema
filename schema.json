@@ -845,6 +845,9 @@
             },
             "required": [
               "addon_attachment"
+            ],
+            "type": [
+              "object"
             ]
           },
           "targetSchema": {
@@ -1961,6 +1964,9 @@
             },
             "required": [
               "addon"
+            ],
+            "type": [
+              "object"
             ]
           },
           "targetSchema": {
@@ -10424,7 +10430,7 @@
               "array"
             ]
           },
-          "title": "List"
+          "title": "List For Current User"
         },
         {
           "description": "List pipeline couplings.",
