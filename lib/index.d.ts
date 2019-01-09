@@ -50,20 +50,10 @@ export interface HerokuPlatformApi {
   'oauth-client'?: OAuthClient
   'oauth-grant'?: OAuthGrant
   'oauth-token'?: OAuthToken
-  'organization-add-on'?: OrganizationAddOn
-  'organization-app-collaborator'?: OrganizationAppCollaborator
-  'organization-app'?: OrganizationApp
-  'organization-feature'?: OrganizationFeature
-  'organization-invitation'?: OrganizationInvitation
-  'organization-invoice'?: OrganizationInvoice
-  'organization-member'?: OrganizationMember
-  'organization-preferences'?: OrganizationPreferences
-  organization?: Organization
   'outbound-ruleset'?: OutboundRuleset
   'password-reset'?: PasswordReset
   'peering-info'?: PeeringInfo
   peering?: Peering
-  'organization-app-permission'?: OrganizationAppPermission
   'pipeline-coupling'?: PipelineCoupling
   'pipeline-promotion-target'?: PipelinePromotionTarget
   'pipeline-promotion'?: PipelinePromotion
@@ -81,6 +71,7 @@ export interface HerokuPlatformApi {
   space?: Space
   'ssl-endpoint'?: SslEndpoint
   stack?: Stack
+  'team-add-on'?: TeamAddOn
   'team-app-collaborator'?: TeamAppCollaborator
   'team-app-permission'?: TeamAppPermission
   'team-app'?: TeamApp
@@ -211,9 +202,15 @@ export interface Account {
    */
   verified?: boolean
   /**
-   * organization selected by default
+   * team selected by default
    */
   default_organization?: {
+    [k: string]: any
+  } | null
+  /**
+   * team selected by default
+   */
+  default_team?: {
     [k: string]: any
   } | null
   [k: string]: any
@@ -1016,7 +1013,7 @@ export interface App {
     [k: string]: any
   }
   /**
-   * identity of organization
+   * identity of team
    */
   organization?: null | {
     [k: string]: any
@@ -1580,7 +1577,7 @@ export interface Formation {
   [k: string]: any
 }
 /**
- * Identity Providers represent the SAML configuration of an Organization.
+ * Identity Providers represent the SAML configuration of an Team.
  */
 export interface IdentityProvider {
   /**
@@ -1608,7 +1605,7 @@ export interface IdentityProvider {
    */
   sso_target_url?: string
   /**
-   * organization associated with this identity provider
+   * team associated with this identity provider
    */
   organization?: null | {
     [k: string]: any
@@ -2062,478 +2059,6 @@ export interface OAuthToken {
   [k: string]: any
 }
 /**
- * Deprecated: A list of add-ons the Organization uses across all apps
- */
-export interface OrganizationAddOn {
-  [k: string]: any
-}
-/**
- * Deprecated: An organization collaborator represents an account that has been given access to an organization app on Heroku.
- */
-export interface OrganizationAppCollaborator {
-  /**
-   * app collaborator belongs to
-   */
-  app?: {
-    /**
-     * unique name of app
-     */
-    name?: string
-    /**
-     * unique identifier of app
-     */
-    id?: string
-    [k: string]: any
-  }
-  /**
-   * when collaborator was created
-   */
-  created_at?: string
-  /**
-   * unique identifier of collaborator
-   */
-  id?: string
-  /**
-   * role in the organization
-   */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
-  /**
-   * when collaborator was updated
-   */
-  updated_at?: string
-  /**
-   * identity of collaborated account
-   */
-  user?: {
-    /**
-     * unique email address of account
-     */
-    email?: string
-    /**
-     * whether the user is federated and belongs to an Identity Provider
-     */
-    federated?: boolean
-    /**
-     * unique identifier of an account
-     */
-    id?: string
-    [k: string]: any
-  }
-  [k: string]: any
-}
-/**
- * Deprecated: An organization app encapsulates the organization specific functionality of Heroku apps.
- */
-export interface OrganizationApp {
-  /**
-   * when app was archived
-   */
-  archived_at?: null | string
-  /**
-   * description from buildpack of app
-   */
-  buildpack_provided_description?: null | string
-  /**
-   * identity of the stack that will be used for new builds
-   */
-  build_stack?: {
-    /**
-     * unique identifier of stack
-     */
-    id?: string
-    /**
-     * unique name of stack
-     */
-    name?: string
-    [k: string]: any
-  }
-  /**
-   * when app was created
-   */
-  created_at?: string
-  /**
-   * git repo URL of app
-   */
-  git_url?: string
-  /**
-   * unique identifier of app
-   */
-  id?: string
-  /**
-   * is the current member a collaborator on this app.
-   */
-  joined?: boolean
-  /**
-   * are other organization members forbidden from joining this app.
-   */
-  locked?: boolean
-  /**
-   * maintenance status of app
-   */
-  maintenance?: boolean
-  /**
-   * unique name of app
-   */
-  name?: string
-  /**
-   * organization that owns this app
-   */
-  organization?: null | {
-    [k: string]: any
-  }
-  /**
-   * identity of app owner
-   */
-  owner?: null | {
-    [k: string]: any
-  }
-  /**
-   * identity of app region
-   */
-  region?: {
-    /**
-     * unique identifier of region
-     */
-    id?: string
-    /**
-     * unique name of region
-     */
-    name?: string
-    [k: string]: any
-  }
-  /**
-   * when app was released
-   */
-  released_at?: null | string
-  /**
-   * git repo size in bytes of app
-   */
-  repo_size?: number | null
-  /**
-   * slug size in bytes of app
-   */
-  slug_size?: number | null
-  /**
-   * identity of space
-   */
-  space?: null | {
-    [k: string]: any
-  }
-  /**
-   * identity of app stack
-   */
-  stack?: {
-    /**
-     * unique identifier of stack
-     */
-    id?: string
-    /**
-     * unique name of stack
-     */
-    name?: string
-    [k: string]: any
-  }
-  /**
-   * when app was updated
-   */
-  updated_at?: string
-  /**
-   * web URL of app
-   */
-  web_url?: string
-  [k: string]: any
-}
-/**
- * Deprecated: An organization feature represents a feature enabled on an organization account.
- */
-export interface OrganizationFeature {
-  /**
-   * when organization feature was created
-   */
-  created_at?: string
-  /**
-   * description of organization feature
-   */
-  description?: string
-  /**
-   * documentation URL of organization feature
-   */
-  doc_url?: string
-  /**
-   * whether or not organization feature has been enabled
-   */
-  enabled?: boolean
-  /**
-   * unique identifier of organization feature
-   */
-  id?: string
-  /**
-   * unique name of organization feature
-   */
-  name?: string
-  /**
-   * state of organization feature
-   */
-  state?: string
-  /**
-   * when organization feature was updated
-   */
-  updated_at?: string
-  /**
-   * user readable feature name
-   */
-  display_name?: string
-  /**
-   * e-mail to send feedback about the feature
-   */
-  feedback_email?: string
-  [k: string]: any
-}
-/**
- * Deprecated: An organization invitation represents an invite to an organization.
- */
-export interface OrganizationInvitation {
-  /**
-   * when invitation was created
-   */
-  created_at?: string
-  /**
-   * Unique identifier of an invitation
-   */
-  id?: string
-  invited_by?: {
-    /**
-     * unique email address of account
-     */
-    email?: string
-    /**
-     * unique identifier of an account
-     */
-    id?: string
-    /**
-     * full name of the account owner
-     */
-    name?: string | null
-    [k: string]: any
-  }
-  organization?: {
-    /**
-     * unique identifier of organization
-     */
-    id?: string
-    /**
-     * unique name of organization
-     */
-    name?: string
-    [k: string]: any
-  }
-  /**
-   * role in the organization
-   */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
-  /**
-   * when invitation was updated
-   */
-  updated_at?: string
-  user?: {
-    /**
-     * unique email address of account
-     */
-    email?: string
-    /**
-     * unique identifier of an account
-     */
-    id?: string
-    /**
-     * full name of the account owner
-     */
-    name?: string | null
-    [k: string]: any
-  }
-  [k: string]: any
-}
-/**
- * Deprecated: An organization invoice is an itemized bill of goods for an organization which includes pricing and charges.
- */
-export interface OrganizationInvoice {
-  /**
-   * total add-ons charges in on this invoice
-   */
-  addons_total?: number
-  /**
-   * total database charges on this invoice
-   */
-  database_total?: number
-  /**
-   * total charges on this invoice
-   */
-  charges_total?: number
-  /**
-   * when invoice was created
-   */
-  created_at?: string
-  /**
-   * total credits on this invoice
-   */
-  credits_total?: number
-  /**
-   * The total amount of dyno units consumed across dyno types.
-   */
-  dyno_units?: number
-  /**
-   * unique identifier of this invoice
-   */
-  id?: string
-  /**
-   * human readable invoice number
-   */
-  number?: number
-  /**
-   * Status of the invoice payment.
-   */
-  payment_status?: string
-  /**
-   * the ending date that the invoice covers
-   */
-  period_end?: string
-  /**
-   * the starting date that this invoice covers
-   */
-  period_start?: string
-  /**
-   * total platform charges on this invoice
-   */
-  platform_total?: number
-  /**
-   * payment status for this invoice (pending, successful, failed)
-   */
-  state?: number
-  /**
-   * combined total of charges and credits on this invoice
-   */
-  total?: number
-  /**
-   * when invoice was updated
-   */
-  updated_at?: string
-  /**
-   * The total amount of hours consumed across dyno types.
-   */
-  weighted_dyno_hours?: number
-  [k: string]: any
-}
-/**
- * Deprecated: An organization member is an individual with access to an organization.
- */
-export interface OrganizationMember {
-  /**
-   * when the membership record was created
-   */
-  created_at: string
-  /**
-   * email address of the organization member
-   */
-  email: string
-  /**
-   * whether the user is federated and belongs to an Identity Provider
-   */
-  federated: boolean
-  /**
-   * unique identifier of organization member
-   */
-  id?: string
-  /**
-   * role in the organization
-   */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
-  /**
-   * whether the Enterprise organization member has two factor authentication enabled
-   */
-  two_factor_authentication?: boolean
-  /**
-   * when the membership record was updated
-   */
-  updated_at: string
-  /**
-   * user information for the membership
-   */
-  user?: {
-    /**
-     * unique email address of account
-     */
-    email?: string
-    /**
-     * unique identifier of an account
-     */
-    id?: string
-    /**
-     * full name of the account owner
-     */
-    name?: string | null
-    [k: string]: any
-  }
-}
-/**
- * Deprecated: Tracks an organization's preferences
- */
-export interface OrganizationPreferences {
-  /**
-   * The default permission used when adding new members to the organization
-   */
-  'default-permission'?: 'admin' | 'member' | 'viewer' | null
-  /**
-   * Whether whitelisting rules should be applied to add-on installations
-   */
-  'whitelisting-enabled'?: boolean | null
-  [k: string]: any
-}
-/**
- * Deprecated: Organizations allow you to manage access to a shared group of applications across your development team.
- */
-export interface Organization {
-  /**
-   * unique identifier of organization
-   */
-  id?: string
-  /**
-   * when the organization was created
-   */
-  created_at?: string
-  /**
-   * whether charges incurred by the org are paid by credit card.
-   */
-  credit_card_collections?: boolean
-  /**
-   * whether to use this organization when none is specified
-   */
-  default?: boolean
-  /**
-   * upper limit of members allowed in an organization.
-   */
-  membership_limit?: number | null
-  /**
-   * unique name of organization
-   */
-  name?: string
-  /**
-   * whether the org is provisioned licenses by salesforce.
-   */
-  provisioned_licenses?: boolean
-  /**
-   * role in the organization
-   */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
-  /**
-   * type of organization.
-   */
-  type?: 'enterprise' | 'team'
-  /**
-   * when the organization was updated
-   */
-  updated_at?: string
-  [k: string]: any
-}
-/**
  * An outbound-ruleset is a collection of rules that specify what hosts Dynos are allowed to communicate with.
  */
 export interface OutboundRuleset {
@@ -2606,7 +2131,7 @@ export interface PasswordReset {
   [k: string]: any
 }
 /**
- * [Peering Info](https://devcenter.heroku.com/articles/private-space-vpc-peering) gives you the information necessary to peer an AWS VPC to a Private Space.
+ * [Peering Info](https://devcenter.heroku.com/articles/private-space-peering) gives you the information necessary to peer an AWS VPC to a Private Space.
  */
 export interface PeeringInfo {
   /**
@@ -2651,7 +2176,7 @@ export interface PeeringInfo {
   [k: string]: any
 }
 /**
- * [Peering](https://devcenter.heroku.com/articles/private-space-vpc-peering) provides a way to peer your Private Space VPC to another AWS VPC.
+ * [Peering](https://devcenter.heroku.com/articles/private-space-peering) provides a way to peer your Private Space VPC to another AWS VPC.
  */
 export interface Peering {
   /**
@@ -2694,20 +2219,6 @@ export interface Peering {
    * When a peering connection will expire.
    */
   expires?: string
-  [k: string]: any
-}
-/**
- * Deprecated: An organization app permission is a behavior that is assigned to a user in an organization app.
- */
-export interface OrganizationAppPermission {
-  /**
-   * The name of the app permission.
-   */
-  name?: string
-  /**
-   * A description of what the app permission allows.
-   */
-  description?: string
   [k: string]: any
 }
 /**
@@ -3285,7 +2796,7 @@ export interface Space {
    */
   organization?: {
     /**
-     * unique name of organization
+     * unique name of team
      */
     name?: string
     [k: string]: any
@@ -3412,6 +2923,9 @@ export interface Stack {
    * when stack was last modified
    */
   updated_at?: string
+  [k: string]: any
+}
+export interface TeamAddOn {
   [k: string]: any
 }
 /**
@@ -4069,7 +3583,7 @@ export interface TestRun {
    */
   number?: number
   /**
-   * the organization that owns this test-run
+   * the team that owns this test-run
    */
   organization?: null | {
     [k: string]: any
@@ -4118,7 +3632,7 @@ export interface UserPreferences {
    */
   timezone?: string | null
   /**
-   * User's default organization
+   * User's default team
    */
   'default-organization'?: string | null
   /**
@@ -4156,7 +3670,7 @@ export interface UserPreferences {
   [k: string]: any
 }
 /**
- * [VPN](https://devcenter.heroku.com/articles/private-spaces-vpn?preview=1) provides a way to connect your Private Spaces to your network via VPN.
+ * [VPN](https://devcenter.heroku.com/articles/private-space-vpn-connection) provides a way to connect your Private Spaces to your network via VPN.
  */
 export interface PrivateSpacesVpn {
   /**
@@ -4221,7 +3735,7 @@ export interface PrivateSpacesVpn {
   [k: string]: any
 }
 /**
- * Entities that have been whitelisted to be used by an Organization
+ * Entities that have been whitelisted to be used by an Team
  */
 export interface WhitelistedEntity {
   /**
