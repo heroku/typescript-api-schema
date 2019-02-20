@@ -80,6 +80,7 @@ export interface HerokuPlatformApi {
   'team-invoice'?: TeamInvoice
   'team-member'?: TeamMember
   'team-preferences'?: TeamPreferences
+  'team-space'?: Space1
   team?: Team
   'test-case'?: TestCase
   'test-node'?: TestNode
@@ -3354,6 +3355,12 @@ export interface TeamPreferences {
    * Whether whitelisting rules should be applied to add-on installations
    */
   'whitelisting-enabled'?: boolean | null
+  [k: string]: any
+}
+/**
+ * A space is an isolated, highly available, secure app execution environments, running in the modern VPC substrate.
+ */
+export interface Space1 {
   [k: string]: any
 }
 /**

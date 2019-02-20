@@ -12865,6 +12865,33 @@
         }
       }
     },
+    "team-space": {
+      "description": "A space is an isolated, highly available, secure app execution environments, running in the modern VPC substrate.",
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "stability": "prototype",
+      "strictProperties": true,
+      "title": "Heroku Platform API - Space",
+      "type": [
+        "object"
+      ],
+      "links": [
+        {
+          "description": "List spaces owned by the team",
+          "href": "/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/spaces",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/space"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
+        }
+      ]
+    },
     "team": {
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
       "description": "Teams allow you to manage access to a shared group of applications and other resources.",
@@ -14790,6 +14817,9 @@
     },
     "team-preferences": {
       "$ref": "#/definitions/team-preferences"
+    },
+    "team-space": {
+      "$ref": "#/definitions/team-space"
     },
     "team": {
       "$ref": "#/definitions/team"
