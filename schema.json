@@ -5487,7 +5487,7 @@
           ]
         },
         "time_to_live": {
-          "description": "seconds until dyno expires, after which it will soon be killed",
+          "description": "seconds until dyno expires, after which it will soon be killed, max 86400 seconds (24 hours)",
           "example": 1800,
           "readOnly": false,
           "type": [
