@@ -28,7 +28,6 @@ export interface HerokuPlatformApi {
   'app-webhook-event'?: AppWebhookEvent
   'app-webhook'?: AppWebhook
   app?: App
-  'build-result'?: BuildResult
   build?: Build
   'buildpack-installation'?: BuildpackInstallations
   collaborator?: Collaborator
@@ -1079,48 +1078,6 @@ export interface App {
    * web URL of app
    */
   web_url?: string
-  [k: string]: any
-}
-/**
- * A build result contains the output from a build.
- */
-export interface BuildResult {
-  /**
-   * identity of build
-   */
-  build?: {
-    /**
-     * unique identifier of build
-     */
-    id?: string
-    /**
-     * status of build
-     */
-    status?: 'failed' | 'pending' | 'succeeded'
-    /**
-     * Build process output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`).
-     */
-    output_stream_url?: string
-    [k: string]: any
-  }
-  /**
-   * status from the build
-   */
-  exit_code?: number
-  /**
-   * A list of all the lines of a build's output. This has been replaced by the `output_stream_url` attribute on the build resource.
-   */
-  lines?: {
-    /**
-     * The output stream where the line was sent.
-     */
-    stream?: 'STDOUT' | 'STDERR'
-    /**
-     * A line of output from the build.
-     */
-    line?: string
-    [k: string]: any
-  }[]
   [k: string]: any
 }
 /**

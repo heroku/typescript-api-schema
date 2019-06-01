@@ -4022,120 +4022,6 @@
         }
       }
     },
-    "build-result": {
-      "$schema": "http://json-schema.org/draft-04/hyper-schema",
-      "deactivate_on": "2016-10-01",
-      "description": "A build result contains the output from a build.",
-      "title": "Heroku Build API - Build Result",
-      "stability": "deprecation",
-      "strictProperties": true,
-      "type": [
-        "object"
-      ],
-      "definitions": {
-        "identity": {
-        },
-        "exit_code": {
-          "description": "status from the build",
-          "example": 0,
-          "readOnly": true,
-          "type": [
-            "number"
-          ]
-        },
-        "line": {
-          "description": "a single line of output to STDOUT or STDERR from the build.",
-          "strictProperties": true,
-          "type": [
-            "object"
-          ],
-          "example": {
-            "stream": "STDOUT",
-            "line": "-----> Ruby app detected\n"
-          },
-          "readOnly": true,
-          "definitions": {
-            "stream": {
-              "type": [
-                "string"
-              ],
-              "enum": [
-                "STDOUT",
-                "STDERR"
-              ],
-              "description": "The output stream where the line was sent.",
-              "example": "STDOUT",
-              "readOnly": true
-            },
-            "line": {
-              "type": [
-                "string"
-              ],
-              "example": "-----> Ruby app detected\n",
-              "readOnly": true,
-              "description": "A line of output from the build."
-            }
-          },
-          "properties": {
-            "stream": {
-              "$ref": "#/definitions/build-result/definitions/line/definitions/stream"
-            },
-            "line": {
-              "$ref": "#/definitions/build-result/definitions/line/definitions/line"
-            }
-          }
-        }
-      },
-      "links": [
-        {
-          "description": "Info for existing result.",
-          "href": "/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}/builds/{(%23%2Fdefinitions%2Fbuild%2Fdefinitions%2Fidentity)}/result",
-          "method": "GET",
-          "rel": "self",
-          "targetSchema": {
-            "$ref": "#/definitions/build-result"
-          },
-          "title": "Info"
-        }
-      ],
-      "properties": {
-        "build": {
-          "description": "identity of build",
-          "properties": {
-            "id": {
-              "$ref": "#/definitions/build/definitions/id"
-            },
-            "status": {
-              "$ref": "#/definitions/build/definitions/status"
-            },
-            "output_stream_url": {
-              "$ref": "#/definitions/build/definitions/output_stream_url"
-            }
-          },
-          "type": [
-            "object"
-          ]
-        },
-        "exit_code": {
-          "$ref": "#/definitions/build-result/definitions/exit_code"
-        },
-        "lines": {
-          "type": [
-            "array"
-          ],
-          "items": {
-            "$ref": "#/definitions/build-result/definitions/line"
-          },
-          "description": "A list of all the lines of a build's output. This has been replaced by the `output_stream_url` attribute on the build resource.",
-          "example": [
-            {
-              "line": "-----> Ruby app detected\n",
-              "stream": "STDOUT"
-            }
-          ]
-        }
-      }
-    },
     "build": {
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
       "description": "A build represents the process of transforming a code tarball into a slug",
@@ -14519,9 +14405,6 @@
     },
     "app": {
       "$ref": "#/definitions/app"
-    },
-    "build-result": {
-      "$ref": "#/definitions/build-result"
     },
     "build": {
       "$ref": "#/definitions/build"
