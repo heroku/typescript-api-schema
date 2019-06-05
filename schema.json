@@ -12389,6 +12389,18 @@
             "null"
           ]
         },
+        "team_role": {
+          "description": "role in the team",
+          "enum": [
+            "admin",
+            "viewer",
+            "member"
+          ],
+          "example": "admin",
+          "type": [
+            "string"
+          ]
+        },
         "two_factor_authentication": {
           "description": "whether the Enterprise team member has two factor authentication enabled",
           "example": true,
@@ -12422,7 +12434,7 @@
                 "$ref": "#/definitions/team-member/definitions/federated"
               },
               "role": {
-                "$ref": "#/definitions/team/definitions/role"
+                "$ref": "#/definitions/team-member/definitions/team_role"
               }
             },
             "required": [
@@ -12452,7 +12464,7 @@
                 "$ref": "#/definitions/team-member/definitions/federated"
               },
               "role": {
-                "$ref": "#/definitions/team/definitions/role"
+                "$ref": "#/definitions/team-member/definitions/team_role"
               }
             },
             "required": [
@@ -12482,7 +12494,7 @@
                 "$ref": "#/definitions/team-member/definitions/federated"
               },
               "role": {
-                "$ref": "#/definitions/team/definitions/role"
+                "$ref": "#/definitions/team-member/definitions/team_role"
               }
             },
             "required": [
