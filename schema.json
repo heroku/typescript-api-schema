@@ -3357,7 +3357,7 @@
       "definitions": {
         "authorization": {
           "description": "a custom `Authorization` header that Heroku will include with all webhook notifications",
-          "example": "Bearer 9266671b2767f804c9d5809c2d384ed57d8f8ce1abd1043e1fb3fbbcb8c3",
+          "example": "Bearer xyz",
           "type": [
             "null",
             "string"
