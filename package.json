@@ -1,7 +1,7 @@
 {
   "name": "@heroku-cli/schema",
   "version": "1.0.25",
-  "author": "Jeff Dickey @jdxcode",
+  "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
     "@oclif/tslint": "^3.1.0",
