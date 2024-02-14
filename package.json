@@ -8,7 +8,7 @@
     "http-call": "^5.2.2",
     "json-schema-to-typescript": "^5.5.0",
     "jsonwebtoken": "^8.3.0",
-    "tslint": "^5.11.0",
+    "tslint": "^5.20.1",
     "typescript": "^3.0.3"
   },
   "engines": {
