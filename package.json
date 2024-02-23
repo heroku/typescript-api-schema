@@ -4,15 +4,24 @@
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
-    "@oclif/tslint": "^3.1.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "camelcase": "^8.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-salesforce-typescript": "3.2.3",
+    "eslint-plugin-unused-imports": "^3.1.0",
+    "pascal-case": "^4.0.0",
+    "dashify": "^2.0.0",
+    "prettier": "3.2.4",
     "http-call": "^5.2.2",
-    "json-schema-to-typescript": "^5.5.0",
-    "jsonwebtoken": "^8.3.0",
-    "tslint": "^5.11.0",
-    "typescript": "^3.0.3"
+    "jsonwebtoken": "9.0.0",
+    "typescript": "^5.3.3"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@heroku-cli/command": ">=9.x"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=16.20.1"
   },
   "files": [
     "/lib"
@@ -24,5 +33,7 @@
   "license": "MIT",
   "repository": "heroku/typescript-api-schema",
   "types": "lib/index.d.ts",
-  "scripts": {}
+  "scripts": {
+    "build": "node schema-builder.mjs && tsc --emitDeclarationOnly && eslint . --config .eslintrc --fix && prettier -w --config ./.prettier.mjs ./src/**/*.ts "
+  }
 }
