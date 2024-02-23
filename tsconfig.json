@@ -3,17 +3,22 @@
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "module": "commonjs",
+    "moduleResolution": "Node",
     "outDir": "./lib",
     "pretty": true,
     "rootDirs": [
       "./src"
     ],
+    "skipLibCheck": true,
     "strict": true,
-    "target": "es2017",
+    "target": "ESNext",
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@heroku-cli/schema": ["src/index.ts"]
+    }
   },
   "include": [
     "./src/**/*"
