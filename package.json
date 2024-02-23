@@ -4,15 +4,33 @@
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-oclif-typescript": "3.1.7",
+    "@typescript-eslint/parser": "^6.15.0",
+    "camelcase": "^8.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-salesforce-typescript": "3.2.3",
+    "eslint-plugin-unused-imports": "^3.1.0",
+    "pascal-case": "^4.0.0",
+    "dashify": "^2.0.0",
+    "prettier": "3.2.4",
     "http-call": "^5.2.2",
-    "json-schema-to-typescript": "^14.1.0",
-    "jsonwebtoken": "^8.3.0",
-    "typescript": "^4.9.5"
+    "jsonwebtoken": "9.0.0",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "tslib": "2.x"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    },
+    "./services/*.js": {
+      "import": "./lib/esm/services/*.js",
+      "require": "./lib/cjs/services/*.js"
+    }
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=16.20.1"
   },
   "files": [
     "/lib"
@@ -25,6 +43,8 @@
   "repository": "heroku/typescript-api-schema",
   "types": "lib/index.d.ts",
   "scripts": {
-    "updateTypes": "./scripts/update_platform_api_types"
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs --target esnext",
+    "build:esm": "tsc --module esnext --outDir lib/esm --target esnext",
+    "build": "node schema-builder.mjs && eslint . --config .eslintrc --fix && prettier -w --config ./.prettier.mjs ./src/**/*.ts && (npm run build:cjs & npm run build:esm)"
   }
 }
