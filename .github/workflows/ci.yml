@@ -1,0 +1,21 @@
+name: build-only
+on:
+  workflow_dispatch:
+  push:
+    paths: [ '*.ts', '*.js', '*.json', '*.lock' ]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+        os: [pub-hk-ubuntu-22.04-small]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm i
+      - run: npm run build
