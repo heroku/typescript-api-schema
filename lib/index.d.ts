@@ -1764,14 +1764,14 @@ export interface AuditTrailEvent {
    */
   created_at?: string
   data?: Data1
-  enterprise_account?: EnterpriseAccount
+  enterprise_account?: AuditTrailEnterpriseAccount
   /**
    * unique identifier of event
    */
   id?: string
   owner?: Owner1
   request?: Request
-  team?: Team
+  team?: AuditTrailTeam
   /**
    * type of event
    */
@@ -1804,7 +1804,7 @@ export interface Owner1 {
 /**
  * enterprise account on which the event happened
  */
-export interface EnterpriseAccount {
+export interface AuditTrailEnterpriseAccount {
   [k: string]: unknown
   id?: string
   name?: string
@@ -1812,7 +1812,7 @@ export interface EnterpriseAccount {
 /**
  * team on which the event happened
  */
-export interface Team {
+export interface AuditTrailTeam {
   [k: string]: unknown
   id?: string
   name?: string
@@ -3978,7 +3978,7 @@ export interface SpaceTopology {
     /**
      * formations for application
      */
-    formation?: Formation[]
+    formation?: SpaceTopologyFormation[]
     /**
      * unique identifier of app
      */
@@ -3992,12 +3992,12 @@ export interface SpaceTopology {
 /**
  * formations for application
  */
-export interface Formation {
+export interface SpaceTopologyFormation {
   [k: string]: unknown
   /**
    * Current dynos for application
    */
-  dynos?: Dyno[]
+  dynos?: FormationDyno[]
   /**
    * unique identifier of this process type
    */
@@ -4010,7 +4010,7 @@ export interface Formation {
 /**
  * A dyno
  */
-export interface Dyno {
+export interface FormationDyno {
   [k: string]: unknown
   /**
    * localspace hostname of resource
