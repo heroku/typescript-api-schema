@@ -5,7 +5,7 @@
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-oclif-typescript": "3.1.7",
+    "eslint-config-oclif-typescript": "3.1.10",
     "http-call": "^5.3.0",
     "json-schema-to-typescript": "^14.1.0",
     "jsonwebtoken": "^8.3.0",
