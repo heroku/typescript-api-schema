@@ -25,14 +25,20 @@ export default class PipelineService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Pipeline>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for existing pipeline.
@@ -50,13 +56,19 @@ export default class PipelineService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Pipeline>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Delete an existing pipeline.
@@ -75,14 +87,20 @@ export default class PipelineService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Pipeline>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Update an existing pipeline.
@@ -103,14 +121,20 @@ export default class PipelineService {
       method: 'PATCH',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Pipeline>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List existing pipelines.
@@ -124,12 +148,18 @@ export default class PipelineService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Pipeline[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

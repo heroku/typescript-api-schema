@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Pipeline Release](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-release)
- * Information about latest releases of apps in a pipeline.
+ * Information about the latest release of each app in a pipeline. A release makes a deployment available to end-users.
  */
 export default class PipelineReleaseService {
     protected readonly fetchImpl: typeof fetch;

@@ -25,13 +25,19 @@ export default class InboundRulesetService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.InboundRuleset>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info on an existing Inbound Ruleset
@@ -53,14 +59,20 @@ export default class InboundRulesetService {
         method: 'GET',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3'
+          Accept: 'application/vnd.heroku+json; version=3.sdk'
         }
       }
     );
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.InboundRuleset>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List all inbound rulesets for a space
@@ -78,13 +90,19 @@ export default class InboundRulesetService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.InboundRuleset[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Create a new inbound ruleset
@@ -104,13 +122,19 @@ export default class InboundRulesetService {
       method: 'PUT',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.InboundRuleset>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

@@ -21,13 +21,19 @@ export default class SpaceService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Space[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for existing space.
@@ -45,13 +51,19 @@ export default class SpaceService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Space>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Update an existing space.
@@ -71,14 +83,20 @@ export default class SpaceService {
       method: 'PATCH',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Space>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Delete an existing space.
@@ -96,14 +114,20 @@ export default class SpaceService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Space>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Create a new space.
@@ -121,13 +145,19 @@ export default class SpaceService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Space>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

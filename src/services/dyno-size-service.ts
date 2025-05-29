@@ -12,7 +12,7 @@ export default class DynoSizeService {
   /**
    * Info for existing dyno size.
    *
-   * @param dynoSizeIdentity unique identifier of this dyno size or the name of this dyno-size.
+   * @param dynoSizeIdentity unique identifier of the dyno size or name of the dyno size.
    * @param requestInit The initializer for the request.
    */
   public async info(
@@ -25,13 +25,19 @@ export default class DynoSizeService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.DynoSize>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List existing dyno sizes.
@@ -45,12 +51,48 @@ export default class DynoSizeService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.DynoSize[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * List available dyno sizes for an app
+   *
+   * @param appIdentity unique identifier of app or unique name of app.
+   * @param requestInit The initializer for the request.
+   */
+  public async listAppDynoSizes(
+    appIdentity: string,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Record<string, unknown>> {
+    const response = await this.fetchImpl(`${this.endpoint}/apps/${appIdentity}/available-dyno-sizes`, {
+      ...requestInit,
+
+      method: 'GET',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Record<string, unknown>>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

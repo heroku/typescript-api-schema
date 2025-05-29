@@ -3,6 +3,38 @@
   "version": "1.0.25",
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/esm/index.d.ts"
+    },
+    "./services/*.js": {
+      "import": "./lib/esm/services/*.js",
+      "require": "./lib/cjs/services/*.js",
+      "types": "./lib/esm/services/*.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=16.20.1"
+  },
+  "files": [
+    "/lib"
+  ],
+  "homepage": "https://github.com/heroku/typescript-api-schema",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "repository": "heroku/typescript-api-schema",
+  "scripts": {
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs --target esnext",
+    "build:esm": "tsc --module esnext --outDir lib/esm --target esnext",
+    "build": "node schema-builder.mjs && eslint . --config .eslintrc --fix && prettier -w --config ./.prettier.mjs ./src/**/*.ts && (npm run build:cjs & npm run build:esm)"
+  },
   "devDependencies": {
     "@typescript-eslint/parser": "^6.15.0",
     "camelcase": "^8.0.0",
@@ -18,33 +50,5 @@
   },
   "peerDependencies": {
     "tslib": "2.x"
-  },
-  "exports": {
-    ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
-    },
-    "./services/*.js": {
-      "import": "./lib/esm/services/*.js",
-      "require": "./lib/cjs/services/*.js"
-    }
-  },
-  "engines": {
-    "node": ">=16.20.1"
-  },
-  "files": [
-    "/lib"
-  ],
-  "homepage": "https://github.com/heroku/typescript-api-schema",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "repository": "heroku/typescript-api-schema",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build:cjs": "tsc --module commonjs --outDir lib/cjs --target esnext",
-    "build:esm": "tsc --module esnext --outDir lib/esm --target esnext",
-    "build": "node schema-builder.mjs && eslint . --config .eslintrc --fix && prettier -w --config ./.prettier.mjs ./src/**/*.ts && (npm run build:cjs & npm run build:esm)"
   }
 }

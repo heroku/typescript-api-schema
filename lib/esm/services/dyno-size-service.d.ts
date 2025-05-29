@@ -10,7 +10,7 @@ export default class DynoSizeService {
     /**
      * Info for existing dyno size.
      *
-     * @param dynoSizeIdentity unique identifier of this dyno size or the name of this dyno-size.
+     * @param dynoSizeIdentity unique identifier of the dyno size or name of the dyno size.
      * @param requestInit The initializer for the request.
      */
     info(dynoSizeIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.DynoSize>;
@@ -20,4 +20,11 @@ export default class DynoSizeService {
      * @param requestInit The initializer for the request.
      */
     list(requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.DynoSize[]>;
+    /**
+     * List available dyno sizes for an app
+     *
+     * @param appIdentity unique identifier of app or unique name of app.
+     * @param requestInit The initializer for the request.
+     */
+    listAppDynoSizes(appIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
 }

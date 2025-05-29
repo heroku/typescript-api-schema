@@ -25,14 +25,20 @@ export default class OauthAuthorizationService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.OauthAuthorization>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Delete OAuth authorization.
@@ -50,14 +56,20 @@ export default class OauthAuthorizationService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.OauthAuthorization>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for an OAuth authorization.
@@ -75,13 +87,52 @@ export default class OauthAuthorizationService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.OauthAuthorization>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * Update an existing OAuth authorization.
+   *
+   * @param oauthAuthorizationIdentity unique identifier of OAuth authorization.
+   * @param payload Object to send to the endpoint.
+   * @param requestInit The initializer for the request.
+   */
+  public async update(
+    oauthAuthorizationIdentity: string,
+    payload: Heroku.OauthAuthorizationUpdatePayload,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Heroku.OauthAuthorization> {
+    const response = await this.fetchImpl(`${this.endpoint}/oauth/authorizations/${oauthAuthorizationIdentity}`, {
+      ...requestInit,
+      body: JSON.stringify(payload, null, 2),
+      method: 'PATCH',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Heroku.OauthAuthorization>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List OAuth authorizations.
@@ -95,13 +146,19 @@ export default class OauthAuthorizationService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.OauthAuthorization[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Regenerate OAuth tokens. This endpoint is only available to direct authorizations or privileged OAuth clients.
@@ -121,7 +178,7 @@ export default class OauthAuthorizationService {
         method: 'POST',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
+          Accept: 'application/vnd.heroku+json; version=3.sdk',
           'Content-Type': 'application/json'
         }
       }
@@ -129,6 +186,12 @@ export default class OauthAuthorizationService {
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.OauthAuthorization>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

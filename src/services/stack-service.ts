@@ -25,13 +25,19 @@ export default class StackService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Stack>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List available stacks.
@@ -45,12 +51,48 @@ export default class StackService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Stack[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * List available app stacks for an app.
+   *
+   * @param appIdentity unique identifier of app or unique name of app.
+   * @param requestInit The initializer for the request.
+   */
+  public async listStacks(
+    appIdentity: string,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Heroku.Stack[]> {
+    const response = await this.fetchImpl(`${this.endpoint}/apps/${appIdentity}/available-stacks`, {
+      ...requestInit,
+
+      method: 'GET',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Heroku.Stack[]>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

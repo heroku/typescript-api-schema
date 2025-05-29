@@ -21,13 +21,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for an existing add-on.
@@ -45,13 +51,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Create a new add-on.
@@ -71,14 +83,20 @@ export default class AddOnService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Delete an existing add-on.
@@ -98,14 +116,20 @@ export default class AddOnService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for an existing add-on.
@@ -125,13 +149,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List existing add-ons for an app.
@@ -149,13 +179,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Change add-on plan. Some add-ons may not support changing plans. In that case, an error will be returned.
@@ -177,14 +213,20 @@ export default class AddOnService {
       method: 'PATCH',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List all existing add-ons a user has access to
@@ -202,13 +244,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List add-ons used across all Team apps
@@ -226,13 +274,19 @@ export default class AddOnService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Resolve an add-on from a name, optionally passing an app name. If there are matches it returns at least one add-on (exact match) or many.
@@ -250,13 +304,19 @@ export default class AddOnService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

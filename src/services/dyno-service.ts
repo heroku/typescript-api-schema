@@ -27,14 +27,20 @@ export default class DynoService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Dyno>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Restart dyno.
@@ -54,14 +60,54 @@ export default class DynoService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * Restart dynos of a given formation type.
+   *
+   * @param appIdentity unique identifier of app or unique name of app.
+   * @param dynoFormationType the formation type of this process on this dyno
+   * @example "run".
+   * @param requestInit The initializer for the request.
+   */
+  public async restartFormation(
+    appIdentity: string,
+    dynoFormationType: string,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Record<string, unknown>> {
+    const response = await this.fetchImpl(`${this.endpoint}/apps/${appIdentity}/formations/${dynoFormationType}`, {
+      ...requestInit,
+
+      method: 'DELETE',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Record<string, unknown>>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Restart all dynos.
@@ -79,14 +125,20 @@ export default class DynoService {
       method: 'DELETE',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Stop dyno.
@@ -106,14 +158,57 @@ export default class DynoService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * Stop dynos of a given formation type.
+   *
+   * @param appIdentity unique identifier of app or unique name of app.
+   * @param dynoFormationType the formation type of this process on this dyno
+   * @example "run".
+   * @param requestInit The initializer for the request.
+   */
+  public async stopFormation(
+    appIdentity: string,
+    dynoFormationType: string,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Record<string, unknown>> {
+    const response = await this.fetchImpl(
+      `${this.endpoint}/apps/${appIdentity}/formations/${dynoFormationType}/actions/stop`,
+      {
+        ...requestInit,
+
+        method: 'POST',
+        headers: {
+          ...requestInit?.headers,
+          Accept: 'application/vnd.heroku+json; version=3.sdk',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (response.ok) {
+      return (await response.json()) as Promise<Record<string, unknown>>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for existing dyno.
@@ -133,13 +228,19 @@ export default class DynoService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Dyno>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List existing dynos.
@@ -157,12 +258,18 @@ export default class DynoService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Dyno[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

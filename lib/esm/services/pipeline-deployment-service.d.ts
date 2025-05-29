@@ -1,14 +1,14 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Pipeline Deployment](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-deployment)
- * Information about latest deployments of apps in a pipeline.
+ * Information about the latest deployment of each app in a pipeline. A deployment is the process of moving the build artifacts to a target environment.
  */
 export default class PipelineDeploymentService {
     protected readonly fetchImpl: typeof fetch;
     protected readonly endpoint: string;
     constructor(fetchImpl: typeof fetch, endpoint: string);
     /**
-     * List latest slug releases for each app in a pipeline
+     * List latest deployments for each app in a pipeline. A deployment is a release that changed your source slug, container image, or Heroku processes.
      *
      * @param pipelineId unique identifier of pipeline
      * @example "01234567-89ab-cdef-0123-456789abcdef".

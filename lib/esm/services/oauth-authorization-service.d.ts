@@ -29,6 +29,14 @@ export default class OauthAuthorizationService {
      */
     info(oauthAuthorizationIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.OauthAuthorization>;
     /**
+     * Update an existing OAuth authorization.
+     *
+     * @param oauthAuthorizationIdentity unique identifier of OAuth authorization.
+     * @param payload Object to send to the endpoint.
+     * @param requestInit The initializer for the request.
+     */
+    update(oauthAuthorizationIdentity: string, payload: Heroku.OauthAuthorizationUpdatePayload, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.OauthAuthorization>;
+    /**
      * List OAuth authorizations.
      *
      * @param requestInit The initializer for the request.

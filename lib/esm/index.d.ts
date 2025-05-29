@@ -185,6 +185,64 @@ export interface Account {
      */
     country_of_residence: string | null;
     /**
+     * whether the user has enabled Eco dynos
+     */
+    eco_dynos_enabled: boolean;
+    /**
+     * When the user's Eco dynos will be shutdown after disablement
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly eco_dynos_shutdown_at: string | null;
+    /**
+     * when pipeline cost consent was made
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly pipeline_cost_consent_at: string | null;
+    /**
+     * whether account has acknowledged the MSA terms of service
+     */
+    readonly acknowledged_msa: boolean;
+    /**
+     * when account has acknowledged the MSA terms of service
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly acknowledged_msa_at: string | null;
+    /**
+     * whether account has acknowledged the Italian customer terms of service
+     *
+     * @example "affirmatively_accepted"
+     */
+    readonly italian_customer_terms: string | null;
+    /**
+     * whether account has acknowledged the Italian provider terms of service
+     *
+     * @example "affirmatively_accepted"
+     */
+    readonly italian_partner_terms: string | null;
+    /**
+     * whether account has legacy 2FA or VaaS MFA enabled
+     */
+    readonly mfa_enabled: boolean;
+    /**
+     * whether the user is exempt from MFA requirements
+     */
+    mfa_exemption: boolean;
+    /**
+     * the reason why a user may be exempt from MFA requirements
+     *
+     * @example "federated"
+     */
+    mfa_exemption_reason: string | null;
+    /**
+     * which type of mfa the user should see
+     *
+     * @example "vaas"
+     */
+    readonly mfa_experience: 'vaas' | 'legacy';
+    /**
      * team selected by default
      */
     default_organization: DefaultOrganization | null;
@@ -196,7 +254,7 @@ export interface Account {
 /**
  *
  * [Heroku Platform API - identity-provider](https://devcenter.heroku.com/articles/platform-api-reference#identity-provider)
- * Identity Providers represent the SAML configuration of teams or an Enterprise account
+ * Identity Providers represent the SSO configuration of an Enterprise Account or Team.
  */
 export interface IdentityProvider {
     /**
@@ -204,7 +262,17 @@ export interface IdentityProvider {
      *
      * @example "-----BEGIN CERTIFICATE----- ..."
      */
-    certificate: string;
+    certificate: string | null;
+    /**
+     * Array of sso certificates belonging to this identity provider
+     */
+    certificates: Array<{
+        readonly created_at?: string;
+        readonly id?: string;
+        readonly expires_at?: string;
+        body?: string;
+        name?: string | null;
+    }>;
     /**
      * when provider record was created
      *
@@ -224,6 +292,16 @@ export interface IdentityProvider {
      */
     readonly id: string;
     /**
+     * user-friendly unique identifier for this identity provider
+     *
+     * @example "acme-sso"
+     */
+    name: string;
+    /**
+     * entity that owns this identity provider
+     */
+    owner: Owner;
+    /**
      * single log out URL for this identity provider
      *
      * @example "https://example.com/idp/logout"
@@ -236,19 +314,33 @@ export interface IdentityProvider {
      */
     sso_target_url: string;
     /**
-     * team associated with this identity provider
-     */
-    organization: null | Organization;
-    /**
      * when the identity provider record was updated
      *
      * @example "2012-01-01T12:00:00Z"
      */
     readonly updated_at: string;
     /**
-     * entity that owns this identity provider
+     * when the identity provider is allowed to be used
      */
-    owner: Owner;
+    readonly enabled: boolean;
+    /**
+     * heroku start url
+     *
+     * @example "https://sso.heroku.com/saml/acme-sso/init"
+     */
+    readonly heroku_start_url: string;
+    /**
+     * heroku entity id
+     *
+     * @example "https://sso.heroku.com/saml/acme-sso"
+     */
+    readonly heroku_entity_id: string;
+    /**
+     * heroku acs url
+     *
+     * @example "https://sso.heroku.com/saml/acme-sso/finalize"
+     */
+    readonly heroku_acs_url: string;
 }
 /**
  *
@@ -291,6 +383,18 @@ export interface Team {
      * @example 25
      */
     readonly membership_limit: number | null;
+    /**
+     * Time when team was consented into new pipeline costs
+     *
+     * @example "01-01-2023"
+     */
+    pipeline_cost_consent_at: string | null;
+    /**
+     * Email of team user that consented to new pipeline costs
+     *
+     * @example "heroku@salesforce.com"
+     */
+    pipeline_cost_consent_user_email: string | null;
     /**
      * unique name of team
      *
@@ -407,6 +511,16 @@ export interface AccountUpdatePayload {
      * @example "Tina Edmonds"
      */
     name?: string | null;
+    /**
+     * whether the user has enabled Eco dynos
+     */
+    eco_dynos_enabled?: boolean;
+    /**
+     * whether pipeline cost consent was made
+     *
+     * @example "true"
+     */
+    readonly pipeline_cost_consent?: boolean;
 }
 export interface AccountUpdateByUserPayload {
     /**
@@ -425,6 +539,16 @@ export interface AccountUpdateByUserPayload {
      * @example "Tina Edmonds"
      */
     name?: string | null;
+    /**
+     * whether the user has enabled Eco dynos
+     */
+    eco_dynos_enabled?: boolean;
+    /**
+     * whether pipeline cost consent was made
+     *
+     * @example "true"
+     */
+    readonly pipeline_cost_consent?: boolean;
 }
 /**
  *
@@ -446,17 +570,7 @@ export interface AddOn {
      * identity of add-on serviceAdd-on services represent add-ons that may be provisioned for apps. Endpoints under add-on services can be accessed without authentication.
      */
     addon_service: {
-        /**
-         * unique identifier of this add-on-service
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id: string;
-        /**
-         * unique name of this add-on-service
-         *
-         * @example "heroku-postgresql"
-         */
         readonly name: string;
     } | AddOnService;
     /**
@@ -499,17 +613,7 @@ export interface AddOn {
      * identity of add-on planPlans represent different configurations of add-ons that may be added to apps. Endpoints under add-on services can be accessed without authentication.
      */
     plan: {
-        /**
-         * unique identifier of this plan
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id: string;
-        /**
-         * unique name of this plan
-         *
-         * @example "heroku-postgresql:dev"
-         */
         readonly name: string;
     } | Plan;
     /**
@@ -597,6 +701,13 @@ export interface AddOnService {
      * @example "2012-01-01T12:00:00Z"
      */
     readonly updated_at: string;
+    /**
+     * generations supported by this add-on
+     */
+    supported_generations: Array<{
+        readonly name?: string;
+        readonly id?: string;
+    }>;
 }
 /**
  *
@@ -639,21 +750,43 @@ export interface App {
      */
     readonly archived_at: null | string;
     /**
+     * name of the image used for the base layers of the OCI image
+     *
+     * @example "heroku/heroku:22-cnb"
+     */
+    readonly base_image_name: null | string;
+    /**
+     * identity of the stack that will be used for new builds
+     */
+    build_stack: BuildStack;
+    /**
      * description from buildpack of app
      *
      * @example "Ruby/Rack"
      */
     readonly buildpack_provided_description: null | string;
     /**
-     * identity of the stack that will be used for new builds
+     * buildpacks of the OCI image
      */
-    build_stack: BuildStack;
+    buildpacks: null | Buildpack[];
     /**
      * when app was created
      *
      * @example "2012-01-01T12:00:00Z"
      */
     readonly created_at: string;
+    /**
+     * current build architecture for the app
+     *
+     * @example "[arm64]"
+     */
+    current_build_architecture: [];
+    /**
+     * the generation of the app
+     *
+     * @example "fir"
+     */
+    readonly generation: string;
     /**
      * git repo URL of app
      *
@@ -744,6 +877,10 @@ export interface BilledPrice {
      * price is negotiated in a contract outside of monthly add-on billing
      */
     readonly contract: boolean;
+    /**
+     * whether this plan is billed per use
+     */
+    readonly metered: boolean;
     /**
      * unit of price for plan
      *
@@ -870,11 +1007,23 @@ export interface Price {
      */
     readonly contract: boolean;
     /**
+     * whether this plan is billed per use
+     */
+    readonly metered: boolean;
+    /**
      * unit of price for plan
      *
      * @example "month"
      */
     readonly unit: string;
+}
+export interface AddOnActionPeerPayload {
+    /**
+     * The AWS VPC Peering Connection ID of the peering.
+     *
+     * @example "pcx-123456789012"
+     */
+    readonly pcx_id: string;
 }
 /**
  *
@@ -1785,7 +1934,7 @@ export interface AppSetup {
 /**
  *
  * [Heroku Platform API - build](https://devcenter.heroku.com/articles/platform-api-reference#build)
- * A build represents the process of transforming a code tarball into a slug
+ * A build represents the process of transforming a code tarball into build artifacts
  */
 export interface Build {
     /**
@@ -1793,20 +1942,10 @@ export interface Build {
      */
     app?: BuildApp;
     /**
-     * buildpacks executed for this build, in order
+     * buildpacks executed for this build, in order (only applicable to Cedar-generation apps)
      */
     buildpacks?: Array<{
-        /**
-         * the URL of the buildpack for the app
-         *
-         * @example "https://github.com/heroku/heroku-buildpack-ruby"
-         */
         url?: string;
-        /**
-         * Buildpack Registry name of the buildpack for the app
-         *
-         * @example "heroku/ruby"
-         */
         name?: string;
     }> | null;
     /**
@@ -1821,6 +1960,12 @@ export interface Build {
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly id: string;
+    /**
+     * Labs set from project.toml file. Only applies to Fir generation apps.
+     *
+     * @example {"build_config_vars":true}
+     */
+    readonly labs?: Record<string, unknown>;
     /**
      * Build process output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`).
      *
@@ -1838,7 +1983,7 @@ export interface Build {
      */
     readonly release?: null | BuildRelease;
     /**
-     * slug created by this build
+     * slug created by this build (only applicable for Cedar-generation apps)
      */
     slug?: Slug | null;
     /**
@@ -2200,13 +2345,37 @@ export interface BuildStack {
      *
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
-    readonly id: string;
+    readonly id?: string;
     /**
      * unique name of stack
      *
      * @example "heroku-18"
      */
-    readonly name: string;
+    readonly name?: string;
+}
+/**
+ *
+ * set of executables that inspects app source code and creates a plan to build and run your image
+ */
+export interface Buildpack {
+    /**
+     * identifier of the buildpack
+     *
+     * @example "heroku/ruby"
+     */
+    id?: string;
+    /**
+     * version of the buildpack
+     *
+     * @example "2.0.0"
+     */
+    version?: string;
+    /**
+     * homepage of the buildpack
+     *
+     * @example "https://github.com/heroku/buildpacks-ruby"
+     */
+    homepage?: string;
 }
 /**
  *
@@ -2347,6 +2516,12 @@ export interface Space {
      * @example "10.2.0.0/16"
      */
     data_cidr: string;
+    /**
+     * generation for space
+     *
+     * @example "fir"
+     */
+    generation: string;
 }
 /**
  *
@@ -2579,6 +2754,10 @@ export interface EnterpriseAccount {
      */
     readonly trial: boolean;
     /**
+     * whether the enterprise account is part of the Salesforce Partner Program
+     */
+    readonly partner_benefits: boolean;
+    /**
      * Identity Provider associated with the Enterprise Account
      */
     identity_provider: null | EnterpriseAccountIdentityProvider;
@@ -2744,20 +2923,10 @@ export interface User {
 }
 export interface BuildCreatePayload {
     /**
-     * buildpacks executed for this build, in order
+     * buildpacks executed for this build, in order (only applicable to Cedar-generation apps)
      */
     buildpacks?: Array<{
-        /**
-         * the URL of the buildpack for the app
-         *
-         * @example "https://github.com/heroku/heroku-buildpack-ruby"
-         */
         url?: string;
-        /**
-         * Buildpack Registry name of the buildpack for the app
-         *
-         * @example "heroku/ruby"
-         */
         name?: string;
     }> | null;
     /**
@@ -2808,13 +2977,13 @@ export interface BuildpackInstallation {
     /**
      * buildpack
      */
-    buildpack: Buildpack;
+    buildpack: BuildpackInstallationBuildpack;
 }
 /**
  *
  * buildpack
  */
-export interface Buildpack {
+export interface BuildpackInstallationBuildpack {
     /**
      * location of the buildpack for the app. Either a url (unofficial buildpacks) or an internal urn (heroku official buildpacks).
      *
@@ -3187,11 +3356,23 @@ export interface DomainUpdatePayload {
  */
 export interface DynoSize {
     /**
+     * CPU architecture of this dyno
+     *
+     * @example "arm64"
+     */
+    readonly architecture: string;
+    /**
      * minimum vCPUs, non-dedicated may get more depending on load
      *
      * @example 1
      */
     readonly compute: number;
+    /**
+     * whether this dyno size's product tier can use auto-scaling
+     *
+     * @example true
+     */
+    readonly can_autoscale: boolean;
     /**
      * price information for this dyno size
      */
@@ -3201,17 +3382,13 @@ export interface DynoSize {
      */
     readonly dedicated: boolean;
     /**
-     * deprecated. See precise_dyno_units instead
-     */
-    readonly dyno_units: number;
-    /**
      * unit of consumption for Heroku Enterprise customers to 2 decimal places
      *
      * @example 0.28
      */
     readonly precise_dyno_units: number;
     /**
-     * unique identifier of this dyno size
+     * unique identifier of the dyno size
      *
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
@@ -3223,7 +3400,7 @@ export interface DynoSize {
      */
     readonly memory: number;
     /**
-     * the name of this dyno-size
+     * name of the dyno size
      *
      * @example "eco"
      */
@@ -3232,6 +3409,41 @@ export interface DynoSize {
      * whether this dyno can only be provisioned in a private space
      */
     readonly private_space_only: boolean;
+    /**
+     * Generation of the Heroku platform for this dyno size
+     */
+    readonly generation: DynoSizeGeneration;
+    /**
+     * infrastructure tier for this dyno
+     *
+     * @example "production"
+     */
+    readonly infrastructure_tier: string;
+    /**
+     * product tier for this dyno
+     *
+     * @example "standard"
+     */
+    readonly product_dyno_tier: string;
+}
+/**
+ *
+ * [Heroku Platform API - generation](https://devcenter.heroku.com/articles/platform-api-reference#generation)
+ * Generation of the Heroku platform for this dyno size
+ */
+export interface DynoSizeGeneration {
+    /**
+     * unique identifier of the generation of the Heroku platform for this dyno size
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * unique name of the generation of the Heroku platform for this dyno size
+     *
+     * @example "cedar"
+     */
+    readonly name?: string;
 }
 /**
  *
@@ -3304,7 +3516,7 @@ export interface Dyno {
 }
 /**
  *
- * [Heroku Platform API - release](https://devcenter.heroku.com/articles/platform-api-reference#release)
+ * [Heroku Platform API - pipeline-deployment](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-deployment)
  * A release represents a combination of code, config vars and add-ons for an app on Heroku.
  */
 export interface Release {
@@ -3312,6 +3524,10 @@ export interface Release {
      * add-on plans installed on the app for this release
      */
     addon_plan_names: string[];
+    /**
+     * build artifacts for the release
+     */
+    artifacts: Artifact[];
     /**
      * app involved in the release
      */
@@ -3341,7 +3557,11 @@ export interface Release {
      */
     readonly updated_at: string;
     /**
-     * slug running in this release
+     * OCI image running in this release
+     */
+    oci_image: ReleaseOciImage | null;
+    /**
+     * slug running in this release. Not applicable to apps using Cloud Native Buildpacks.
      */
     slug: Slug | null;
     /**
@@ -3349,7 +3569,7 @@ export interface Release {
      *
      * @example "succeeded"
      */
-    readonly status: 'failed' | 'pending' | 'succeeded';
+    readonly status: 'expired' | 'failed' | 'pending' | 'succeeded';
     /**
      * user that created the release
      */
@@ -3361,17 +3581,23 @@ export interface Release {
      */
     readonly version: number;
     /**
-     * indicates this release as being the current one for the app
+     * indicates if this release is the current one for the app
      *
      * @example true
      */
     readonly current: boolean;
     /**
-     * Release command output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`).
+     * URL that the release command output streams to. The stream is available as either `text/plain` or `text/event-stream`. Prepare clients to handle disconnects and to resume the stream by sending a `Range` header for `text/plain` or a `Last-Event-Id` header for `text/event-stream`.
      *
      * @example "https://release-output.heroku.com/streams/01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly output_stream_url: string | null;
+    /**
+     * indicates if this release is eligible for rollback
+     *
+     * @example true
+     */
+    readonly eligible_for_rollback: boolean;
 }
 /**
  *
@@ -3450,51 +3676,13 @@ export interface EnterpriseAccountDailyUsage {
      * usage by team
      */
     teams: Array<{
-        /**
-         * total add-on credits used
-         *
-         * @example 250
-         */
         readonly addons?: number;
-        /**
-         * app usage in the team
-         */
         apps?: AppUsageDaily[];
-        /**
-         * total add-on credits used for first party add-ons
-         *
-         * @example 34.89
-         */
         readonly data?: number;
-        /**
-         * dynos used
-         *
-         * @example 1.548
-         */
         readonly dynos?: number;
-        /**
-         * team identifier
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id?: string;
-        /**
-         * name of the team
-         *
-         * @example "ops"
-         */
         readonly name?: string;
-        /**
-         * total add-on credits used for third party add-ons
-         *
-         * @example 12.34
-         */
         readonly partner?: number;
-        /**
-         * space credits used
-         *
-         * @example 1.548
-         */
         readonly space?: number;
     }>;
     /**
@@ -3607,16 +3795,7 @@ export interface EnterpriseAccountMember {
      * enterprise account permissions
      */
     permissions: Array<{
-        /**
-         *
-         * @example "View enterprise account members and teams."
-         */
         description?: string;
-        /**
-         * permission in the enterprise account
-         *
-         * @example "view"
-         */
         readonly name?: 'view' | 'create' | 'manage' | 'billing';
     }>;
     /**
@@ -3714,61 +3893,18 @@ export interface EnterpriseAccountMonthlyUsage {
      * usage by team
      */
     teams: Array<{
-        /**
-         * total add-on credits used
-         *
-         * @example 250
-         */
         readonly addons?: number;
-        /**
-         * app usage in the team
-         */
         apps?: AppUsageMonthly[];
-        /**
-         * average connect rows synced
-         *
-         * @example 15000
-         */
         readonly connect?: number;
-        /**
-         * total add-on credits used for first party add-ons
-         *
-         * @example 34.89
-         */
         readonly data?: number;
-        /**
-         * dynos used
-         *
-         * @example 1.548
-         */
         readonly dynos?: number;
-        /**
-         * team identifier
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id?: string;
-        /**
-         * name of the team
-         *
-         * @example "ops"
-         */
         readonly name?: string;
-        /**
-         * total add-on credits used for third party add-ons
-         *
-         * @example 12.34
-         */
         readonly partner?: number;
-        /**
-         * space credits used
-         *
-         * @example 1.548
-         */
         readonly space?: number;
     }>;
     /**
-     * average connect rows synced
+     * max connect rows synced
      *
      * @example 15000
      */
@@ -3915,21 +4051,43 @@ export interface TeamApp {
      */
     readonly archived_at?: null | string;
     /**
+     * name of the image used for the base layers of the OCI image
+     *
+     * @example "heroku/heroku:22-cnb"
+     */
+    readonly base_image_name?: null | string;
+    /**
+     * identity of the stack that will be used for new builds
+     */
+    build_stack?: BuildStack;
+    /**
      * description from buildpack of app
      *
      * @example "Ruby/Rack"
      */
     readonly buildpack_provided_description?: null | string;
     /**
-     * identity of the stack that will be used for new builds
+     * buildpacks of the OCI image
      */
-    build_stack?: BuildStack;
+    buildpacks?: null | Buildpack[];
+    /**
+     * current build architecture for the app
+     *
+     * @example "[arm64]"
+     */
+    current_build_architecture?: [];
     /**
      * when app was created
      *
      * @example "2012-01-01T12:00:00Z"
      */
     readonly created_at?: string;
+    /**
+     * the generation of the app
+     *
+     * @example "fir"
+     */
+    readonly generation?: string;
     /**
      * git repo URL of app
      *
@@ -4090,6 +4248,10 @@ export interface Formation {
      */
     readonly created_at: string;
     /**
+     * dyno size
+     */
+    dyno_size: FormationDynoSize;
+    /**
      * unique identifier of this process type
      *
      * @example "01234567-89ab-cdef-0123-456789abcdef"
@@ -4102,7 +4264,7 @@ export interface Formation {
      */
     quantity: number;
     /**
-     * dyno size
+     * deprecated, refer to 'dyno_size' instead
      *
      * @example "standard-1X"
      */
@@ -4139,9 +4301,27 @@ export interface FormationApp {
      */
     readonly id?: string;
 }
+/**
+ *
+ * dyno size
+ */
+export interface FormationDynoSize {
+    /**
+     * unique identifier of the dyno size
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * name of the dyno size
+     *
+     * @example "eco"
+     */
+    readonly name?: string;
+}
 export interface FormationBatchUpdatePayload {
     /**
-     * Array with formation updates. Each element must have "type", the id or name of the process type to be updated, and can optionally update its "quantity" or "size".
+     * Array with formation updates. Each element must have "type", the id or name of the process type to be updated, and can optionally update its "quantity" or "dyno_size".
      */
     updates: FormationBatchUpdatePayloadUpdate[];
 }
@@ -4151,17 +4331,17 @@ export interface FormationBatchUpdatePayload {
  */
 export interface FormationBatchUpdatePayloadUpdate {
     /**
+     * dyno size
+     *
+     * @example {"id":"01234567-89ab-cdef-0123-456789abcdef"}
+     */
+    dyno_size?: FormationBatchUpdatePayloadUpdateDynoSize;
+    /**
      * number of processes to maintain
      *
      * @example 1
      */
     quantity?: number;
-    /**
-     * dyno size
-     *
-     * @example "standard-1X"
-     */
-    size?: string;
     /**
      * type of process to maintain
      *
@@ -4169,53 +4349,136 @@ export interface FormationBatchUpdatePayloadUpdate {
      */
     readonly type: string;
 }
+/**
+ *
+ * dyno size
+ */
+export interface FormationBatchUpdatePayloadUpdateDynoSize {
+    /**
+     * unique identifier of the dyno size
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * name of the dyno size
+     *
+     * @example "Standard-1X"
+     */
+    readonly name?: string;
+}
 export interface FormationUpdatePayload {
+    /**
+     * dyno size
+     *
+     * @example {"id":"01234567-89ab-cdef-0123-456789abcdef"}
+     */
+    dyno_size?: FormationUpdatePayloadDynoSize;
     /**
      * number of processes to maintain
      *
      * @example 1
      */
     quantity?: number;
-    /**
-     * dyno size
-     *
-     * @example "standard-1X"
-     */
-    size?: string;
 }
-export interface IdentityProviderCreateByTeamPayload {
+/**
+ *
+ * dyno size
+ */
+export interface FormationUpdatePayloadDynoSize {
+    /**
+     * unique identifier of the dyno size
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * name of the dyno size
+     *
+     * @example "Standard-1X"
+     */
+    readonly name?: string;
+}
+/**
+ *
+ * [Heroku Platform API - generation](https://devcenter.heroku.com/articles/platform-api-reference#generation)
+ * A generation represents a version of the Heroku platform that includes the app execution environment, routing, telemetry, and build systems.
+ */
+export interface Generation {
+    /**
+     * when generation was created
+     *
+     * @example "2024-12-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * unique identifier of generation
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * unique name of generation
+     *
+     * @example "fir"
+     */
+    readonly name: string;
+    /**
+     * when generation was updated
+     *
+     * @example "2024-12-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+    /**
+     * features unsupported by this generation
+     */
+    unsupported_features: string[];
+    /**
+     * features unsupported by this generation along with their metadata
+     */
+    expanded_supported_features: UnsupportedFeature[];
+}
+/**
+ *
+ * unsupported feature information
+ */
+export interface UnsupportedFeature {
+    /**
+     * name of unsupported feature
+     *
+     * @example "app_maintenance"
+     */
+    name?: string;
+    /**
+     * type of unsupported feature
+     *
+     * @example "temporary"
+     */
+    incompatible_type?: string;
+    /**
+     * scope of unsupported feature
+     *
+     * @example "app"
+     */
+    scope?: string;
+}
+export interface IdentityProviderCreatePayload {
+    /**
+     * Array of sso certificates belonging to this identity provider
+     */
+    certificates?: Array<{
+        readonly created_at?: string;
+        readonly id?: string;
+        readonly expires_at?: string;
+        body?: string;
+        name?: string | null;
+    }>;
     /**
      * raw contents of the public certificate (eg: .crt or .pem file)
      *
      * @example "-----BEGIN CERTIFICATE----- ..."
      */
-    certificate: string;
-    /**
-     * URL identifier provided by the identity provider
-     *
-     * @example "https://customer-domain.idp.com"
-     */
-    entity_id: string;
-    /**
-     * single log out URL for this identity provider
-     *
-     * @example "https://example.com/idp/logout"
-     */
-    slo_target_url?: string;
-    /**
-     * single sign on URL for this identity provider
-     *
-     * @example "https://example.com/idp/login"
-     */
-    sso_target_url: string;
-}
-export interface IdentityProviderUpdateByTeamPayload {
-    /**
-     * raw contents of the public certificate (eg: .crt or .pem file)
-     *
-     * @example "-----BEGIN CERTIFICATE----- ..."
-     */
-    certificate?: string;
+    certificate?: string | null;
     /**
      * URL identifier provided by the identity provider
      *
@@ -4234,6 +4497,42 @@ export interface IdentityProviderUpdateByTeamPayload {
      * @example "https://example.com/idp/login"
      */
     sso_target_url?: string;
+    /**
+     * entity that owns this identity provider
+     */
+    owner: Owner;
+    /**
+     * when the identity provider is allowed to be used
+     */
+    readonly enabled?: boolean;
+}
+export interface IdentityProviderUpdatePayload {
+    /**
+     * URL identifier provided by the identity provider
+     *
+     * @example "https://customer-domain.idp.com"
+     */
+    entity_id?: string;
+    /**
+     * single log out URL for this identity provider
+     *
+     * @example "https://example.com/idp/logout"
+     */
+    slo_target_url?: string;
+    /**
+     * single sign on URL for this identity provider
+     *
+     * @example "https://example.com/idp/login"
+     */
+    sso_target_url?: string;
+    /**
+     * when the identity provider is allowed to be used
+     */
+    readonly enabled?: boolean;
+    /**
+     * List of certificates to update or create; any existing certificates not referenced here will be deleted
+     */
+    certificates?: [];
 }
 /**
  *
@@ -4647,13 +4946,19 @@ export interface LogSession {
 }
 export interface LogSessionCreatePayload {
     /**
-     * dyno to limit results to
+     * dyno name to limit results to
      *
-     * @example "web.1"
+     * @example "'web.1' (Cedar-generation) or 'web-1234abcde-123ab' (Fir-generation)"
      */
     dyno?: string;
     /**
-     * number of log lines to stream at once
+     * process type to limit results to (for Fir-generation apps only)
+     *
+     * @example "web"
+     */
+    type?: string;
+    /**
+     * number of log lines to stream at a time (for Cedar-generation apps only)
      *
      * @example 10
      */
@@ -4692,6 +4997,12 @@ export interface OauthAuthorization {
      */
     readonly created_at: string;
     /**
+     * human-friendly description of this OAuth authorization
+     *
+     * @example "sample authorization"
+     */
+    readonly description: string;
+    /**
      * this authorization's grant
      */
     grant: null | Grant;
@@ -4711,6 +5022,10 @@ export interface OauthAuthorization {
      * @example ["global"]
      */
     readonly scope: string[];
+    /**
+     * this authorization's session
+     */
+    readonly session: null | Session;
     /**
      * when OAuth authorization was updated
      *
@@ -4742,9 +5057,15 @@ export interface AccessToken {
     /**
      * contents of the token to be used for authorization
      *
-     * @example "HRKU-01234567-89ab-cdef-0123-456789abcdef"
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly token?: string;
+    /**
+     * the version of the token
+     *
+     * @example "1"
+     */
+    readonly version?: number;
 }
 /**
  *
@@ -4814,9 +5135,21 @@ export interface RefreshToken {
     /**
      * contents of the token to be used for authorization
      *
-     * @example "HRKU-01234567-89ab-cdef-0123-456789abcdef"
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly token: string;
+}
+/**
+ *
+ * this authorization's session
+ */
+export interface Session {
+    /**
+     * unique identifier of OAuth token
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
 }
 /**
  *
@@ -4865,6 +5198,36 @@ export interface OauthAuthorizationCreatePayload {
      * @example ["global"]
      */
     readonly scope: string[];
+}
+export interface OauthAuthorizationUpdatePayload {
+    /**
+     * human-friendly description of this OAuth authorization
+     *
+     * @example "sample authorization"
+     */
+    readonly description?: string;
+    /**
+     * identifier of the client that obtained this authorization
+     */
+    client: OauthAuthorizationUpdatePayloadClient;
+}
+/**
+ *
+ * identifier of the client that obtained this authorization
+ */
+export interface OauthAuthorizationUpdatePayloadClient {
+    /**
+     * unique identifier of this OAuth client
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * secret used to obtain OAuth authorizations under this client
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly secret?: string;
 }
 /**
  *
@@ -4957,7 +5320,7 @@ export interface OauthToken {
     /**
      * current access token
      */
-    access_token: AccessToken;
+    access_token: OauthTokenAccessToken;
     /**
      * authorization for this set of tokens
      */
@@ -4985,7 +5348,7 @@ export interface OauthToken {
     /**
      * refresh token for this authorization
      */
-    refresh_token: RefreshToken;
+    refresh_token: OauthTokenRefreshToken;
     /**
      * OAuth session using this token
      */
@@ -5000,6 +5363,30 @@ export interface OauthToken {
      * Reference to the user associated with this token
      */
     user: OauthTokenUser;
+}
+/**
+ *
+ * current access token
+ */
+export interface OauthTokenAccessToken {
+    /**
+     * seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime
+     *
+     * @example 2592000
+     */
+    readonly expires_in: null | number;
+    /**
+     * unique identifier of OAuth token
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * contents of the token to be used for authorization
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly token: string;
 }
 /**
  *
@@ -5045,15 +5432,33 @@ export interface OauthTokenGrant {
 }
 /**
  *
- * OAuth session using this token
+ * refresh token for this authorization
  */
-export interface Session {
+export interface OauthTokenRefreshToken {
+    /**
+     * seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime
+     *
+     * @example 2592000
+     */
+    readonly expires_in: null | number;
     /**
      * unique identifier of OAuth token
      *
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly id: string;
+    /**
+     * contents of the token to be used for authorization
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly token: string;
+    /**
+     * the version of the token
+     *
+     * @example "1"
+     */
+    readonly version: number;
 }
 /**
  *
@@ -5098,9 +5503,167 @@ export interface OauthTokenCreatePayloadRefreshToken {
     /**
      * contents of the token to be used for authorization
      *
-     * @example "HRKU-01234567-89ab-cdef-0123-456789abcdef"
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly token?: string;
+}
+/**
+ *
+ * [Heroku Platform API - oci-image](https://devcenter.heroku.com/articles/platform-api-reference#oci-image)
+ * An OCI (Open Container Initiative) image is a standardized format for packaging and distributing containerized applications, ready to run on the platform.
+ */
+export interface OciImage {
+    /**
+     * unique identifier of the OCI image
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * name of the image used for the base layers of the OCI image
+     *
+     * @example "heroku/heroku:22-cnb"
+     */
+    base_image_name: string;
+    /**
+     * the digest of the top most layer of the base image.
+     *
+     * @example "sha256:ea36ae5fbc1e7230e0a782bf216fb46500e210382703baa6bab8acf2c6a23f78"
+     */
+    base_top_layer: string;
+    /**
+     * identification of the code in your version control system (eg: SHA of the git HEAD)
+     *
+     * @example "60883d9e8947a57e04dc9124f25df004866a2051"
+     */
+    commit: string;
+    /**
+     * an optional description of the provided commit
+     *
+     * @example "fixed a bug with API documentation"
+     */
+    commit_description: string;
+    /**
+     * name of the image registry repository used for storage
+     *
+     * @example "d7ba1ace-b396-4691-968c-37ae53153426/builds"
+     */
+    image_repo: string;
+    /**
+     * unique identifier representing the content of the OCI image
+     *
+     * @example "sha256:dc14ae5fbc1e7230e0a782bf216fb46500e210631703bcc6bab8acf2c6a23f42"
+     */
+    digest: string;
+    /**
+     * stack associated to the OCI image
+     */
+    stack: OciImageStack;
+    /**
+     * process types of the OCI image
+     *
+     * @example {"web":{"name":"web","display_cmd":"bundle exec puma -p $PORT","command":"/cnb/process/web","working_dir":"/workspace/webapp","default":true}}
+     */
+    process_types: Record<string, unknown>;
+    /**
+     * buildpacks of the OCI image
+     */
+    buildpacks: Buildpack[];
+    /**
+     * when the OCI image was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * when the OCI image was updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+    /**
+     * build architecture for OCI image
+     *
+     * @example "arm64"
+     */
+    architecture: string | null;
+}
+/**
+ *
+ * [Heroku Platform API - stack](https://devcenter.heroku.com/articles/platform-api-reference#stack)
+ * stack associated to the OCI image
+ */
+export interface OciImageStack {
+    /**
+     * unique identifier of stack
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * unique name of stack
+     *
+     * @example "heroku-18"
+     */
+    readonly name?: string;
+}
+export interface OciImageCreatePayload {
+    /**
+     * build architecture for OCI image
+     *
+     * @example "arm64"
+     */
+    architecture?: string | null;
+    /**
+     * name of the image used for the base layers of the OCI image
+     *
+     * @example "heroku/heroku:22-cnb"
+     */
+    base_image_name?: string;
+    /**
+     * the digest of the top most layer of the base image.
+     *
+     * @example "sha256:ea36ae5fbc1e7230e0a782bf216fb46500e210382703baa6bab8acf2c6a23f78"
+     */
+    base_top_layer?: string;
+    /**
+     * identification of the code in your version control system (eg: SHA of the git HEAD)
+     *
+     * @example "60883d9e8947a57e04dc9124f25df004866a2051"
+     */
+    commit?: string;
+    /**
+     * an optional description of the provided commit
+     *
+     * @example "fixed a bug with API documentation"
+     */
+    commit_description?: string;
+    /**
+     * name of the image registry repository used for storage
+     *
+     * @example "d7ba1ace-b396-4691-968c-37ae53153426/builds"
+     */
+    image_repo?: string;
+    /**
+     * unique identifier representing the content of the OCI image
+     *
+     * @example "sha256:dc14ae5fbc1e7230e0a782bf216fb46500e210631703bcc6bab8acf2c6a23f42"
+     */
+    digest?: string;
+    /**
+     * unique name of stack or unique identifier of stack
+     */
+    stack?: string;
+    /**
+     * process types of the OCI image
+     *
+     * @example {"web":{"name":"web","display_cmd":"bundle exec puma -p $PORT","command":"/cnb/process/web","working_dir":"/workspace/webapp","default":true}}
+     */
+    process_types?: Record<string, unknown>;
+    /**
+     * buildpacks of the OCI image
+     */
+    buildpacks?: Buildpack[];
 }
 /**
  *
@@ -5141,7 +5704,7 @@ export interface PasswordResetCompleteResetPasswordPayload {
 /**
  *
  * [Heroku Platform API - peering-info](https://devcenter.heroku.com/articles/platform-api-reference#peering-info)
- * [Peering Info](https://devcenter.heroku.com/articles/private-space-peering) gives you the information necessary to peer an AWS VPC to a Private Space.
+ * [Peering Info](https://devcenter.heroku.com/articles/private-space-vpc-peering?preview=1) gives you the information necessary to peer an AWS VPC to a Private Space.
  */
 export interface PeeringInfo {
     /**
@@ -5151,11 +5714,11 @@ export interface PeeringInfo {
      */
     readonly aws_account_id: string;
     /**
-     * region name used by provider
+     * The AWS region where your Private Space resides
      *
-     * @example "us-east-1"
+     * @example "us-west-1"
      */
-    readonly aws_region: 'ap-south-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'eu-central-1' | 'eu-west-2' | 'ap-northeast-2' | 'ap-northeast-1' | 'us-east-1' | 'sa-east-1' | 'us-west-1' | 'us-west-2' | 'ca-central-1';
+    readonly aws_region: 'ap-south-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'eu-central-1' | 'ap-northeast-2' | 'ap-northeast-1' | 'us-east-1' | 'sa-east-1' | 'us-west-1' | 'us-west-2';
     /**
      * The AWS VPC ID of the peer.
      *
@@ -5165,7 +5728,7 @@ export interface PeeringInfo {
     /**
      * An IP address and the number of significant bits that make up the routing or networking portion.
      *
-     * @example "10.0.0.0/16"
+     * @example "192.0.2.0/24"
      */
     vpc_cidr: string;
     /**
@@ -5184,7 +5747,7 @@ export interface PeeringInfo {
 /**
  *
  * [Heroku Platform API - peering](https://devcenter.heroku.com/articles/platform-api-reference#peering)
- * [Peering](https://devcenter.heroku.com/articles/private-space-peering) provides a way to peer your Private Space VPC to another AWS VPC.
+ * [Peering](https://devcenter.heroku.com/articles/private-space-vpc-peering?preview=1) provides a way to peer your Private Space VPC to another AWS VPC.
  */
 export interface Peering {
     /**
@@ -5192,13 +5755,19 @@ export interface Peering {
      *
      * @example "heroku-managed"
      */
-    type: 'heroku-managed' | 'customer-managed' | 'unknown';
+    type: 'heroku-managed' | 'customer-managed' | 'unknown' | 'slowdb' | 'heroku-postgresql' | 'heroku-redis' | 'heroku-kafka' | 'heroku-cassandra';
     /**
      * The AWS VPC Peering Connection ID of the peering.
      *
      * @example "pcx-123456789012"
      */
     readonly pcx_id: string;
+    /**
+     * An IP address and the number of significant bits that make up the routing or networking portion.
+     *
+     * @example "192.0.2.0/24"
+     */
+    cidr_block: string;
     /**
      * The CIDR blocks of the peer.
      */
@@ -5234,6 +5803,14 @@ export interface Peering {
      */
     readonly expires: string;
 }
+export interface PeeringAcceptPayload {
+    /**
+     * The AWS VPC Peering Connection ID of the peering.
+     *
+     * @example "pcx-123456789012"
+     */
+    readonly pcx_id: string;
+}
 /**
  *
  * [Heroku Platform API - permission-entity](https://devcenter.heroku.com/articles/platform-api-reference#permission-entity)
@@ -5268,23 +5845,151 @@ export interface PermissionEntity {
      * Users that have access to the entity.
      */
     users: Array<{
-        /**
-         * unique email address of account
-         *
-         * @example "username@example.com"
-         */
         email?: string;
-        /**
-         * unique identifier of an account
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id?: string;
-        /**
-         * enterprise account permissions
-         */
         permissions?: string[];
     }>;
+}
+/**
+ *
+ * [Heroku Platform API - pipeline-build](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-build)
+ * Information about the latest builds of apps in a pipeline. A build represents the process of transforming code into build artifacts.
+ */
+export interface PipelineBuild {
+    /**
+     * app that the build belongs to
+     */
+    app: PipelineBuildApp;
+    /**
+     * buildpacks executed for this build, in order (only applicable to Cedar-generation apps)
+     */
+    buildpacks: Array<{
+        url?: string;
+        name?: string;
+    }> | null;
+    /**
+     * when build was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * unique identifier of build
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * Build process output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`).
+     *
+     * @example "https://build-output.heroku.com/streams/01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly output_stream_url: string;
+    /**
+     * location of gzipped tarball of source code used to create build
+     */
+    source_blob: PipelineBuildSourceBlob;
+    /**
+     * release resulting from the build
+     *
+     * @example {"id":"01234567-89ab-cdef-0123-456789abcdef"}
+     */
+    readonly release: null | BuildRelease;
+    /**
+     * slug created by this build
+     */
+    slug: PipelineBuildSlug | null;
+    /**
+     * stack of build
+     *
+     * @example "heroku-22"
+     */
+    readonly stack: string;
+    /**
+     * status of build
+     *
+     * @example "succeeded"
+     */
+    readonly status: 'failed' | 'pending' | 'succeeded';
+    /**
+     * when build was updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+    /**
+     * user that started the build
+     */
+    user: User;
+}
+/**
+ *
+ * [Heroku Platform API - app](https://devcenter.heroku.com/articles/platform-api-reference#app)
+ * app that the build belongs to
+ */
+export interface PipelineBuildApp {
+    /**
+     * unique identifier of app
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+}
+/**
+ *
+ * location of gzipped tarball of source code used to create build
+ */
+export interface PipelineBuildSourceBlob {
+    /**
+     * an optional checksum of the gzipped tarball for verifying its integrity
+     *
+     * @example "SHA256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+     */
+    readonly checksum: null | string;
+    /**
+     * URL where gzipped tar archive of source code for build was downloaded.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly url: string;
+    /**
+     * version of the gzipped tarball
+     *
+     * @example "v1.3.0"
+     */
+    readonly version: string | null;
+    /**
+     * version description of the gzipped tarball
+     *
+     * @example "* Fake User: Change session key"
+     */
+    readonly version_description: string | null;
+}
+/**
+ *
+ * [Heroku Platform API - slug](https://devcenter.heroku.com/articles/platform-api-reference#slug)
+ * slug created by this build
+ */
+export interface PipelineBuildSlug {
+    /**
+     * unique identifier of slug
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+}
+/**
+ *
+ * [Heroku Platform API - pipeline-config-var](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-config-var)
+ * Pipeline config vars in Heroku CI and review apps used to manage the configuration information for a pipeline.
+ */
+export interface PipelineConfigVar {
+    /**
+     * user-defined config var name and value
+     *
+     * @example {"FOO":"bar"}
+     */
+    '["NAME"]: ["value"]': Record<string, unknown>;
 }
 /**
  *
@@ -5372,6 +6077,10 @@ export interface Pipeline {
      * @example "2012-01-01T12:00:00Z"
      */
     readonly updated_at?: string;
+    /**
+     * the generation of the Heroku platform for this pipeline
+     */
+    generation?: PipelineGeneration;
 }
 export interface PipelineCouplingCreatePayload {
     /**
@@ -5401,6 +6110,22 @@ export interface PipelineCouplingUpdatePayload {
 }
 /**
  *
+ * a build artifact for the release
+ */
+export interface Artifact {
+    /**
+     * type of artifact
+     *
+     * @example "oci-image"
+     */
+    type?: string;
+    /**
+     * unique identifier of slug or unique identifier of the OCI image
+     */
+    id?: string;
+}
+/**
+ *
  * [Heroku Platform API - app](https://devcenter.heroku.com/articles/platform-api-reference#app)
  * app involved in the release
  */
@@ -5417,6 +6142,18 @@ export interface ReleaseApp {
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
     readonly id?: string;
+}
+/**
+ *
+ * OCI image running in this release
+ */
+export interface ReleaseOciImage {
+    /**
+     * unique identifier of the OCI image
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
 }
 /**
  *
@@ -5567,9 +6304,6 @@ export interface PipelinePromotionCreatePayload {
      */
     source: PipelinePromotionCreatePayloadSource;
     targets: Array<{
-        /**
-         * the app is being promoted to
-         */
         app?: PipelinePromotionCreatePayloadApp;
     }>;
 }
@@ -5605,6 +6339,119 @@ export interface PipelinePromotionCreatePayloadSourceApp {
 export interface PipelinePromotionCreatePayloadApp {
     /**
      * unique identifier of app
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+}
+/**
+ *
+ * [Heroku Platform API - pipeline-release](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-release)
+ * Information about the latest release of each app in a pipeline. A release makes a deployment available to end-users.
+ */
+export interface PipelineRelease {
+    /**
+     * add-on plans installed on the app for this release
+     */
+    addon_plan_names: string[];
+    /**
+     * a build artifact for the release
+     */
+    readonly artifacts: Artifact;
+    /**
+     * app involved in the release
+     */
+    app: PipelineReleaseApp;
+    /**
+     * when release was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * description of changes in this release
+     *
+     * @example "Added new feature"
+     */
+    readonly description: string;
+    /**
+     * unique identifier of release
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * when release was updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+    /**
+     * slug running in the release
+     */
+    slug: PipelineReleaseSlug | null;
+    /**
+     * current status of the release
+     *
+     * @example "succeeded"
+     */
+    readonly status: 'expired' | 'failed' | 'pending' | 'succeeded';
+    /**
+     * user that created the release
+     */
+    user: User;
+    /**
+     * unique version assigned to the release
+     *
+     * @example 11
+     */
+    readonly version: number;
+    /**
+     * indicates if this release is the current one for the app
+     *
+     * @example true
+     */
+    readonly current: boolean;
+    /**
+     * URL that the release command output streams to. The stream is available as either `text/plain` or `text/event-stream`. Prepare clients to handle disconnects and to resume the stream by sending a `Range` header for `text/plain` or a `Last-Event-Id` header for `text/event-stream`.
+     *
+     * @example "https://release-output.heroku.com/streams/01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly output_stream_url: string | null;
+    /**
+     * indicates if this release is eligible for rollback
+     *
+     * @example true
+     */
+    readonly eligible_for_rollback: boolean;
+}
+/**
+ *
+ * [Heroku Platform API - app](https://devcenter.heroku.com/articles/platform-api-reference#app)
+ * app involved in the release
+ */
+export interface PipelineReleaseApp {
+    /**
+     * unique name of app
+     *
+     * @example "example"
+     */
+    name?: string;
+    /**
+     * unique identifier of app
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+}
+/**
+ *
+ * [Heroku Platform API - slug](https://devcenter.heroku.com/articles/platform-api-reference#slug)
+ * slug running in the release
+ */
+export interface PipelineReleaseSlug {
+    /**
+     * unique identifier of slug
      *
      * @example "01234567-89ab-cdef-0123-456789abcdef"
      */
@@ -5686,6 +6533,25 @@ export interface PipelineOwner {
      */
     type: string;
 }
+/**
+ *
+ * [Heroku Platform API - generation](https://devcenter.heroku.com/articles/platform-api-reference#generation)
+ * the generation of the Heroku platform for this pipeline
+ */
+export interface PipelineGeneration {
+    /**
+     * unique identifier of the generation of the Heroku platform for this pipeline
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * unique name of the generation of the Heroku platform for this pipeline
+     *
+     * @example "cedar"
+     */
+    readonly name?: string;
+}
 export interface PipelineCreatePayload {
     /**
      * name of pipeline
@@ -5745,9 +6611,13 @@ export interface ReleaseCreatePayload {
      */
     readonly description?: string;
     /**
+     * unique identifier of the OCI image or unique identifier representing the content of the OCI image
+     */
+    oci_image?: string;
+    /**
      * unique identifier of slug
      */
-    slug: string;
+    slug?: string;
 }
 export interface ReleaseRollbackPayload {
     /**
@@ -6163,7 +7033,7 @@ export interface SniEndpointApp {
  */
 export interface SslCert {
     readonly 'ca_signed?'?: boolean;
-    readonly cert_domains?: unknown[];
+    readonly cert_domains?: [];
     readonly expires_at?: string;
     readonly issuer?: string;
     readonly 'self_signed?'?: boolean;
@@ -6331,20 +7201,8 @@ export interface SpaceTopology {
      * The apps within this space
      */
     readonly apps: Array<{
-        /**
-         * unique identifier of app
-         *
-         * @example "01234567-89ab-cdef-0123-456789abcdef"
-         */
         readonly id?: string;
-        /**
-         *
-         * @example ["example.com","example.net"]
-         */
-        readonly domains?: unknown[];
-        /**
-         * formations for application
-         */
+        readonly domains?: [];
         readonly formation?: SpaceTopologyFormation[];
     }>;
 }
@@ -6495,6 +7353,30 @@ export interface SpaceCreatePayload {
      * @example "https://example.com/logs"
      */
     log_drain_url?: string;
+    /**
+     * channel to create the space on
+     *
+     * @example "some-channel"
+     */
+    channel_name?: string;
+    /**
+     * generation for space
+     *
+     * @example "fir"
+     */
+    generation?: string;
+    /**
+     * runtime features for the space
+     *
+     * @example "[feature-name]"
+     */
+    features?: [];
+    /**
+     * supported api features for the space
+     *
+     * @example "[api-feature-name]"
+     */
+    supported_features?: [];
 }
 /**
  *
@@ -7201,7 +8083,7 @@ export interface TeamMonthlyUsage {
      */
     apps: AppUsageMonthly[];
     /**
-     * average connect rows synced
+     * max connect rows synced
      *
      * @example 15000
      */
@@ -7445,6 +8327,133 @@ export interface TeamCreateInEnterpriseAccountPayload {
      * @example "example"
      */
     readonly name: string;
+}
+/**
+ *
+ * [Heroku Platform API - telemetry-drain](https://devcenter.heroku.com/articles/platform-api-reference#telemetry-drain)
+ * A telemetry drain forwards OpenTelemetry traces, metrics, and logs to your own consumer. For Fir-generation apps only.
+ */
+export interface TelemetryDrain {
+    /**
+     * when the telemetry drain was created
+     *
+     * @example "2024-12-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * unique identifier of telemetry drain
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * entity that owns this telemetry drain
+     */
+    owner: TelemetryDrainOwner;
+    /**
+     * OpenTelemetry signals to send to telemetry drain
+     *
+     * @example ["traces","metrics"]
+     */
+    signals: 'traces' | 'metrics' | Array<'logs'>;
+    /**
+     * OpenTelemetry exporter configuration
+     */
+    exporter: Exporter;
+    /**
+     * when telemetry drain was last updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+}
+/**
+ *
+ * entity that owns this telemetry drain
+ */
+export interface TelemetryDrainOwner {
+    /**
+     * unique identifier of owner
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * type of owner
+     *
+     * @example "app"
+     */
+    readonly type: 'app' | 'space';
+}
+/**
+ *
+ * OpenTelemetry exporter configuration
+ */
+export interface Exporter {
+    /**
+     * the transport type to be used for your OpenTelemetry consumer
+     *
+     * @example "otlphttp"
+     */
+    readonly type: 'otlphttp' | 'otlp';
+    /**
+     * URI of your OpenTelemetry consumer
+     *
+     * @example "https://api.otelproduct.example/consumer"
+     */
+    endpoint: string;
+    /**
+     * JSON headers to send to your OpenTelemetry consumer
+     *
+     * @example {"API-Key":"example_api_key_012345","Environment":"production"}
+     */
+    headers?: Record<string, unknown>;
+}
+export interface TelemetryDrainCreatePayload {
+    /**
+     * entity that owns this telemetry drain
+     */
+    owner: TelemetryDrainCreatePayloadOwner;
+    /**
+     * OpenTelemetry signals to send to telemetry drain
+     *
+     * @example ["traces","metrics"]
+     */
+    signals: 'traces' | 'metrics' | Array<'logs'>;
+    /**
+     * OpenTelemetry exporter configuration
+     */
+    exporter: Exporter;
+}
+/**
+ *
+ * entity that owns this telemetry drain
+ */
+export interface TelemetryDrainCreatePayloadOwner {
+    /**
+     * unique identifier of owner
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * type of owner
+     *
+     * @example "app"
+     */
+    readonly type: 'app' | 'space';
+}
+export interface TelemetryDrainUpdatePayload {
+    /**
+     * OpenTelemetry signals to send to telemetry drain
+     *
+     * @example ["traces","metrics"]
+     */
+    signals?: 'traces' | 'metrics' | Array<'logs'>;
+    /**
+     * OpenTelemetry exporter configuration
+     */
+    exporter?: Exporter;
 }
 /**
  *
@@ -7979,4 +8988,1008 @@ export interface VpnConnectionUpdatePayload {
      * Routable CIDRs of VPN
      */
     routable_cidrs: string[];
+}
+/**
+ *
+ * [Heroku Platform API - add-on-sso](https://devcenter.heroku.com/articles/platform-api-reference#add-on-sso)
+ * Add-on Single Sign-on generates URL that allows a customer to log in to an Add-on Service's web dashboard.
+ */
+export interface AddOnSso {
+    /**
+     * whether this SSO request is a GET or a POST
+     *
+     * @example "get"
+     */
+    readonly method: 'get' | 'post';
+    /**
+     * URL to follow to initiate single sign-on
+     *
+     * @example "https://slowdb.heroku.com/heroku/resources/"
+     */
+    readonly action: string;
+    /**
+     * params for this request
+     */
+    readonly params: Params;
+}
+/**
+ *
+ * params for this request
+ */
+export interface Params {
+    /**
+     * unique email address of current user
+     *
+     * @example "username@example.com"
+     */
+    readonly email?: string;
+    /**
+     * unique identifier of current user
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly user_id?: string;
+    /**
+     * name of app where add-on was first attached
+     *
+     * @example "example"
+     */
+    readonly owning_app?: string;
+    /**
+     * current app name when SSO was requested
+     *
+     * @example "example"
+     */
+    readonly attached_app?: string;
+    /**
+     * timestamp used to build params as an unix epoch integer
+     *
+     * @example "1325419200"
+     */
+    readonly timestamp?: number;
+    /**
+     * Base64-encoded nav data for Heroku header
+     *
+     * @example "example"
+     */
+    readonly 'nav-data'?: string;
+    /**
+     * id of this add-on with its provider
+     *
+     * @example "abcd1234"
+     */
+    readonly id?: string;
+    /**
+     * token generated for this request that authenticates user
+     *
+     * @example "0123456789abcdef0123456789abcdef01234578"
+     */
+    readonly token?: string;
+    /**
+     * unique identifier of add-on
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly resource_id?: string;
+    /**
+     * unique token for this SSO request
+     *
+     * @example "bb466eb1d6bc345d11072c3cd25c311f21be130d"
+     */
+    readonly resource_token?: string;
+}
+/**
+ *
+ * [Heroku Platform API - build-metadata](https://devcenter.heroku.com/articles/platform-api-reference#build-metadata)
+ * Build metadata contains the reference data for building the associated App.
+ */
+export interface BuildMetadata {
+    /**
+     * App associated with this metadata
+     */
+    app: BuildMetadataApp;
+    /**
+     * URL for deleting the build cache.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly cache_delete_url: string;
+    /**
+     * URL for retrieving the latest build cache.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly cache_get_url: string;
+    /**
+     * URL for updating the latest build cache.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly cache_put_url: string;
+    /**
+     * URL for deleting this app's repo.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly repo_delete_url: string;
+    /**
+     * URL for retrieving this app's repo.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly repo_get_url: string;
+    /**
+     * URL for updating the app's repo.
+     *
+     * @example "https://example.com/source.tgz?token=xyz"
+     */
+    readonly repo_put_url: string;
+}
+/**
+ *
+ * [Heroku Platform API - app](https://devcenter.heroku.com/articles/platform-api-reference#app)
+ * App associated with this metadata
+ */
+export interface BuildMetadataApp {
+    /**
+     * unique name of app
+     *
+     * @example "example"
+     */
+    name?: string;
+    /**
+     * unique identifier of app
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+}
+/**
+ *
+ * [Heroku Platform API - capability](https://devcenter.heroku.com/articles/platform-api-reference#capability)
+ * A capability represents a requested capability on a resource along with whether the requesting user has that capability
+ */
+export interface Capability {
+    /**
+     * name of the capability
+     *
+     * @example "manage_dynos"
+     */
+    readonly capability: string;
+    /**
+     * id or name of the resource
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly resource_id: null | string;
+    /**
+     * type of the resource
+     *
+     * @example "app"
+     */
+    readonly resource_type: string;
+    /**
+     * whether the user has the capability on the resource_id of type resource_type
+     *
+     * @example true
+     */
+    readonly capable: boolean;
+    /**
+     * whether the given application resource is flagged as a paranoid app and will require a second factor
+     *
+     * @example true
+     */
+    readonly requires_second_factor?: boolean;
+    /**
+     * canonical id of the resource if it's present
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly resource_canonical_id?: string;
+}
+export interface CapabilityCapabilitiesPayload {
+    /**
+     * The list of capabilities that you want to check
+     */
+    capabilities: CapabilityRequest[];
+}
+/**
+ *
+ * an object representing the requested capability
+ */
+export interface CapabilityRequest {
+    /**
+     * name of the capability
+     *
+     * @example "manage_dynos"
+     */
+    readonly capability: string;
+    /**
+     * id or name of the resource
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly resource_id: null | string;
+    /**
+     * type of the resource
+     *
+     * @example "app"
+     */
+    readonly resource_type: string;
+}
+export interface CapabilityCapabilitiesResponse {
+    /**
+     * The list of capabilities for the requested resources
+     */
+    capabilities?: Capability[];
+}
+/**
+ *
+ * [Heroku Platform API - config-vars-settings](https://devcenter.heroku.com/articles/platform-api-reference#config-vars-settings)
+ * The Config Vars Settings endpoints enable you to view and manage the configuration provided to an app on Heroku. These endpoints are similar to /config-vars but also allow you to check which config vars you can mask, and which are currently masked.
+ */
+export interface ConfigVarsSettings {
+    /**
+     * attachment that created this config var, if any
+     */
+    attachment: ConfigVarsSettingsAttachment | null;
+    /**
+     * name of the config var
+     *
+     * @example "FOO_TOKEN"
+     */
+    key: string;
+    /**
+     * value of the config var
+     *
+     * @example "bar"
+     */
+    value: string | null;
+    /**
+     * indicates if the value is masked
+     */
+    masked: boolean;
+    /**
+     * indicates if you can mask the value
+     *
+     * @example true
+     */
+    readonly masking_supported: boolean;
+    /**
+     * indicates when the value was updated
+     *
+     * @example "2024-01-01T12:00:00Z"
+     */
+    readonly value_updated_at: string;
+}
+/**
+ *
+ * attachment that created this config var, if any
+ */
+export interface ConfigVarsSettingsAttachment {
+    /**
+     * unique identifier of this add-on attachment
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+}
+export interface ConfigVarsSettingsUpdatePayload {
+    /**
+     * An array of config vars to be updated.
+     */
+    config?: [];
+}
+/**
+ *
+ * [Heroku Platform API - dyno-processes](https://devcenter.heroku.com/articles/platform-api-reference#dyno-processes)
+ * Run processes inside existing dynos.
+ */
+export interface DynoProcesses {
+    /**
+     * a URL to stream output from for attached processes or null for non-attached processes
+     *
+     * @example "rendezvous://rendezvous.runtime.heroku.com:5000/{rendezvous-id}"
+     */
+    readonly attach_url: string | null;
+}
+export interface DynoProcessesCreatePayload {
+    /**
+     * command used to start this process
+     *
+     * @example "bash"
+     */
+    command: string;
+    /**
+     * custom environment to add to the dyno config vars
+     *
+     * @example {"COLUMNS":"80","LINES":"24"}
+     */
+    env?: Record<string, unknown>;
+}
+/**
+ *
+ * [Heroku Platform API - gateway-token](https://devcenter.heroku.com/articles/platform-api-reference#gateway-token)
+ * Contains a set of information useful for identifying a user and the type of access this user is allowed to have.
+ */
+export interface GatewayToken {
+    /**
+     * Token issuer
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly iss: string;
+    /**
+     * Integer representation of the timestamp the token was issued at
+     *
+     * @example 1526341325
+     */
+    readonly iat: number;
+    /**
+     * Integer representation of the timestamp the token should expire at
+     *
+     * @example 1526341325
+     */
+    readonly exp: number;
+    /**
+     * Unique identifier of the subject
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly sub: string;
+    /**
+     * Unique identifier of the user
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly user_id: string;
+    /**
+     * Email address of the user
+     *
+     * @example "username@example.com"
+     */
+    readonly user_email: string;
+    /**
+     * Unique identifier of the OAuth authirization used in the token
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly authorization_id: string | null;
+    /**
+     * Indicates that a rate limit should be enforced
+     *
+     * @example true
+     */
+    readonly rate_limit_enabled: boolean;
+    /**
+     * Rate limit multiplier that should be used
+     *
+     * @example 2
+     */
+    readonly rate_limit_multiplier: number;
+    /**
+     * Describes if the token contains second factor claim
+     *
+     * @example true
+     */
+    readonly second_factor: boolean;
+    /**
+     * Describes if the token contains sudo claim
+     *
+     * @example true
+     */
+    readonly sudo: boolean;
+    /**
+     * Unique identifier of the sudoer if sudo was used
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly sudo_user_id: string | null;
+    /**
+     * Reason for using sudo if present
+     *
+     * @example "Ticket #123"
+     */
+    readonly sudo_reason: string | null;
+    /**
+     * Describes if the token contains sudo force claim
+     *
+     * @example true
+     */
+    readonly sudo_force: boolean;
+}
+/**
+ *
+ * [Heroku Platform API - identity-provider-actions](https://devcenter.heroku.com/articles/platform-api-reference#identity-provider-actions)
+ * Actions taken on Identity Providers, the SSO configuration representation.
+ */
+export interface IdentityProviderActions {
+    /**
+     * Array of sso certificates belonging to this identity provider
+     */
+    certificates: Array<{
+        readonly created_at?: string;
+        readonly id?: string;
+        readonly expires_at?: string;
+        body?: string;
+        name?: string | null;
+    }>;
+    /**
+     * raw contents of the public certificate (eg: .crt or .pem file)
+     *
+     * @example "-----BEGIN CERTIFICATE----- ..."
+     */
+    certificate: string | null;
+    /**
+     * when provider record was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * URL identifier provided by the identity provider
+     *
+     * @example "https://customer-domain.idp.com"
+     */
+    entity_id: string;
+    /**
+     * unique identifier of this identity provider
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * user-friendly unique identifier for this identity provider
+     *
+     * @example "acme-sso"
+     */
+    name: string;
+    /**
+     * entity that owns this identity provider
+     */
+    owner: Owner;
+    /**
+     * single log out URL for this identity provider
+     *
+     * @example "https://example.com/idp/logout"
+     */
+    slo_target_url: string;
+    /**
+     * single sign on URL for this identity provider
+     *
+     * @example "https://example.com/idp/login"
+     */
+    sso_target_url: string;
+    /**
+     * when the identity provider record was updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at: string;
+}
+/**
+ *
+ * [Heroku Platform API - identity-provider-certificate](https://devcenter.heroku.com/articles/platform-api-reference#identity-provider-certificate)
+ * Certificates represent an sso cert attached to an Identity Provider
+ */
+export interface IdentityProviderCertificate {
+    /**
+     * label for certificate
+     *
+     * @example "Certificate 1"
+     */
+    name: string | null;
+    /**
+     * raw contents of the public certificate (eg: .crt or .pem file)
+     *
+     * @example "-----BEGIN CERTIFICATE----- ..."
+     */
+    body: string;
+    /**
+     * when provider record was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at: string;
+    /**
+     * unique identifier of this identity provider
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id: string;
+    /**
+     * time which the certificate expires
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly expires_at: string;
+    /**
+     * unique identifier of the identity provider the cert belongs to
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly identity_provider_id: string;
+}
+export interface IdentityProviderCertificateCreatePayload {
+    /**
+     * raw contents of the public certificate (eg: .crt or .pem file)
+     *
+     * @example "-----BEGIN CERTIFICATE----- ..."
+     */
+    body: string;
+    /**
+     * label for certificate
+     *
+     * @example "Certificate 1"
+     */
+    name?: string | null;
+}
+export interface IdentityProviderCertificateUpdatePayload {
+    /**
+     * label for certificate
+     *
+     * @example "Certificate 1"
+     */
+    name?: string | null;
+}
+/**
+ *
+ * [Heroku Platform API - payment-method](https://devcenter.heroku.com/articles/platform-api-reference#payment-method)
+ * The on file payment method for an account
+ */
+export interface PaymentMethod {
+    /**
+     * street address line 1
+     *
+     * @example "40 Hickory Lane"
+     */
+    address_1?: string | null;
+    /**
+     * street address line 2
+     *
+     * @example "Suite 103"
+     */
+    address_2?: string;
+    /**
+     * last 4 digits of credit card number
+     *
+     * @example "1234"
+     */
+    readonly card_last4?: string;
+    /**
+     * name of credit card issuer
+     *
+     * @example "VISA"
+     */
+    readonly card_type?: string;
+    /**
+     * city
+     *
+     * @example "San Francisco"
+     */
+    city?: string;
+    /**
+     * country
+     *
+     * @example "US"
+     */
+    country?: string;
+    /**
+     * expiration month
+     *
+     * @example "11"
+     */
+    expiration_month?: string | null;
+    /**
+     * expiration year
+     *
+     * @example "2014"
+     */
+    expiration_year?: string | null;
+    /**
+     * the first name for payment method
+     *
+     * @example "Jason"
+     */
+    first_name?: string;
+    /**
+     * the last name for payment method
+     *
+     * @example "Walker"
+     */
+    last_name?: string;
+    /**
+     * metadata
+     *
+     * @example "Additional information for payment method"
+     */
+    other?: string | null;
+    /**
+     * postal code
+     *
+     * @example "90210"
+     */
+    postal_code?: string;
+    /**
+     * state
+     *
+     * @example "CA"
+     */
+    state?: string;
+}
+export interface PaymentMethodUpdatePayload {
+    /**
+     * street address line 1
+     *
+     * @example "40 Hickory Lane"
+     */
+    address_1?: string | null;
+    /**
+     * street address line 2
+     *
+     * @example "Suite 103"
+     */
+    address_2?: string;
+    /**
+     * encrypted card number of payment method
+     *
+     * @example "encrypted-card-number"
+     */
+    card_number?: string | null;
+    /**
+     * city
+     *
+     * @example "San Francisco"
+     */
+    city?: string;
+    /**
+     * country
+     *
+     * @example "US"
+     */
+    country?: string;
+    /**
+     * card verification value
+     *
+     * @example "123"
+     */
+    cvv?: string | null;
+    /**
+     * expiration month
+     *
+     * @example "11"
+     */
+    expiration_month?: string | null;
+    /**
+     * expiration year
+     *
+     * @example "2014"
+     */
+    expiration_year?: string | null;
+    /**
+     * the first name for payment method
+     *
+     * @example "Jason"
+     */
+    first_name?: string;
+    /**
+     * the last name for payment method
+     *
+     * @example "Walker"
+     */
+    last_name?: string;
+    /**
+     * metadata
+     *
+     * @example "Additional information for payment method"
+     */
+    other?: string | null;
+    /**
+     * postal code
+     *
+     * @example "90210"
+     */
+    postal_code?: string;
+    /**
+     * state
+     *
+     * @example "CA"
+     */
+    state?: string;
+    /**
+     * Nonce generated by Braintree hosted fields form
+     *
+     * @example "VGhpcyBpcyBhIGdvb2QgZGF5IHRvIGRpZQ=="
+     */
+    nonce?: string | null;
+    /**
+     * Device data string generated by the client
+     *
+     * @example "VGhpcyBpcyBhIGdvb2QgZGF5IHRvIGRpZQ=="
+     */
+    device_data?: string;
+}
+/**
+ *
+ * [Heroku Platform API - payment](https://devcenter.heroku.com/articles/platform-api-reference#payment)
+ * A payment represents money collected for an account
+ */
+export interface Payment {
+    /**
+     * amount of payment in cents
+     *
+     * @example 50000
+     */
+    amount?: number;
+    /**
+     * when payment was created
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly created_at?: string;
+    /**
+     * legacy unique identifier of payment
+     *
+     * @example 9403943
+     */
+    readonly id?: number;
+    /**
+     * identity of invoice
+     */
+    invoice?: null | PaymentInvoice;
+    /**
+     * when credit was updated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly updated_at?: string;
+    /**
+     * identity of user issuing payment
+     */
+    user?: User;
+    /**
+     * state of the payment
+     *
+     * @example "pending"
+     */
+    readonly state?: 'failure' | 'pending' | 'success';
+}
+/**
+ *
+ * [Heroku Platform API - invoice](https://devcenter.heroku.com/articles/platform-api-reference#invoice)
+ * identity of invoice
+ */
+export interface PaymentInvoice {
+    /**
+     * unique identifier of this invoice
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * human readable invoice number
+     *
+     * @example 9403943
+     */
+    readonly number?: number;
+}
+export interface PaymentCreatePayload {
+    /**
+     * amount of payment in cents
+     *
+     * @example 50000
+     */
+    amount: number;
+    /**
+     * human readable invoice number
+     */
+    invoice_id: number;
+    /**
+     * unique identifier for a payment transaction
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    uuid: string;
+}
+/**
+ *
+ * [Heroku Platform API - space-host](https://devcenter.heroku.com/articles/platform-api-reference#space-host)
+ * [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space
+ */
+export interface SpaceHost {
+    /**
+     * unique identifier of this host
+     *
+     * @example "h-05abcdd96ee9ca123"
+     */
+    readonly host_id: string;
+    /**
+     * availability of this space
+     *
+     * @example "available"
+     */
+    readonly state: 'available' | 'under-assessment' | 'permanent-failure' | 'released' | 'released-permanent-failure';
+    /**
+     * approximate available capacity on this host expresses a percentage
+     *
+     * @example 67
+     */
+    readonly available_capacity_percentage: number;
+    /**
+     * when the host was allocated
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly allocated_at: string;
+    /**
+     * when the host was released
+     *
+     * @example "2012-01-01T12:00:00Z"
+     */
+    readonly released_at: string;
+}
+export interface SpaceLogDrainUpdatePayload {
+    url?: string;
+}
+/**
+ *
+ * [Heroku Platform API - team-license](https://devcenter.heroku.com/articles/platform-api-reference#team-license)
+ * A team license is credits provided and consumed by the team.
+ */
+export interface TeamLicense {
+    /**
+     * when license started
+     *
+     * @example "2012-01-01"
+     */
+    readonly start_date: string;
+    /**
+     * when license ended
+     *
+     * @example "2012-01-01"
+     */
+    readonly end_date: string;
+    /**
+     * quantity of the license
+     *
+     * @example 5
+     */
+    readonly qty: number;
+    /**
+     * consumed quantity
+     *
+     * @example 2
+     */
+    readonly consumed: number;
+    /**
+     * code of this license change
+     *
+     * @example "add"
+     */
+    readonly code: string;
+    /**
+     * name of this license
+     *
+     * @example "HerokuAddOnCredits1"
+     */
+    readonly name: string;
+}
+/**
+ *
+ * [Heroku Platform API - team-license-collection](https://devcenter.heroku.com/articles/platform-api-reference#team-license-collection)
+ * A team license collection is credits provided and consumed by the team per period.
+ */
+export interface TeamLicenseCollection {
+    /**
+     * year and month the licenses were in effect
+     *
+     * @example "2014-01"
+     */
+    readonly period: string;
+    /**
+     * Licenses for this period.
+     */
+    licenses: TeamLicense[];
+}
+/**
+ *
+ * [Heroku Platform API - telemetry-ingress-info](https://devcenter.heroku.com/articles/platform-api-reference#telemetry-ingress-info)
+ * Telemetry Ingress Info allows add-on partners to view authorization information required to write to Fir app logs.
+ */
+export interface TelemetryIngressInfo {
+    /**
+     * JWT token to be used for authorization
+     *
+     * @example "vJkbPNUFaK4kVIMGQlEmyA.-MAquq_5yQqtae62b8i7aw"
+     */
+    readonly id_token: string;
+    /**
+     * the authorization type
+     *
+     * @example "Bearer"
+     */
+    readonly token_type: string;
+    /**
+     * URLs for add-on partners to write to an add-ons logs
+     */
+    readonly transports: string;
+    /**
+     * when the token will expire
+     *
+     * @example "2025-01-01T12:00:00Z"
+     */
+    readonly expires_at: string;
+}
+/**
+ *
+ * [Heroku Platform API - usage](https://devcenter.heroku.com/articles/platform-api-reference#usage)
+ * Usage for apps.
+ */
+export interface Usage {
+    /**
+     * add-on usage in the app
+     */
+    addons: UsageAddon[];
+}
+/**
+ *
+ * usage for an add-on
+ */
+export interface UsageAddon {
+    /**
+     * unique identifier of add-on
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * the meters associated with the add-on
+     *
+     * @example {"storage":{"quantity":1000}}
+     */
+    meters?: Record<string, unknown>;
+}
+/**
+ *
+ * usage for the apps belonging to the team
+ */
+export interface Apps {
+    /**
+     * apps belonging to the team
+     */
+    apps?: UsageApp[];
+}
+/**
+ *
+ * usage for an app belonging to the team
+ */
+export interface UsageApp {
+    /**
+     * unique identifier of app
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * add-on usage in the app
+     */
+    addons?: UsageAppAddon[];
+}
+/**
+ *
+ * usage for an add-on
+ */
+export interface UsageAppAddon {
+    /**
+     * unique identifier of add-on
+     *
+     * @example "01234567-89ab-cdef-0123-456789abcdef"
+     */
+    readonly id?: string;
+    /**
+     * the meters associated with the add-on
+     *
+     * @example {"storage":{"quantity":1000}}
+     */
+    meters?: Record<string, unknown>;
 }

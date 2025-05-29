@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Identity Provider](https://devcenter.heroku.com/articles/platform-api-reference#identity-provider)
- * Identity Providers represent the SAML configuration of teams or an Enterprise account
+ * Identity Providers represent the SSO configuration of an Enterprise Account or Team.
  */
 export default class IdentityProviderService {
   public constructor(
@@ -10,122 +10,97 @@ export default class IdentityProviderService {
   ) {}
 
   /**
-   * Get a list of a team's Identity Providers
+   * Info for an Identity Provider
    *
-   * @param teamName unique name of team
-   * @example "example".
+   * @param identityProviderIdentity unique identifier of this identity provider or user-friendly unique identifier for this identity provider.
    * @param requestInit The initializer for the request.
    */
-  public async listByTeam(
-    teamName: string,
+  public async info(
+    identityProviderIdentity: string,
     requestInit: Omit<RequestInit, 'body' | 'method'> = {}
-  ): Promise<Heroku.IdentityProvider[]> {
-    const response = await this.fetchImpl(`${this.endpoint}/teams/${teamName}/identity-providers`, {
+  ): Promise<Heroku.IdentityProvider> {
+    const response = await this.fetchImpl(`${this.endpoint}/identity-providers/${identityProviderIdentity}`, {
       ...requestInit,
 
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
-      return (await response.json()) as Promise<Heroku.IdentityProvider[]>;
+      return (await response.json()) as Promise<Heroku.IdentityProvider>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
-   * Create an Identity Provider for a team
+   * Create an Identity Provider
    *
-   * @param teamName unique name of team
-   * @example "example".
    * @param payload Object to send to the endpoint.
    * @param requestInit The initializer for the request.
    */
-  public async createByTeam(
-    teamName: string,
-    payload: Heroku.IdentityProviderCreateByTeamPayload,
+  public async create(
+    payload: Heroku.IdentityProviderCreatePayload,
     requestInit: Omit<RequestInit, 'body' | 'method'> = {}
   ): Promise<Heroku.IdentityProvider> {
-    const response = await this.fetchImpl(`${this.endpoint}/teams/${teamName}/identity-providers`, {
+    const response = await this.fetchImpl(`${this.endpoint}/identity-providers`, {
       ...requestInit,
       body: JSON.stringify(payload, null, 2),
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.IdentityProvider>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
-   * Update a team's Identity Provider
+   * Update an Identity Provider
    *
-   * @param teamName unique name of team
-   * @example "example".
-   * @param identityProviderId unique identifier of this identity provider
-   * @example "01234567-89ab-cdef-0123-456789abcdef".
+   * @param identityProviderIdentity unique identifier of this identity provider or user-friendly unique identifier for this identity provider.
    * @param payload Object to send to the endpoint.
    * @param requestInit The initializer for the request.
    */
-  public async updateByTeam(
-    teamName: string,
-    identityProviderId: string,
-    payload: Heroku.IdentityProviderUpdateByTeamPayload,
+  public async update(
+    identityProviderIdentity: string,
+    payload: Heroku.IdentityProviderUpdatePayload,
     requestInit: Omit<RequestInit, 'body' | 'method'> = {}
   ): Promise<Heroku.IdentityProvider> {
-    const response = await this.fetchImpl(
-      `${this.endpoint}/teams/${teamName}/identity-providers/${identityProviderId}`,
-      {
-        ...requestInit,
-        body: JSON.stringify(payload, null, 2),
-        method: 'PATCH',
-        headers: {
-          ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
-          'Content-Type': 'application/json'
-        }
+    const response = await this.fetchImpl(`${this.endpoint}/identity-providers/${identityProviderIdentity}`, {
+      ...requestInit,
+      body: JSON.stringify(payload, null, 2),
+      method: 'PATCH',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Content-Type': 'application/json'
       }
-    );
+    });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.IdentityProvider>;
     }
-    throw new Error(response.statusText);
-  }
-  /**
-   * Delete a team's Identity Provider
-   *
-   * @param teamName unique name of team
-   * @example "example".
-   * @param identityProviderId unique identifier of this identity provider
-   * @example "01234567-89ab-cdef-0123-456789abcdef".
-   * @param requestInit The initializer for the request.
-   */
-  public async deleteByTeam(
-    teamName: string,
-    identityProviderId: string,
-    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
-  ): Promise<Heroku.IdentityProvider> {
-    const response = await this.fetchImpl(
-      `${this.endpoint}/teams/${teamName}/identity-providers/${identityProviderId}`,
-      {
-        ...requestInit,
-
-        method: 'DELETE',
-        headers: {
-          ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    if (response.ok) {
-      return (await response.json()) as Promise<Heroku.IdentityProvider>;
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
     }
-    throw new Error(response.statusText);
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

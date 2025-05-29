@@ -1,6 +1,6 @@
 /**
  * [Heroku Platform API - Pipeline Config Vars](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-config-var)
- * Pipeline Config Vars allow you to manage the configuration information provided to a pipeline.
+ * Pipeline config vars in Heroku CI and review apps used to manage the configuration information for a pipeline.
  */
 export default class PipelineConfigVarService {
   public constructor(
@@ -30,14 +30,20 @@ export default class PipelineConfigVarService {
         method: 'GET',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3'
+          Accept: 'application/vnd.heroku+json; version=3.sdk'
         }
       }
     );
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Update config-vars for a pipeline stage. You can update existing config-vars by setting them again, and remove by setting it to `null`.
@@ -63,7 +69,7 @@ export default class PipelineConfigVarService {
         method: 'PATCH',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
+          Accept: 'application/vnd.heroku+json; version=3.sdk',
           'Content-Type': 'application/json'
         }
       }
@@ -71,6 +77,12 @@ export default class PipelineConfigVarService {
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

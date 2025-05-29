@@ -1,6 +1,6 @@
 /**
  * [Heroku Platform API - Pipeline Config Vars](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-config-var)
- * Pipeline Config Vars allow you to manage the configuration information provided to a pipeline.
+ * Pipeline config vars in Heroku CI and review apps used to manage the configuration information for a pipeline.
  */
 export default class PipelineConfigVarService {
     protected readonly fetchImpl: typeof fetch;

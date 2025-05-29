@@ -24,6 +24,15 @@ export default class DynoService {
      */
     restart(appIdentity: string, dynoIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
     /**
+     * Restart dynos of a given formation type.
+     *
+     * @param appIdentity unique identifier of app or unique name of app.
+     * @param dynoFormationType the formation type of this process on this dyno
+     * @example "run".
+     * @param requestInit The initializer for the request.
+     */
+    restartFormation(appIdentity: string, dynoFormationType: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
+    /**
      * Restart all dynos.
      *
      * @param appIdentity unique identifier of app or unique name of app.
@@ -38,6 +47,15 @@ export default class DynoService {
      * @param requestInit The initializer for the request.
      */
     stop(appIdentity: string, dynoIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
+    /**
+     * Stop dynos of a given formation type.
+     *
+     * @param appIdentity unique identifier of app or unique name of app.
+     * @param dynoFormationType the formation type of this process on this dyno
+     * @example "run".
+     * @param requestInit The initializer for the request.
+     */
+    stopFormation(appIdentity: string, dynoFormationType: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
     /**
      * Info for existing dyno.
      *

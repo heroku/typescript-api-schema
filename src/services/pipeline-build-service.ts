@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Pipeline Build](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-build)
- * Information about latest builds of apps in a pipeline.
+ * Information about the latest builds of apps in a pipeline. A build represents the process of transforming code into build artifacts.
  */
 export default class PipelineBuildService {
   public constructor(
@@ -19,19 +19,25 @@ export default class PipelineBuildService {
   public async list(
     pipelineId: string,
     requestInit: Omit<RequestInit, 'body' | 'method'> = {}
-  ): Promise<Heroku.Build[]> {
+  ): Promise<Heroku.PipelineBuild[]> {
     const response = await this.fetchImpl(`${this.endpoint}/pipelines/${pipelineId}/latest-builds`, {
       ...requestInit,
 
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
-      return (await response.json()) as Promise<Heroku.Build[]>;
+      return (await response.json()) as Promise<Heroku.PipelineBuild[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

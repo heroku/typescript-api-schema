@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Build API - Build](https://devcenter.heroku.com/articles/platform-api-reference#build)
- * A build represents the process of transforming a code tarball into a slug
+ * A build represents the process of transforming a code tarball into build artifacts
  */
 export default class BuildService {
     protected readonly fetchImpl: typeof fetch;

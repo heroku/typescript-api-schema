@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Pipeline Release](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-release)
- * Information about latest releases of apps in a pipeline.
+ * Information about the latest release of each app in a pipeline. A release makes a deployment available to end-users.
  */
 export default class PipelineReleaseService {
   public constructor(
@@ -26,12 +26,18 @@ export default class PipelineReleaseService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Release[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

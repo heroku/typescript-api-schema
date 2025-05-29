@@ -25,14 +25,20 @@ export default class AddOnActionService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Mark an add-on as deprovisioned.
@@ -50,13 +56,85 @@ export default class AddOnActionService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.AddOn>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * Add or update a peering connection to an add-on
+   *
+   * @param addOnIdentity unique identifier of add-on or globally unique name of the add-on.
+   * @param payload Object to send to the endpoint.
+   * @param requestInit The initializer for the request.
+   */
+  public async peer(
+    addOnIdentity: string,
+    payload: Heroku.AddOnActionPeerPayload,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Record<string, unknown>> {
+    const response = await this.fetchImpl(`${this.endpoint}/addons/${addOnIdentity}/actions/peer`, {
+      ...requestInit,
+      body: JSON.stringify(payload, null, 2),
+      method: 'POST',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Record<string, unknown>>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
+  }
+  /**
+   * Remove a peering connection from an add-on
+   *
+   * @param addOnIdentity unique identifier of add-on or globally unique name of the add-on.
+   * @param payload Object to send to the endpoint.
+   * @param requestInit The initializer for the request.
+   */
+  public async unpeer(
+    addOnIdentity: string,
+    payload: Record<string, unknown>,
+    requestInit: Omit<RequestInit, 'body' | 'method'> = {}
+  ): Promise<Record<string, unknown>> {
+    const response = await this.fetchImpl(`${this.endpoint}/addons/${addOnIdentity}/actions/unpeer`, {
+      ...requestInit,
+      body: JSON.stringify(payload, null, 2),
+      method: 'POST',
+      headers: {
+        ...requestInit?.headers,
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.ok) {
+      return (await response.json()) as Promise<Record<string, unknown>>;
+    }
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

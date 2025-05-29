@@ -24,13 +24,19 @@ export default class ConfigVarService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Get config-vars for a release.
@@ -52,14 +58,20 @@ export default class ConfigVarService {
         method: 'GET',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3'
+          Accept: 'application/vnd.heroku+json; version=3.sdk'
         }
       }
     );
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Update config-vars for app. You can update existing config-vars by setting them again, and remove by setting it to `null`.
@@ -79,13 +91,19 @@ export default class ConfigVarService {
       method: 'PATCH',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Record<string, unknown>>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

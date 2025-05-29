@@ -1,7 +1,7 @@
 import * as Heroku from '@heroku-cli/schema';
 /**
  * [Heroku Platform API - Pipeline Deployment](https://devcenter.heroku.com/articles/platform-api-reference#pipeline-deployment)
- * Information about latest deployments of apps in a pipeline.
+ * Information about the latest deployment of each app in a pipeline. A deployment is the process of moving the build artifacts to a target environment.
  */
 export default class PipelineDeploymentService {
   public constructor(
@@ -10,7 +10,7 @@ export default class PipelineDeploymentService {
   ) {}
 
   /**
-   * List latest slug releases for each app in a pipeline
+   * List latest deployments for each app in a pipeline. A deployment is a release that changed your source slug, container image, or Heroku processes.
    *
    * @param pipelineId unique identifier of pipeline
    * @example "01234567-89ab-cdef-0123-456789abcdef".
@@ -26,12 +26,18 @@ export default class PipelineDeploymentService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.Release[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

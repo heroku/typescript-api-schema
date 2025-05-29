@@ -1,4 +1,4 @@
-import schema from './schema.json' assert {type: 'json'};
+import schema from './schema.json' with {type: 'json'};
 
 import {pascalCase} from 'pascal-case';
 import fs from 'node:fs/promises';
@@ -50,6 +50,9 @@ function isDeepEqual(a, b) {
  * @returns {(*|undefined)[]}
  */
 function resolveTypes(items) {
+  if (!items) {
+    return [];
+  }
   if (!Array.isArray(items)) {
     items = [items];
   }
@@ -59,7 +62,8 @@ function resolveTypes(items) {
     if (schemaValue) {
       const {type: types} = schemaValue;
       const proposedInterfaceName = buildNameFromRef($ref);
-      return types.map(resolvedType => getTypeDefinition(resolvedType, proposedInterfaceName, item)).join(' | ');
+      const typesToMap = Array.isArray(types) ? types : [types];
+      return typesToMap.map(resolvedType => getTypeDefinition(resolvedType, proposedInterfaceName, item)).join(' | ');
     }
   }))];
 }
@@ -114,15 +118,16 @@ function getTypeDefinition(typeName, proposedInterfaceName, schemaInfo) {
  * @param {string} propName The name of the interface member.
  * @param {Record<string, unknown>} schemaInfo The schema info belonging to this member
  * @param {boolean} required Boolean indicating whether this property is required.
+ * @param {boolean} includeDescription Boolean indicating whether to include the description in the doc block.
  * @returns {string}
  */
-function createInterfaceMemberFromProp(propName, schemaInfo, required) {
+function createInterfaceMemberFromProp(propName, schemaInfo, required, includeDescription = true) {
   if (/\W/g.test(propName)) {
     propName = `'${propName}'`;
   }
 
   const {description, typeScriptType, readOnly} = createInterfaceMemberDescriptor(propName, schemaInfo);
-  const docBlock = description ? `/**\n  * ${description}\n */\n  ` : '';
+  const docBlock = includeDescription && description ? `/**\n  * ${description}\n */\n  ` : '';
   return `${docBlock}${readOnly ? 'readonly ' : ''}${propName}${required ? '' : '?'}: ${typeScriptType};`;
 }
 
@@ -140,7 +145,7 @@ function createInterfaceMemberDescriptor(propName, schemaInfo) {
   const {type, readOnly, anyOf} = schemaValue;
   let {description = '', example = ''} = schemaValue;
 
-  let resolvedTypes = anyOf ? resolveTypes(anyOf) : type;
+  let resolvedTypes = anyOf ? resolveTypes(anyOf) : Array.isArray(type) ? type : [type];
   if (anyOf) {
     description += anyOf
       .filter(anyOfRef => anyOfRef.$ref)
@@ -152,7 +157,7 @@ function createInterfaceMemberDescriptor(propName, schemaInfo) {
   const typeDefinitions = resolvedTypes.map((resolvedType) => getTypeDefinition(resolvedType, propName, schemaInfo));
   return {
     description,
-    typeScriptType: typeDefinitions.join(` ${unionOrIntersection} `),
+    typeScriptType: typeDefinitions?.join(` ${unionOrIntersection} `),
     propName,
     readOnly,
   };
@@ -202,8 +207,8 @@ function buildNameFromRef(ref = '', useShallowCheck = true) {
  * @return string
  */
 function createInterfaceFromSchemaInfo(propName, schemaInfo) {
-  let {properties, strictProperties, description = '', required, $ref} = schemaInfo;
-  let interfaceName = pascalCase(propName ?? '');
+  let {properties, strictProperties, description = '', required, title:schemaTitle, $ref} = schemaInfo;
+  let interfaceName = pascalCase(propName || schemaTitle || '');
 
   // $ref will always reference a single definition
   // and are safe to use as-is
@@ -254,7 +259,7 @@ function createInterfaceFromSchemaInfo(propName, schemaInfo) {
   // Interface members are primitives, other interfaces,
   // intersection types or enums.
   const interfaceMembers = properties
-    ? Object.keys(properties).map((propName => createInterfaceMemberFromProp(propName, properties[propName], strictProperties || required?.includes(propName))))
+    ? Object.keys(properties).map((propName => createInterfaceMemberFromProp(propName, properties[propName], strictProperties || required?.includes(propName), !!interfaceName)))
     : ['[k: string]: unknown'];
 
   // Build the entire interface
@@ -285,14 +290,14 @@ function createInterfaceFromSchemaInfo(propName, schemaInfo) {
  * @param targetSchema
  * @returns {string}
  */
-function getTargetSchemaType(targetSchema) {
+function getTargetSchemaType(targetSchema, alternateInterfaceName) {
   if (!targetSchema) {
     return 'void';
   }
   const {type: types} = targetSchema;
   if (types) {
     return types
-      .map(type => getTypeDefinition(type, undefined, targetSchema))
+      .map(type => getTypeDefinition(type, alternateInterfaceName, targetSchema))
       .join(' | ');
   }
   return createInterfaceFromSchemaInfo(undefined, targetSchema);
@@ -309,9 +314,14 @@ function createParamDescriptors(tokenizedUrl) {
   const tokenRegex = /{\((#[\w+/\-_]+)\)}/g;
   const hrefTokens = [...tokenizedUrl.matchAll(tokenRegex)];
   let parameterizedUrl = tokenizedUrl;
+  const encounteredNames = new Set();
   const paramDescriptors = hrefTokens.map(hrefToken => {
     const [token, ref] = hrefToken;
-    const proposedInterfaceName = camelcase(buildNameFromRef(ref, false));
+    let proposedInterfaceName = camelcase(buildNameFromRef(ref, false));
+    if (encounteredNames.has(proposedInterfaceName)) {
+      proposedInterfaceName = `${proposedInterfaceName}${encounteredNames.size}`;
+    }
+    encounteredNames.add(proposedInterfaceName);
     parameterizedUrl = parameterizedUrl.replace(token, '${' + proposedInterfaceName + '}');
     return createInterfaceMemberDescriptor(proposedInterfaceName, getValueFromSchema(ref));
   });
@@ -350,7 +360,9 @@ function createParamDescriptors(tokenizedUrl) {
  */
 function buildClassMembersFromLinks(entityName, links) {
   const members = [];
-  for (const link of links) {
+  const encounteredTitles = new Set();
+  for (let i = 0; i < links.length; i++) {
+    const link = links[i];
     const {description, method, href, schema, title, targetSchema} = link;
     let payloadType = schema
       ? createInterfaceFromSchemaInfo(`${entityName}-${title}-payload`, schema)
@@ -359,12 +371,20 @@ function buildClassMembersFromLinks(entityName, links) {
       payloadType = `Heroku.${payloadType}`;
     }
 
-    let targetSchemaType = getTargetSchemaType(targetSchema);
+    let targetSchemaType = getTargetSchemaType(targetSchema, `${entityName}-${title}-response`);
     if (targetSchemaType !== 'void' && !targetSchemaType.startsWith('Record')) {
       targetSchemaType = `Heroku.${targetSchemaType}`;
     }
     const {paramDescriptors, parameterizedUrl} = createParamDescriptors(decodeURIComponent(href));
+    let methodName = title || method.toLowerCase();
 
+    if (encounteredTitles.has(methodName)) {
+      const targetSchemaTypeName = targetSchemaType.split('.').pop();
+      const [name, isArray] = targetSchemaTypeName.split('[]');
+      const formattedTitle = `${title ? `-${title.replace(new RegExp(methodName, 'ig'), '-')}` : ''}`;
+      methodName = `${methodName}-${name}${isArray !== undefined ? 's' : ''}${title ? `${formattedTitle}` : ''}`;
+    }
+    encounteredTitles.add(methodName);
     // Doc blocks are composed of the schema
     // description for the method declaration
     // and the interface descriptor for each param.
@@ -393,7 +413,7 @@ function buildClassMembersFromLinks(entityName, links) {
     method: '${method}',
     headers: {
       ...requestInit?.headers,
-      Accept: 'application/vnd.heroku+json; version=3'
+      Accept: 'application/vnd.heroku+json; version=3.sdk'
       ${method !== 'GET' ? `,'Content-Type': 'application/json'` : ''}
       } }`;
 
@@ -402,11 +422,17 @@ function buildClassMembersFromLinks(entityName, links) {
     if (response.ok) {
         return await response.json() as Promise<${targetSchemaType}>;
     }
-    throw new Error(response.statusText);` : `await this.fetchImpl(\`${parameterizedUrl}\`, ${requestInit});`;
+    let message = response.statusText;
+    try {
+        ({message} = await response.json() as {message:string});
+    } catch (error) {
+        // no-op
+    }
+    throw new Error(\`\${response.status}: \${message}\`, {cause: response});` : `await this.fetchImpl(\`${parameterizedUrl}\`, ${requestInit});`;
 
     // Finally the class member is constructed
     let member = `${docBlock}
-    public async ${camelcase(title)}(${params}): Promise<${targetSchemaType}> {
+    public async ${camelcase(methodName)}(${params}): Promise<${targetSchemaType}> {
     ${returnVal}
     }`;
     members.push(member);

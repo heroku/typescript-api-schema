@@ -20,4 +20,11 @@ export default class StackService {
      * @param requestInit The initializer for the request.
      */
     list(requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.Stack[]>;
+    /**
+     * List available app stacks for an app.
+     *
+     * @param appIdentity unique identifier of app or unique name of app.
+     * @param requestInit The initializer for the request.
+     */
+    listStacks(appIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.Stack[]>;
 }

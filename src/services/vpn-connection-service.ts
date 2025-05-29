@@ -27,14 +27,20 @@ export default class VpnConnectionService {
       method: 'POST',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3',
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
         'Content-Type': 'application/json'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.VpnConnection>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Destroy existing VPN Connection
@@ -56,7 +62,7 @@ export default class VpnConnectionService {
         method: 'DELETE',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
+          Accept: 'application/vnd.heroku+json; version=3.sdk',
           'Content-Type': 'application/json'
         }
       }
@@ -64,7 +70,13 @@ export default class VpnConnectionService {
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.VpnConnection>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * List VPN connections for a space.
@@ -82,13 +94,19 @@ export default class VpnConnectionService {
       method: 'GET',
       headers: {
         ...requestInit?.headers,
-        Accept: 'application/vnd.heroku+json; version=3'
+        Accept: 'application/vnd.heroku+json; version=3.sdk'
       }
     });
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.VpnConnection[]>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Info for an existing vpn-connection.
@@ -110,14 +128,20 @@ export default class VpnConnectionService {
         method: 'GET',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3'
+          Accept: 'application/vnd.heroku+json; version=3.sdk'
         }
       }
     );
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.VpnConnection>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
   /**
    * Update a VPN connection in a private space.
@@ -141,7 +165,7 @@ export default class VpnConnectionService {
         method: 'PATCH',
         headers: {
           ...requestInit?.headers,
-          Accept: 'application/vnd.heroku+json; version=3',
+          Accept: 'application/vnd.heroku+json; version=3.sdk',
           'Content-Type': 'application/json'
         }
       }
@@ -149,6 +173,12 @@ export default class VpnConnectionService {
     if (response.ok) {
       return (await response.json()) as Promise<Heroku.VpnConnection>;
     }
-    throw new Error(response.statusText);
+    let message = response.statusText;
+    try {
+      ({ message } = (await response.json()) as { message: string });
+    } catch (error) {
+      // no-op
+    }
+    throw new Error(`${response.status}: ${message}`, { cause: response });
   }
 }

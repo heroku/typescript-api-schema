@@ -21,4 +21,20 @@ export default class AddOnActionService {
      * @param requestInit The initializer for the request.
      */
     deprovision(addOnIdentity: string, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Heroku.AddOn>;
+    /**
+     * Add or update a peering connection to an add-on
+     *
+     * @param addOnIdentity unique identifier of add-on or globally unique name of the add-on.
+     * @param payload Object to send to the endpoint.
+     * @param requestInit The initializer for the request.
+     */
+    peer(addOnIdentity: string, payload: Heroku.AddOnActionPeerPayload, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
+    /**
+     * Remove a peering connection from an add-on
+     *
+     * @param addOnIdentity unique identifier of add-on or globally unique name of the add-on.
+     * @param payload Object to send to the endpoint.
+     * @param requestInit The initializer for the request.
+     */
+    unpeer(addOnIdentity: string, payload: Record<string, unknown>, requestInit?: Omit<RequestInit, 'body' | 'method'>): Promise<Record<string, unknown>>;
 }
