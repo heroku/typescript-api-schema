@@ -5,6 +5,23 @@
 
 * updated schema ([a0396d9](https://github.com/heroku/typescript-api-schema/commit/a0396d9))
 
+## [2.0.1](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.0...schema-v2.0.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* update dependencies to fix high vulnerabilities ([9c17409](https://github.com/heroku/typescript-api-schema/commit/9c1740974792606d7768c64964bbe15d57d0e2db))
+* update package version to resolve glob vuln ([#56](https://github.com/heroku/typescript-api-schema/issues/56)) ([df9cf99](https://github.com/heroku/typescript-api-schema/commit/df9cf99ad2fab0657a5426bb1a6392b0397b5f67))
+
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump eslint from 8.57.0 to 8.57.1 ([#46](https://github.com/heroku/typescript-api-schema/issues/46)) ([806e7a6](https://github.com/heroku/typescript-api-schema/commit/806e7a67fd33a2765bb06e7d7f315d17bb9b5212))
+* **deps-dev:** bump eslint-config-oclif-typescript ([#49](https://github.com/heroku/typescript-api-schema/issues/49)) ([e01ddf3](https://github.com/heroku/typescript-api-schema/commit/e01ddf3ba43b0201d26f04c280502fbdb9fad968))
+* **deps:** bump js-yaml from 4.1.0 to 4.1.1 ([3f1c629](https://github.com/heroku/typescript-api-schema/commit/3f1c629332766bacf11460f050a9c08c6b111edd))
+* **deps:** bump js-yaml from 4.1.0 to 4.1.1 ([24540c0](https://github.com/heroku/typescript-api-schema/commit/24540c0565c89d035b40b02ef0543bc580d13cfe))
+* onboard shared workflows ([#58](https://github.com/heroku/typescript-api-schema/issues/58)) ([90cad55](https://github.com/heroku/typescript-api-schema/commit/90cad557db320f3f264256f621dea25c5518f44d))
+
 ## [1.0.22](https://github.com/heroku/typescript-api-schema/compare/v1.0.21...v1.0.22) (2018-10-02)
 
 
