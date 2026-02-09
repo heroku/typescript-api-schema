@@ -5,6 +5,13 @@
 
 * updated schema ([a0396d9](https://github.com/heroku/typescript-api-schema/commit/a0396d9))
 
+## [2.0.2](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.1...schema-v2.0.2) (2026-02-09)
+
+
+### Miscellaneous Chores
+
+* update PR template ([#67](https://github.com/heroku/typescript-api-schema/issues/67)) ([6a49d19](https://github.com/heroku/typescript-api-schema/commit/6a49d19397eacadd7fb7cdceaa18626b8336b36f))
+
 ## [2.0.1](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.0...schema-v2.0.1) (2026-01-29)
 
 
