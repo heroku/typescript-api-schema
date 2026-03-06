@@ -5,6 +5,13 @@
 
 * updated schema ([a0396d9](https://github.com/heroku/typescript-api-schema/commit/a0396d9))
 
+## [2.0.2](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.1...schema-v2.0.2) (2026-03-06)
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#71](https://github.com/heroku/typescript-api-schema/issues/71)) ([bae0c15](https://github.com/heroku/typescript-api-schema/commit/bae0c1555e0f9c650ceb8996c52c4395d4bac6a8))
+
 ## [2.0.1](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.0...schema-v2.0.1) (2026-01-29)
 
 
