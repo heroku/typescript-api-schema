@@ -1,0 +1,21 @@
+{
+  "name": "@heroku/types",
+  "version": "0.1.0",
+  "description": "Generates Typescript types from API hyperschema",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "heroku-types": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate": "node dist/cli.js",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
+  }
+}
