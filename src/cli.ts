@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { writeFileSync } from 'node:fs'
-import { fetchSchema } from './gen/schema.js'
+import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { generateTypes } from './gen/generator.js'
 import type { HerokuSchema } from './gen/template.js'
 
@@ -12,6 +12,24 @@ interface CliOptions {
   help: boolean
 }
 
+export interface MainDeps {
+  argv: string[]
+  fetchSchema: (baseUrl?: string, variant?: string) => Promise<unknown>
+  generateTypes: (schema: HerokuSchema) => string
+  writeFile: (path: string, content: string) => void
+  log: (message: string) => void
+  exit: (code: number) => void
+}
+
+const defaultDeps: MainDeps = {
+  argv: process.argv,
+  fetchSchema,
+  generateTypes,
+  writeFile: writeFileSync,
+  log: (message: string) => console.error(message),
+  exit: (code: number) => process.exit(code),
+}
+
 const USAGE = `Usage: heroku-types [options]
 
 Options:
@@ -20,8 +38,8 @@ Options:
   --output <path>       Output file path (default: heroku-<variant>.d.ts)
   --help                Show this help message`
 
-export function parseArgs(argv: string[]): CliOptions {
-  let variant
+function parseArgs(argv: string[]): CliOptions {
+  let variant = DEFAULT_SCHEMA_VARIANT
   let baseUrl
   let output: string | undefined
   let help = false
@@ -57,22 +75,25 @@ export function parseArgs(argv: string[]): CliOptions {
   }
 }
 
-async function main() {
+export async function main(deps: Partial<MainDeps> = {}) {
+  const { argv, fetchSchema, generateTypes, writeFile, log, exit } = { ...defaultDeps, ...deps }
+
   try {
-    const options = parseArgs(process.argv.slice(2))
+    const options = parseArgs(argv.slice(2))
 
     if (options.help) {
-      console.error(USAGE)
-      process.exit(0)
+      log(USAGE)
+      exit(0)
+      return
     }
 
     const schema = await fetchSchema(options.baseUrl, options.variant) as HerokuSchema
     const types = generateTypes(schema)
-    writeFileSync(options.output, types)
-    console.error(`Wrote ${options.output}`)
+    writeFile(options.output, types)
+    log(`Wrote ${options.output}`)
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error)
-    process.exit(1)
+    log(error instanceof Error ? error.message : String(error))
+    exit(1)
   }
 }
 

@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc",
     "generate": "node dist/cli.js",
-    "test": "vitest"
+    "test": "vitest --run",
+    "test:watch": "vitest"
   },
   "license": "MIT",
   "devDependencies": {

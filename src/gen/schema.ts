@@ -1,4 +1,4 @@
-const DEFAULT_SCHEMA_VARIANT = '3.sdk'
+export const DEFAULT_SCHEMA_VARIANT = '3.sdk'
 const DEFAULT_URL = 'https://api.heroku.com/schema'
 
 export async function fetchSchema(baseUrl = DEFAULT_URL, schemaVariant = DEFAULT_SCHEMA_VARIANT): Promise<unknown> {
