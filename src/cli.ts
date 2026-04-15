@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { generateTypes } from './gen/generator.js'
 import type { HerokuSchema } from './gen/template.js'
@@ -8,7 +9,6 @@ import type { HerokuSchema } from './gen/template.js'
 interface CliOptions {
   variant?: string
   baseUrl?: string
-  output: string
   help: boolean
 }
 
@@ -35,13 +35,11 @@ const USAGE = `Usage: heroku-types [options]
 Options:
   --variant <variant>   Schema variant (default: 3.sdk)
   --base-url <url>      Schema endpoint (default: https://api.heroku.com/schema)
-  --output <path>       Output file path (default: heroku-<variant>.d.ts)
   --help                Show this help message`
 
 function parseArgs(argv: string[]): CliOptions {
   let variant = DEFAULT_SCHEMA_VARIANT
   let baseUrl
-  let output: string | undefined
   let help = false
 
   for (let i = 0; i < argv.length; i++) {
@@ -55,10 +53,6 @@ function parseArgs(argv: string[]): CliOptions {
         if (i + 1 >= argv.length) throw new Error('--base-url requires a value')
         baseUrl = argv[++i]
         break
-      case '--output':
-        if (i + 1 >= argv.length) throw new Error('--output requires a value')
-        output = argv[++i]
-        break
       case '--help':
         help = true
         break
@@ -70,7 +64,6 @@ function parseArgs(argv: string[]): CliOptions {
   return {
     variant,
     baseUrl,
-    output: output ?? `heroku-${variant}.d.ts`,
     help,
   }
 }
@@ -89,8 +82,11 @@ export async function main(deps: Partial<MainDeps> = {}) {
 
     const schema = await fetchSchema(options.baseUrl, options.variant) as HerokuSchema
     const types = generateTypes(schema)
-    writeFile(options.output, types)
-    log(`Wrote ${options.output}`)
+    const outputDir = 'types'
+    mkdirSync(outputDir, { recursive: true })
+    const output = join(outputDir, `heroku-${options.variant}.d.ts`)
+    writeFile(output, types)
+    log(`Wrote ${output}`)
   } catch (error) {
     log(error instanceof Error ? error.message : String(error))
     exit(1)

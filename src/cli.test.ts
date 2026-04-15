@@ -24,7 +24,7 @@ describe('main', () => {
 
     expect(deps.fetchSchema).toHaveBeenCalledWith(undefined, DEFAULT_SCHEMA_VARIANT)
     expect(deps.generateTypes).toHaveBeenCalled()
-    expect(deps.writeFile).toHaveBeenCalledWith(`heroku-${DEFAULT_SCHEMA_VARIANT}.d.ts`, '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith(`types/heroku-${DEFAULT_SCHEMA_VARIANT}.d.ts`, '// types')
     expect(deps.exit).not.toHaveBeenCalled()
   })
 
@@ -39,14 +39,7 @@ describe('main', () => {
     const deps = makeDeps({ argv: argv('--variant', '3.platform') })
     await main(deps)
 
-    expect(deps.writeFile).toHaveBeenCalledWith('heroku-3.platform.d.ts', '// types')
-  })
-
-  it('uses explicit --output over variant-derived default', async () => {
-    const deps = makeDeps({ argv: argv('--variant', '3.platform', '--output', 'custom.d.ts') })
-    await main(deps)
-
-    expect(deps.writeFile).toHaveBeenCalledWith('custom.d.ts', '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith('types/heroku-3.platform.d.ts', '// types')
   })
 
   it('prints usage and exits 0 on --help', async () => {

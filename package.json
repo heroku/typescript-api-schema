@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "description": "Generates Typescript types from API hyperschema",
   "type": "module",
-  "main": "dist/index.js",
-  "bin": {
-    "heroku-types": "dist/cli.js"
+  "types": "./types/heroku-3.sdk.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/heroku-3.sdk.d.ts"
+    }
   },
+  "files": [
+    "types/"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "generate": "node dist/cli.js",
     "test": "vitest --run",
     "test:watch": "vitest"
