@@ -52,7 +52,8 @@ export interface SchemaLink {
 
 export function toPascalCase(name: string): string {
   return name
-    .split('-')
+    .split(/[-.\s/:_{}()]+/)
+    .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join('')
 }
