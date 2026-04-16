@@ -7,6 +7,7 @@ import {
   schemaTypeToTS,
   renderProperties,
   renderResourceInterface,
+  renderLinkTypes,
   type HerokuSchema,
   type SchemaNode,
 } from './template.js'
@@ -416,6 +417,116 @@ describe('renderResourceInterface with inline nested objects', () => {
       '  } | null\n' +
       '}',
     )
+  })
+})
+
+describe('renderLinkTypes', () => {
+  const schema: HerokuSchema = {
+    definitions: {
+      app: {
+        definitions: {
+          id: { type: ['string'], description: 'unique identifier' },
+          name: { type: ['string'], description: 'app name' },
+        },
+        required: ['id', 'name'],
+        properties: {
+          id: { $ref: '#/definitions/app/definitions/id' },
+          name: { $ref: '#/definitions/app/definitions/name' },
+        },
+        links: [
+          {
+            title: 'Create',
+            description: 'Create a new app.',
+            method: 'POST',
+            href: '/apps',
+            schema: {
+              properties: {
+                name: { $ref: '#/definitions/app/definitions/name' },
+                region: { type: ['string'] },
+              },
+              required: ['name'],
+            },
+          },
+          {
+            title: 'List',
+            description: 'List existing apps.',
+            method: 'GET',
+            href: '/apps',
+            rel: 'instances',
+            targetSchema: {
+              type: ['array'],
+              items: { $ref: '#/definitions/app' },
+            },
+          },
+          {
+            title: 'Info',
+            description: 'Info for an app.',
+            method: 'GET',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+            // targetSchema same as resource — no Result type
+          },
+          {
+            title: 'Update',
+            description: 'Update an existing app.',
+            method: 'PATCH',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+            schema: {
+              properties: {
+                name: { $ref: '#/definitions/app/definitions/name' },
+                maintenance: { type: ['boolean'] },
+              },
+            },
+            targetSchema: {
+              properties: {
+                id: { $ref: '#/definitions/app/definitions/id' },
+                name: { $ref: '#/definitions/app/definitions/name' },
+                maintenance: { type: ['boolean'] },
+              },
+              required: ['id'],
+            },
+          },
+        ],
+      },
+    },
+  }
+
+  it('generates Opts interface for links with custom request schema', () => {
+    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const createOpts = results.find(r => r.includes('AppCreateOpts'))
+    expect(createOpts).toBeDefined()
+    expect(createOpts).toContain('name: string')
+    expect(createOpts).toContain('region?: string')
+  })
+
+  it('generates Result interface for links with custom targetSchema', () => {
+    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const updateResult = results.find(r => r.includes('AppUpdateResult'))
+    expect(updateResult).toBeDefined()
+    expect(updateResult).toContain('id: string')
+    expect(updateResult).toContain('maintenance?: boolean')
+  })
+
+  it('does not generate Result for links whose targetSchema has no properties', () => {
+    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    expect(results.find(r => r.includes('AppListResult'))).toBeUndefined()
+  })
+
+  it('does not generate types for links without title', () => {
+    const def = {
+      ...schema.definitions['app'],
+      links: [{ method: 'GET', href: '/apps' }],
+    }
+    expect(renderLinkTypes('app', def, schema)).toEqual([])
+  })
+
+  it('returns empty array for definitions without links', () => {
+    expect(renderLinkTypes('app', { properties: {} }, schema)).toEqual([])
+  })
+
+  it('includes JSDoc from link description', () => {
+    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const createOpts = results.find(r => r.includes('AppCreateOpts'))
+    expect(createOpts).toContain('/** Create a new app. */')
   })
 })
 

@@ -41,4 +41,39 @@ describe('generateTypes', () => {
     const result = generateTypes(schema)
     expect(result).toContain('}\n\nexport interface')
   })
+
+  it('generates link Opts and Result types', () => {
+    const schemaWithLinks: HerokuSchema = {
+      definitions: {
+        app: {
+          required: ['id'],
+          properties: {
+            id: { type: ['string'] },
+          },
+          links: [
+            {
+              title: 'Create',
+              method: 'POST',
+              href: '/apps',
+              schema: {
+                properties: { name: { type: ['string'] } },
+                required: ['name'],
+              },
+              targetSchema: {
+                properties: {
+                  id: { type: ['string'] },
+                  name: { type: ['string'] },
+                },
+                required: ['id', 'name'],
+              },
+            },
+          ],
+        },
+      },
+    }
+    const result = generateTypes(schemaWithLinks)
+    expect(result).toContain('export interface App')
+    expect(result).toContain('export interface AppCreateOpts')
+    expect(result).toContain('export interface AppCreateResult')
+  })
 })

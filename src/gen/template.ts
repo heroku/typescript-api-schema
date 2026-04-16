@@ -202,3 +202,40 @@ export function renderResourceInterface(
   return `${doc}export interface ${interfaceName} {\n${body}\n}`
 }
 
+function hasCustomProperties(node: SchemaNode | undefined): boolean {
+  if (!node) return false
+  return !!node.properties && Object.keys(node.properties).length > 0
+}
+
+export function renderLinkTypes(
+  resourceName: string,
+  definition: ResourceDefinition,
+  schema: HerokuSchema,
+): string[] {
+  if (!definition.links) return []
+
+  const results: string[] = []
+  for (const link of definition.links) {
+    if (!link.title) continue
+
+    // Generate Opts interface for links with a custom request schema
+    if (hasCustomProperties(link.schema)) {
+      const optsName = toPascalCase(resourceName) + toPascalCase(link.title) + 'Opts'
+      const optsSchema = link.schema!
+      const doc = renderJSDoc(link.description, '')
+      const body = renderProperties(optsSchema.properties!, schema, 1, optsSchema.required ?? [])
+      results.push(`${doc}export interface ${optsName} {\n${body}\n}`)
+    }
+
+    // Generate Result interface for links with a custom response schema
+    if (hasCustomProperties(link.targetSchema) && link.targetSchema !== definition) {
+      const resultName = toPascalCase(resourceName) + toPascalCase(link.title) + 'Result'
+      const resultSchema = link.targetSchema!
+      const doc = renderJSDoc(link.description, '')
+      const body = renderProperties(resultSchema.properties!, schema, 1, resultSchema.required ?? [])
+      results.push(`${doc}export interface ${resultName} {\n${body}\n}`)
+    }
+  }
+  return results
+}
+
