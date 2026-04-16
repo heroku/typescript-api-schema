@@ -15,6 +15,7 @@ export interface ResourceDefinition {
   required?: string[]
   definitions?: Record<string, SchemaNode>
   properties?: Record<string, SchemaNode>
+  patternProperties?: Record<string, SchemaNode>
   links?: SchemaLink[]
 }
 
@@ -208,13 +209,24 @@ export function renderResourceInterface(
   definition: ResourceDefinition,
   schema: HerokuSchema,
 ): string {
-  if (!definition.properties) {
-    return ''
-  }
   const interfaceName = toPascalCase(name)
   const doc = renderJSDoc(definition.description, '')
-  const body = renderProperties(definition.properties, schema, 1, definition.required ?? [])
-  return `${doc}export interface ${interfaceName} {\n${body}\n}`
+
+  if (definition.properties) {
+    const body = renderProperties(definition.properties, schema, 1, definition.required ?? [])
+    return `${doc}export interface ${interfaceName} {\n${body}\n}`
+  }
+
+  if (definition.type) {
+    const node: SchemaNode = {
+      type: definition.type,
+      patternProperties: definition.patternProperties,
+    }
+    const tsType = schemaTypeToTS(node, schema)
+    return `${doc}export type ${interfaceName} = ${tsType}`
+  }
+
+  return ''
 }
 
 export function disambiguateLinkTitles(links: SchemaLink[]): Map<SchemaLink, string> {

@@ -32,9 +32,23 @@ describe('generateTypes', () => {
     expect(result).toContain('export interface App')
   })
 
-  it('skips definitions without properties', () => {
+  it('emits type alias for definitions with type but no properties', () => {
     const result = generateTypes(schema)
-    expect(result).not.toContain('ConfigVar')
+    expect(result).toContain('export type ConfigVar = Record<string, unknown>')
+  })
+
+  it('skips definitions with neither properties nor type', () => {
+    const schemaWithEmpty: HerokuSchema = {
+      definitions: {
+        app: {
+          required: ['id'],
+          properties: { id: { type: ['string'] } },
+        },
+        empty: {},
+      },
+    }
+    const result = generateTypes(schemaWithEmpty)
+    expect(result).not.toContain('Empty')
   })
 
   it('separates interfaces with blank lines', () => {
@@ -102,6 +116,23 @@ describe('generateTypes', () => {
     const result = generateTypes(schemaWithLinks)
     expect(result).toContain('export interface HerokuClient')
     expect(result).toContain('list(): Promise<App[]>')
+  })
+
+  it('generates valid types for property-less resources with links', () => {
+    const schemaWithPropertyless: HerokuSchema = {
+      definitions: {
+        'config-var': {
+          type: ['object'],
+          patternProperties: { '^\\w+$': { type: ['string', 'null'] } },
+          links: [
+            { title: 'Update', method: 'PATCH', href: '/config-vars' },
+          ],
+        },
+      },
+    }
+    const result = generateTypes(schemaWithPropertyless)
+    expect(result).toContain('export type ConfigVar = Record<string, string | null>')
+    expect(result).toContain('update(): Promise<ConfigVar>')
   })
 
   it('disambiguates duplicate link titles by appending HTTP method', () => {

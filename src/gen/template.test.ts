@@ -422,8 +422,29 @@ describe('renderResourceInterface', () => {
     )
   })
 
-  it('returns empty string for definitions without properties', () => {
-    const result = renderResourceInterface('config-var', { type: ['object'] }, schema)
+  it('emits type alias for object without properties', () => {
+    const result = renderResourceInterface('app-webhook', { type: ['object'] }, schema)
+    expect(result).toBe('export type AppWebhook = Record<string, unknown>')
+  })
+
+  it('emits type alias with patternProperties as Record', () => {
+    const result = renderResourceInterface('config-var', {
+      type: ['object'],
+      patternProperties: { '^\\w+$': { type: ['string', 'null'] } },
+    }, schema)
+    expect(result).toBe('export type ConfigVar = Record<string, string | null>')
+  })
+
+  it('emits JSDoc on type aliases', () => {
+    const result = renderResourceInterface('app-webhook', {
+      type: ['object'],
+      description: 'Represents a webhook.',
+    }, schema)
+    expect(result).toBe('/** Represents a webhook. */\nexport type AppWebhook = Record<string, unknown>')
+  })
+
+  it('returns empty string for definitions without properties or type', () => {
+    const result = renderResourceInterface('unknown', {}, schema)
     expect(result).toBe('')
   })
 
