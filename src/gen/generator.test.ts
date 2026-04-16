@@ -6,12 +6,14 @@ describe('generateTypes', () => {
   const schema: HerokuSchema = {
     definitions: {
       account: {
+        required: ['id', 'verified'],
         properties: {
           id: { type: ['string'] },
           verified: { type: ['boolean'] },
         },
       },
       app: {
+        required: ['id', 'name'],
         properties: {
           id: { type: ['string'] },
           name: { type: ['string'] },

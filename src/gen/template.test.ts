@@ -146,9 +146,10 @@ describe('schemaTypeToTS', () => {
     expect(schemaTypeToTS(node, schema)).toBe('App')
   })
 
-  it('converts inline nested object', () => {
+  it('converts inline nested object with required/optional', () => {
     const node: SchemaNode = {
       type: ['object'],
+      required: ['id'],
       properties: {
         id: { type: ['string'] },
         name: { type: ['string'] },
@@ -156,13 +157,14 @@ describe('schemaTypeToTS', () => {
     }
     const result = schemaTypeToTS(node, schema)
     expect(result).toContain('id: string')
-    expect(result).toContain('name: string')
+    expect(result).toContain('name?: string')
     expect(result).toMatch(/^\{/)
   })
 
   it('converts nullable inline object', () => {
     const node: SchemaNode = {
       type: ['object', 'null'],
+      required: ['id'],
       properties: {
         id: { type: ['string'] },
       },
@@ -249,8 +251,26 @@ describe('renderProperties', () => {
       id: { $ref: '#/definitions/account/definitions/id' },
       email: { $ref: '#/definitions/account/definitions/email' },
     }
-    const result = renderProperties(properties, schema)
+    const result = renderProperties(properties, schema, 1, ['id', 'email'])
     expect(result).toBe('  id: string\n  email: string')
+  })
+
+  it('marks non-required properties as optional', () => {
+    const properties: Record<string, SchemaNode> = {
+      id: { $ref: '#/definitions/account/definitions/id' },
+      email: { $ref: '#/definitions/account/definitions/email' },
+    }
+    const result = renderProperties(properties, schema, 1, ['id'])
+    expect(result).toBe('  id: string\n  email?: string')
+  })
+
+  it('marks all properties optional when required is empty', () => {
+    const properties: Record<string, SchemaNode> = {
+      id: { type: ['string'] },
+      name: { type: ['string'] },
+    }
+    const result = renderProperties(properties, schema)
+    expect(result).toBe('  id?: string\n  name?: string')
   })
 
   it('quotes non-identifier property keys', () => {
@@ -259,7 +279,7 @@ describe('renderProperties', () => {
       'ca_signed?': { type: ['boolean'] },
       normal_key: { type: ['number'] },
     }
-    const result = renderProperties(properties, schema)
+    const result = renderProperties(properties, schema, 1, ['nav-data', 'ca_signed?', 'normal_key'])
     expect(result).toBe("  'nav-data': string\n  'ca_signed?': boolean\n  normal_key: number")
   })
 })
@@ -273,6 +293,7 @@ describe('renderResourceInterface', () => {
           name: { type: ['string', 'null'] },
           verified: { type: ['boolean'] },
         },
+        required: ['id'],
         properties: {
           id: { $ref: '#/definitions/account/definitions/id' },
           name: { $ref: '#/definitions/account/definitions/name' },
@@ -282,13 +303,13 @@ describe('renderResourceInterface', () => {
     },
   }
 
-  it('generates a complete interface', () => {
+  it('generates a complete interface with required and optional properties', () => {
     const result = renderResourceInterface('account', schema.definitions['account'], schema)
     expect(result).toBe(
       'export interface Account {\n' +
       '  id: string\n' +
-      '  name: string | null\n' +
-      '  verified: boolean\n' +
+      '  name?: string | null\n' +
+      '  verified?: boolean\n' +
       '}',
     )
   })
@@ -320,10 +341,12 @@ describe('renderResourceInterface with inline nested objects', () => {
       },
       account: {
         definitions: {},
+        required: ['id', 'default_team'],
         properties: {
           id: { type: ['string'] },
           default_team: {
             type: ['object', 'null'],
+            required: ['id'],
             properties: {
               id: { $ref: '#/definitions/team/definitions/id' },
               name: { $ref: '#/definitions/team/definitions/name' },
@@ -334,14 +357,14 @@ describe('renderResourceInterface with inline nested objects', () => {
     },
   }
 
-  it('renders inline nested objects with proper indentation', () => {
+  it('renders inline nested objects with proper indentation and optionality', () => {
     const result = renderResourceInterface('account', schema.definitions['account'], schema)
     expect(result).toBe(
       'export interface Account {\n' +
       '  id: string\n' +
       '  default_team: {\n' +
       '    id: string\n' +
-      '    name: string\n' +
+      '    name?: string\n' +
       '  } | null\n' +
       '}',
     )

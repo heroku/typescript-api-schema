@@ -12,6 +12,7 @@ export interface ResourceDefinition {
   type?: string[]
   stability?: string
   strictProperties?: boolean
+  required?: string[]
   definitions?: Record<string, SchemaNode>
   properties?: Record<string, SchemaNode>
   links?: SchemaLink[]
@@ -24,6 +25,7 @@ export interface SchemaNode {
   anyOf?: SchemaNode[]
   oneOf?: SchemaNode[]
   properties?: Record<string, SchemaNode>
+  required?: string[]
   strictProperties?: boolean
   items?: SchemaNode
   patternProperties?: Record<string, SchemaNode>
@@ -123,7 +125,7 @@ export function schemaTypeToTS(node: SchemaNode, schema: HerokuSchema, indent = 
         case 'object':
           if (node.properties) {
             const closePad = '  '.repeat(indent)
-            const body = renderProperties(node.properties, schema, indent + 1)
+            const body = renderProperties(node.properties, schema, indent + 1, node.required ?? [])
             parts.push(`{\n${body}\n${closePad}}`)
           } else if (node.patternProperties) {
             const values = Object.values(node.patternProperties)
@@ -162,12 +164,15 @@ export function renderProperties(
   properties: Record<string, SchemaNode>,
   schema: HerokuSchema,
   indent = 1,
+  required: string[] = [],
 ): string {
   const pad = '  '.repeat(indent)
   return Object.entries(properties)
     .map(([key, value]) => {
       const tsType = schemaTypeToTS(value, schema, indent)
-      return `${pad}${formatPropertyKey(key)}: ${tsType}`
+      const optional = !required.includes(key)
+      const formattedKey = formatPropertyKey(key)
+      return `${pad}${formattedKey}${optional ? '?' : ''}: ${tsType}`
     })
     .join('\n')
 }
@@ -181,7 +186,7 @@ export function renderResourceInterface(
     return ''
   }
   const interfaceName = toPascalCase(name)
-  const body = renderProperties(definition.properties, schema, 1)
+  const body = renderProperties(definition.properties, schema, 1, definition.required ?? [])
   return `export interface ${interfaceName} {\n${body}\n}`
 }
 
