@@ -1,3 +1,7 @@
+/**
+ * NOTE: the contents of this file are generated. Do not modify this file.
+ */
+
 /** A Heroku account becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent accounts if their invoices remain unpaid. */
 export interface AccountDelinquency {
   /** scheduled time of when we will suspend your account due to delinquency */

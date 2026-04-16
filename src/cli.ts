@@ -3,7 +3,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
-import { generateTypes } from './gen/generator.js'
+import { generateTypes, GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
 import { verifyTypes, type VerifyError } from './gen/verify.js'
 import type { HerokuSchema } from './gen/template.js'
 
@@ -105,7 +105,9 @@ export async function main(deps: Partial<MainDeps> = {}) {
     const outputDir = 'types'
     mkdirSync(outputDir, { recursive: true })
     const output = join(outputDir, `heroku-${options.variant}.d.ts`)
-    writeFile(output, types)
+    const fileContent = GENERATED_CONTENT_PREAMBLE + types
+
+    writeFile(output, fileContent)
     log(`Wrote ${output}`)
   } catch (error) {
     log(error instanceof Error ? error.message : String(error))

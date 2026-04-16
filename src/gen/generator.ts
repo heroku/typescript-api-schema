@@ -1,5 +1,12 @@
 import { TypeRenderer, type HerokuSchema } from './template.js'
 
+export const GENERATED_CONTENT_PREAMBLE = `
+/**
+ * NOTE: the contents of this file are generated. Do not modify this file.
+ */
+
+`.trimStart()
+
 export function generateTypes(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
   const interfaces: string[] = []
