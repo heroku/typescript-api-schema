@@ -257,6 +257,20 @@ function hasCustomProperties(node: SchemaNode | undefined): boolean {
   return !!node.properties && Object.keys(node.properties).length > 0
 }
 
+/**
+ * True when a link's targetSchema defines its own properties distinct from the
+ * parent resource definition. The parsed JSON schema reuses the same object
+ * reference when a link's targetSchema IS the resource definition itself —
+ * reference equality detects this so we emit the resource type name instead of
+ * a redundant Result interface.
+ */
+function hasDistinctResultSchema(
+  targetSchema: SchemaNode | undefined,
+  resourceDef: ResourceDefinition,
+): boolean {
+  return hasCustomProperties(targetSchema) && targetSchema !== resourceDef
+}
+
 export function renderLinkTypes(
   resourceName: string,
   definition: ResourceDefinition,
@@ -280,7 +294,7 @@ export function renderLinkTypes(
     }
 
     // Generate Result interface for links with a custom response schema
-    if (hasCustomProperties(link.targetSchema) && link.targetSchema !== definition) {
+    if (hasDistinctResultSchema(link.targetSchema, definition)) {
       const resultName = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
       const resultSchema = link.targetSchema!
       const doc = renderJSDoc(link.description, '')
@@ -375,7 +389,7 @@ function linkReturnType(
   if (ts.type?.includes('array') && ts.items) {
     return schemaTypeToTS(ts, schema)
   }
-  if (hasCustomProperties(ts) && ts !== definition) {
+  if (hasDistinctResultSchema(ts, definition)) {
     return toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
   }
   return toPascalCase(resourceName)
