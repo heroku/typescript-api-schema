@@ -28,9 +28,13 @@ TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imp
 
 ### Key modules
 
-- `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url`, `--output` args.
+- `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url` args. Orchestrates fetch → generate → verify → write.
 - `src/gen/schema.ts` — Fetches the hyperschema from Heroku API (default variant `3.sdk`).
-- `src/gen/template.ts` — Schema type definitions (`HerokuSchema`, `SchemaNode`, etc.) and core rendering functions: `resolveRef`, `schemaTypeToTS`, `renderProperties`, `renderResourceInterface`.
-- `src/gen/generator.ts` — Iterates schema definitions and assembles the final type output.
+- `src/gen/template.ts` — Barrel re-export for the rendering pipeline. The actual implementations are split across:
+  - `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, etc.).
+  - `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `renderJSDoc`, `disambiguateLinkTitles`).
+  - `src/gen/render.ts` — `TypeRenderer` class that converts a parsed hyperschema into `.d.ts` content (resource interfaces, link Opts/Result types, `HerokuClient` interface).
+- `src/gen/generator.ts` — Iterates schema definitions, drives `TypeRenderer`, and assembles the final type output with a generated-content preamble.
+- `src/gen/verify.ts` — Validates the emitted `.d.ts` content by running the TypeScript compiler in-memory and returning any diagnostics.
 
 Tests are colocated (e.g. `generator.test.ts` next to `generator.ts`).
