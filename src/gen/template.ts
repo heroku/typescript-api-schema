@@ -283,18 +283,24 @@ export class TypeRenderer {
     return ''
   }
 
+  private resolveLinks(definition: ResourceDefinition): Array<{ link: SchemaLink; titleKey: string }> {
+    if (!definition.links) return []
+    const titles = disambiguateLinkTitles(definition.links)
+    const resolved: Array<{ link: SchemaLink; titleKey: string }> = []
+    for (const link of definition.links) {
+      const titleKey = titles.get(link)
+      if (!titleKey) continue
+      resolved.push({ link, titleKey })
+    }
+    return resolved
+  }
+
   renderLinkTypes(
     resourceName: string,
     definition: ResourceDefinition,
   ): string[] {
-    if (!definition.links) return []
-
-    const titles = disambiguateLinkTitles(definition.links)
     const results: string[] = []
-    for (const link of definition.links) {
-      const titleKey = titles.get(link)
-      if (!titleKey) continue
-
+    for (const { link, titleKey } of this.resolveLinks(definition)) {
       // Generate Opts interface for links with a custom request schema
       if (hasCustomProperties(link.schema)) {
         const optsName = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts'
@@ -400,13 +406,8 @@ export class TypeRenderer {
     resourceName: string,
     definition: ResourceDefinition,
   ): string[] {
-    if (!definition.links) return []
-
-    const titles = disambiguateLinkTitles(definition.links)
     const lines: string[] = []
-    for (const link of definition.links) {
-      const titleKey = titles.get(link)
-      if (!titleKey) continue
+    for (const { link, titleKey } of this.resolveLinks(definition)) {
       if (link.rel === 'self') continue
 
       const methodName = toCamelCase(titleKey)
