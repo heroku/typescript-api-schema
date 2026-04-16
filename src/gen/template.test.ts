@@ -3,6 +3,7 @@ import {
   toPascalCase,
   formatPropertyKey,
   resolveRef,
+  renderJSDoc,
   schemaTypeToTS,
   renderProperties,
   renderResourceInterface,
@@ -46,6 +47,22 @@ describe('formatPropertyKey', () => {
 
   it('escapes single quotes in keys', () => {
     expect(formatPropertyKey("it's")).toBe("'it\\'s'")
+  })
+})
+
+describe('renderJSDoc', () => {
+  it('returns empty string for undefined description', () => {
+    expect(renderJSDoc(undefined, '')).toBe('')
+  })
+
+  it('renders single-line description', () => {
+    expect(renderJSDoc('unique identifier', '  ')).toBe('  /** unique identifier */\n')
+  })
+
+  it('renders multi-line description', () => {
+    expect(renderJSDoc('line one\nline two', '')).toBe(
+      '/**\n * line one\n * line two\n */\n',
+    )
   })
 })
 
@@ -273,6 +290,35 @@ describe('renderProperties', () => {
     expect(result).toBe('  id?: string\n  name?: string')
   })
 
+  it('emits JSDoc from property descriptions', () => {
+    const properties: Record<string, SchemaNode> = {
+      id: { type: ['string'], description: 'unique identifier' },
+      name: { type: ['string'] },
+    }
+    const result = renderProperties(properties, schema, 1, ['id', 'name'])
+    expect(result).toBe(
+      '  /** unique identifier */\n  id: string\n  name: string',
+    )
+  })
+
+  it('emits JSDoc from resolved $ref descriptions', () => {
+    const schemaWithDescs: HerokuSchema = {
+      definitions: {
+        account: {
+          definitions: {
+            id: { type: ['string'], description: 'unique identifier' },
+          },
+          properties: {},
+        },
+      },
+    }
+    const properties: Record<string, SchemaNode> = {
+      id: { $ref: '#/definitions/account/definitions/id' },
+    }
+    const result = renderProperties(properties, schemaWithDescs, 1, ['id'])
+    expect(result).toBe('  /** unique identifier */\n  id: string')
+  })
+
   it('quotes non-identifier property keys', () => {
     const properties: Record<string, SchemaNode> = {
       'nav-data': { type: ['string'] },
@@ -288,6 +334,7 @@ describe('renderResourceInterface', () => {
   const schema: HerokuSchema = {
     definitions: {
       account: {
+        description: 'An account represents an individual signed up to use the Heroku platform.',
         definitions: {
           id: { type: ['string'] },
           name: { type: ['string', 'null'] },
@@ -303,9 +350,10 @@ describe('renderResourceInterface', () => {
     },
   }
 
-  it('generates a complete interface with required and optional properties', () => {
+  it('generates a complete interface with JSDoc and required/optional properties', () => {
     const result = renderResourceInterface('account', schema.definitions['account'], schema)
     expect(result).toBe(
+      '/** An account represents an individual signed up to use the Heroku platform. */\n' +
       'export interface Account {\n' +
       '  id: string\n' +
       '  name?: string | null\n' +

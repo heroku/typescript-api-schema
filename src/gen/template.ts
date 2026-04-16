@@ -62,6 +62,15 @@ export function formatPropertyKey(key: string): string {
   return VALID_IDENTIFIER.test(key) ? key : `'${key.replace(/'/g, "\\'")}'`
 }
 
+export function renderJSDoc(description: string | undefined, indent: string): string {
+  if (!description) return ''
+  if (!description.includes('\n')) {
+    return `${indent}/** ${description} */\n`
+  }
+  const lines = description.split('\n')
+  return `${indent}/**\n${lines.map(l => `${indent} * ${l}`).join('\n')}\n${indent} */\n`
+}
+
 // --- Core template functions ---
 
 export function resolveRef(schema: HerokuSchema, ref: string): SchemaNode {
@@ -172,7 +181,9 @@ export function renderProperties(
       const tsType = schemaTypeToTS(value, schema, indent)
       const optional = !required.includes(key)
       const formattedKey = formatPropertyKey(key)
-      return `${pad}${formattedKey}${optional ? '?' : ''}: ${tsType}`
+      const resolved = value.$ref ? resolveRef(schema, value.$ref) : value
+      const doc = renderJSDoc(resolved.description, pad)
+      return `${doc}${pad}${formattedKey}${optional ? '?' : ''}: ${tsType}`
     })
     .join('\n')
 }
@@ -186,7 +197,8 @@ export function renderResourceInterface(
     return ''
   }
   const interfaceName = toPascalCase(name)
+  const doc = renderJSDoc(definition.description, '')
   const body = renderProperties(definition.properties, schema, 1, definition.required ?? [])
-  return `export interface ${interfaceName} {\n${body}\n}`
+  return `${doc}export interface ${interfaceName} {\n${body}\n}`
 }
 
