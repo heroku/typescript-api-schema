@@ -5,6 +5,16 @@
 
 * updated schema ([a0396d9](https://github.com/heroku/typescript-api-schema/commit/a0396d9))
 
+## [2.0.2](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.1...schema-v2.0.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#71](https://github.com/heroku/typescript-api-schema/issues/71)) ([bae0c15](https://github.com/heroku/typescript-api-schema/commit/bae0c1555e0f9c650ceb8996c52c4395d4bac6a8))
+* **deps:** bump flatted from 3.3.4 to 3.4.2 ([#74](https://github.com/heroku/typescript-api-schema/issues/74)) ([caba198](https://github.com/heroku/typescript-api-schema/commit/caba1986abf3b6524c12b38f1e0d89db73620b9b))
+* **deps:** bump lodash from 4.17.23 to 4.18.1 ([#76](https://github.com/heroku/typescript-api-schema/issues/76)) ([262dfd0](https://github.com/heroku/typescript-api-schema/commit/262dfd0cf23a3c8f7eb40ea2cbc7b3d0f42c65fa))
+* **deps:** bump picomatch from 4.0.3 to 4.0.4 ([#75](https://github.com/heroku/typescript-api-schema/issues/75)) ([a84b856](https://github.com/heroku/typescript-api-schema/commit/a84b856f85cdccf892c5e80d5fac168a2a9989f4))
+
 ## [2.0.1](https://github.com/heroku/typescript-api-schema/compare/schema-v2.0.0...schema-v2.0.1) (2026-01-29)
 
 
