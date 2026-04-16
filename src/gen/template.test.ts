@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   toPascalCase,
+  toCamelCase,
   formatPropertyKey,
   resolveRef,
   renderJSDoc,
@@ -8,6 +9,9 @@ import {
   renderProperties,
   renderResourceInterface,
   renderLinkTypes,
+  parseHRefParams,
+  renderMethodSignatures,
+  renderClientInterface,
   type HerokuSchema,
   type SchemaNode,
 } from './template.js'
@@ -527,6 +531,203 @@ describe('renderLinkTypes', () => {
     const results = renderLinkTypes('app', schema.definitions['app'], schema)
     const createOpts = results.find(r => r.includes('AppCreateOpts'))
     expect(createOpts).toContain('/** Create a new app. */')
+  })
+})
+
+describe('toCamelCase', () => {
+  it('converts hyphenated names', () => {
+    expect(toCamelCase('app-identity')).toBe('appIdentity')
+  })
+
+  it('converts single words', () => {
+    expect(toCamelCase('account')).toBe('account')
+  })
+})
+
+describe('parseHRefParams', () => {
+  const schema: HerokuSchema = {
+    definitions: {
+      app: {
+        definitions: {
+          id: { type: ['string'], description: 'unique identifier' },
+          name: { type: ['string'] },
+        },
+        properties: {},
+      },
+    },
+  }
+
+  it('parses URL-encoded href params', () => {
+    const params = parseHRefParams(
+      '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+      schema,
+    )
+    expect(params).toEqual([{ name: 'appId', type: 'string' }])
+  })
+
+  it('parses non-encoded href params', () => {
+    const params = parseHRefParams(
+      '/apps/{(#/definitions/app/definitions/id)}',
+      schema,
+    )
+    expect(params).toEqual([{ name: 'appId', type: 'string' }])
+  })
+
+  it('parses multiple params', () => {
+    const params = parseHRefParams(
+      '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}/config/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fname)}',
+      schema,
+    )
+    expect(params).toHaveLength(2)
+    expect(params[0].name).toBe('appId')
+    expect(params[1].name).toBe('appName')
+  })
+
+  it('returns empty array for href with no params', () => {
+    expect(parseHRefParams('/apps', schema)).toEqual([])
+  })
+})
+
+describe('renderMethodSignatures', () => {
+  const schema: HerokuSchema = {
+    definitions: {
+      app: {
+        definitions: {
+          id: { type: ['string'] },
+          name: { type: ['string'] },
+        },
+        required: ['id', 'name'],
+        properties: {
+          id: { $ref: '#/definitions/app/definitions/id' },
+          name: { $ref: '#/definitions/app/definitions/name' },
+        },
+        links: [
+          {
+            title: 'Create',
+            description: 'Create a new app.',
+            method: 'POST',
+            href: '/apps',
+            schema: {
+              properties: { name: { type: ['string'] } },
+              required: ['name'],
+            },
+          },
+          {
+            title: 'Info',
+            description: 'Info for existing app.',
+            method: 'GET',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+          },
+          {
+            title: 'List',
+            method: 'GET',
+            href: '/apps',
+            rel: 'instances',
+          },
+          {
+            title: 'Delete',
+            method: 'DELETE',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+            targetSchema: { type: ['null'] },
+          },
+        ],
+      },
+    },
+  }
+
+  it('generates method with path params and request body', () => {
+    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const create = methods.find(m => m.includes('create('))
+    expect(create).toContain('requestBody: AppCreateOpts')
+    expect(create).toContain('Promise<App>')
+  })
+
+  it('generates method with path params for Info', () => {
+    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const info = methods.find(m => m.includes('info('))
+    expect(info).toContain('appId: string')
+    expect(info).toContain('Promise<App>')
+  })
+
+  it('generates list method returning array', () => {
+    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const list = methods.find(m => m.includes('list('))
+    expect(list).toContain('Promise<App[]>')
+  })
+
+  it('generates void return for null targetSchema', () => {
+    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const del = methods.find(m => m.includes('delete('))
+    expect(del).toContain('Promise<void>')
+  })
+
+  it('includes JSDoc from link description', () => {
+    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const create = methods.find(m => m.includes('create('))
+    expect(create).toContain('/** Create a new app. */')
+  })
+
+  it('skips links with rel=self', () => {
+    const defWithSelf = {
+      ...schema.definitions['app'],
+      links: [{ title: 'Self', rel: 'self', href: '/schema', method: 'GET' }],
+    }
+    expect(renderMethodSignatures('app', defWithSelf, schema)).toEqual([])
+  })
+})
+
+describe('renderClientInterface', () => {
+  const schema: HerokuSchema = {
+    definitions: {
+      app: {
+        description: 'An app represents a program.',
+        definitions: {
+          id: { type: ['string'] },
+        },
+        required: ['id'],
+        properties: {
+          id: { $ref: '#/definitions/app/definitions/id' },
+        },
+        links: [
+          {
+            title: 'List',
+            method: 'GET',
+            href: '/apps',
+            rel: 'instances',
+          },
+        ],
+      },
+      'config-var': {
+        type: ['object'],
+        // no links, no properties
+      },
+    },
+  }
+
+  it('generates a client interface with resource namespaces', () => {
+    const result = renderClientInterface(schema)
+    expect(result).toContain('export interface HerokuClient')
+    expect(result).toContain('app: {')
+    expect(result).toContain('list(): Promise<App[]>')
+  })
+
+  it('skips resources with no links', () => {
+    const result = renderClientInterface(schema)
+    expect(result).not.toContain('configVar')
+  })
+
+  it('includes resource JSDoc', () => {
+    const result = renderClientInterface(schema)
+    expect(result).toContain('/** An app represents a program. */')
+  })
+
+  it('returns empty string when no resources have links', () => {
+    const noLinks: HerokuSchema = {
+      definitions: {
+        account: { properties: { id: { type: ['string'] } } },
+      },
+    }
+    expect(renderClientInterface(noLinks)).toBe('')
   })
 })
 

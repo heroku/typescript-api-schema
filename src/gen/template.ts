@@ -56,6 +56,11 @@ export function toPascalCase(name: string): string {
     .join('')
 }
 
+export function toCamelCase(name: string): string {
+  const pascal = toPascalCase(name)
+  return pascal.charAt(0).toLowerCase() + pascal.slice(1)
+}
+
 const VALID_IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 export function formatPropertyKey(key: string): string {
@@ -237,5 +242,125 @@ export function renderLinkTypes(
     }
   }
   return results
+}
+
+// --- Href parsing and method signature generation ---
+
+const HREF_PARAM = /\{[^}]*\}/g
+
+export interface HRefParam {
+  name: string
+  type: string
+}
+
+export function parseHRefParams(href: string, schema: HerokuSchema): HRefParam[] {
+  const params: HRefParam[] = []
+  for (const match of href.matchAll(HREF_PARAM)) {
+    const raw = match[0]
+    // Format: {(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)} or {(#/definitions/...)}
+    const inner = raw.slice(1, -1) // strip { }
+    if (!inner.startsWith('(') || !inner.endsWith(')')) continue
+    const encoded = inner.slice(1, -1) // strip ( )
+    const decoded = decodeURIComponent(encoded)
+    const parts = decoded.replace(/^#\//, '').split('/')
+
+    // Derive parameter name from schema path: resource-field → camelCase
+    const name = toCamelCase(parts[parts.length - 3] + '-' + parts[parts.length - 1])
+
+    // Resolve the referenced schema to get the type
+    let type = 'string'
+    try {
+      const resolved = resolveRef(schema, '#/' + parts.join('/'))
+      type = schemaTypeToTS(resolved, schema)
+    } catch {
+      // fallback to string
+    }
+
+    params.push({ name, type })
+  }
+  return params
+}
+
+function linkReturnType(
+  resourceName: string,
+  definition: ResourceDefinition,
+  link: SchemaLink,
+  schema: HerokuSchema,
+): string {
+  if (!link.targetSchema) {
+    // Default: returns the resource type itself
+    if (link.rel === 'instances') {
+      return toPascalCase(resourceName) + '[]'
+    }
+    return toPascalCase(resourceName)
+  }
+
+  const ts = link.targetSchema
+  if (ts.type?.includes('null') && ts.type.length === 1) {
+    return 'void'
+  }
+  if (ts.type?.includes('array') && ts.items) {
+    return schemaTypeToTS(ts, schema)
+  }
+  if (hasCustomProperties(ts) && ts !== definition) {
+    return toPascalCase(resourceName) + toPascalCase(link.title!) + 'Result'
+  }
+  return toPascalCase(resourceName)
+}
+
+export function renderMethodSignatures(
+  resourceName: string,
+  definition: ResourceDefinition,
+  schema: HerokuSchema,
+): string[] {
+  if (!definition.links) return []
+
+  const lines: string[] = []
+  for (const link of definition.links) {
+    if (!link.title) continue
+    if (link.rel === 'self') continue
+
+    const methodName = toCamelCase(link.title)
+    const params: string[] = []
+
+    // Path parameters from href
+    if (link.href) {
+      for (const p of parseHRefParams(link.href, schema)) {
+        params.push(`${p.name}: ${p.type}`)
+      }
+    }
+
+    // Request body parameter
+    if (hasCustomProperties(link.schema)) {
+      const optsType = toPascalCase(resourceName) + toPascalCase(link.title) + 'Opts'
+      params.push(`requestBody: ${optsType}`)
+    }
+
+    const returnType = linkReturnType(resourceName, definition, link, schema)
+    const doc = renderJSDoc(link.description, '  ')
+    lines.push(`${doc}  ${methodName}(${params.join(', ')}): Promise<${returnType}>`)
+  }
+  return lines
+}
+
+export function renderClientInterface(
+  schema: HerokuSchema,
+): string {
+  const memberLines: string[] = []
+  for (const [name, definition] of Object.entries(schema.definitions)) {
+    if (!definition.links || definition.links.length === 0) continue
+
+    const methods = renderMethodSignatures(name, definition, schema)
+    if (methods.length === 0) continue
+
+    const resourcePascal = toPascalCase(name)
+    const resourceCamel = toCamelCase(name)
+    const doc = renderJSDoc(definition.description, '  ')
+    const body = methods.join('\n')
+    memberLines.push(`${doc}  ${resourceCamel}: {\n${body}\n  }`)
+  }
+
+  if (memberLines.length === 0) return ''
+  return `export interface HerokuClient {\n${memberLines.join('\n')}\n}`
 }
 

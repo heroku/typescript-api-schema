@@ -76,4 +76,31 @@ describe('generateTypes', () => {
     expect(result).toContain('export interface AppCreateOpts')
     expect(result).toContain('export interface AppCreateResult')
   })
+
+  it('generates HerokuClient interface from links', () => {
+    const schemaWithLinks: HerokuSchema = {
+      definitions: {
+        app: {
+          definitions: {
+            id: { type: ['string'] },
+          },
+          required: ['id'],
+          properties: {
+            id: { type: ['string'] },
+          },
+          links: [
+            {
+              title: 'List',
+              method: 'GET',
+              href: '/apps',
+              rel: 'instances',
+            },
+          ],
+        },
+      },
+    }
+    const result = generateTypes(schemaWithLinks)
+    expect(result).toContain('export interface HerokuClient')
+    expect(result).toContain('list(): Promise<App[]>')
+  })
 })

@@ -1,4 +1,4 @@
-import { type HerokuSchema, renderResourceInterface, renderLinkTypes } from './template.js'
+import { type HerokuSchema, renderResourceInterface, renderLinkTypes, renderClientInterface } from './template.js'
 
 export function generateTypes(schema: HerokuSchema): string {
   const interfaces: string[] = []
@@ -9,5 +9,11 @@ export function generateTypes(schema: HerokuSchema): string {
     }
     interfaces.push(...renderLinkTypes(name, definition, schema))
   }
+
+  const client = renderClientInterface(schema)
+  if (client) {
+    interfaces.push(client)
+  }
+
   return interfaces.join('\n\n') + '\n'
 }
