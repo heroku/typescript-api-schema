@@ -301,20 +301,35 @@ export interface HRefParam {
 }
 
 export function parseHRefParams(href: string, schema: HerokuSchema): HRefParam[] {
-  const params: HRefParam[] = []
-  for (const match of href.matchAll(HREF_PARAM)) {
-    const raw = match[0]
-    // Format: {(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)} or {(#/definitions/...)}
-    const inner = raw.slice(1, -1) // strip { }
+  // Split href into alternating text/placeholder segments to capture context
+  const segments = href.split(HREF_PARAM)
+  const placeholders = [...href.matchAll(HREF_PARAM)]
+
+  interface RawParam {
+    refName: string      // name derived from $ref path (default)
+    contextName: string  // name derived from preceding URL segment (fallback)
+    type: string
+  }
+
+  const raw: RawParam[] = []
+  for (let i = 0; i < placeholders.length; i++) {
+    const match = placeholders[i][0]
+    const inner = match.slice(1, -1)
     if (!inner.startsWith('(') || !inner.endsWith(')')) continue
-    const encoded = inner.slice(1, -1) // strip ( )
+    const encoded = inner.slice(1, -1)
     const decoded = decodeURIComponent(encoded)
     const parts = decoded.replace(/^#\//, '').split('/')
+    const fieldName = parts[parts.length - 1]
 
-    // Derive parameter name from schema path: resource-field → camelCase
-    const name = toCamelCase(parts[parts.length - 3] + '-' + parts[parts.length - 1])
+    // Default name from $ref path: resource-field → camelCase
+    const refName = toCamelCase(parts[parts.length - 3] + '-' + fieldName)
 
-    // Resolve the referenced schema to get the type
+    // Contextual name from preceding URL path segment
+    const precedingText = segments[i] || ''
+    const urlSegments = precedingText.split('/').filter(Boolean)
+    const precedingSegment = urlSegments[urlSegments.length - 1] || parts[parts.length - 3]
+    const contextName = toCamelCase(precedingSegment + '-' + fieldName)
+
     let type = 'string'
     try {
       const resolved = resolveRef(schema, '#/' + parts.join('/'))
@@ -323,9 +338,19 @@ export function parseHRefParams(href: string, schema: HerokuSchema): HRefParam[]
       // fallback to string
     }
 
-    params.push({ name, type })
+    raw.push({ refName, contextName, type })
   }
-  return params
+
+  // Check for collisions in refNames
+  const refNameCounts = new Map<string, number>()
+  for (const p of raw) {
+    refNameCounts.set(p.refName, (refNameCounts.get(p.refName) ?? 0) + 1)
+  }
+
+  return raw.map(p => ({
+    name: (refNameCounts.get(p.refName) ?? 0) > 1 ? p.contextName : p.refName,
+    type: p.type,
+  }))
 }
 
 function linkReturnType(

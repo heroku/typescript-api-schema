@@ -694,6 +694,38 @@ describe('parseHRefParams', () => {
   it('returns empty array for href with no params', () => {
     expect(parseHRefParams('/apps', schema)).toEqual([])
   })
+
+  it('uses preceding URL segment to disambiguate colliding param names', () => {
+    const schemaWithIdp: HerokuSchema = {
+      definitions: {
+        'identity-provider': {
+          definitions: {
+            identity: { type: ['string'] },
+          },
+          properties: {},
+        },
+      },
+    }
+    const params = parseHRefParams(
+      '/identity-providers/{(%23%2Fdefinitions%2Fidentity-provider%2Fdefinitions%2Fidentity)}/certificates/{(%23%2Fdefinitions%2Fidentity-provider%2Fdefinitions%2Fidentity)}',
+      schemaWithIdp,
+    )
+    expect(params).toHaveLength(2)
+    expect(params[0].name).toBe('identityProvidersIdentity')
+    expect(params[1].name).toBe('certificatesIdentity')
+    expect(params[0].type).toBe('string')
+    expect(params[1].type).toBe('string')
+  })
+
+  it('keeps default names when there are no collisions', () => {
+    const params = parseHRefParams(
+      '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}/builds/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fname)}',
+      schema,
+    )
+    expect(params).toHaveLength(2)
+    expect(params[0].name).toBe('appId')
+    expect(params[1].name).toBe('appName')
+  })
 })
 
 describe('renderMethodSignatures', () => {
