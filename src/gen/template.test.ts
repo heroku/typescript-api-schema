@@ -3,16 +3,9 @@ import {
   toPascalCase,
   toCamelCase,
   formatPropertyKey,
-  resolveRef,
   renderJSDoc,
-  schemaTypeToTS,
-  renderProperties,
-  renderResourceInterface,
-  renderLinkTypes,
   disambiguateLinkTitles,
-  parseHRefParams,
-  renderMethodSignatures,
-  renderClientInterface,
+  TypeRenderer,
   type HerokuSchema,
   type SchemaNode,
 } from './template.js'
@@ -84,19 +77,20 @@ describe('resolveRef', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('resolves a sub-definition ref', () => {
-    const result = resolveRef(schema, '#/definitions/account/definitions/id')
+    const result = renderer.resolveRef('#/definitions/account/definitions/id')
     expect(result).toEqual({ type: ['string'], description: 'unique identifier' })
   })
 
   it('resolves a top-level definition ref', () => {
-    const result = resolveRef(schema, '#/definitions/account')
+    const result = renderer.resolveRef('#/definitions/account')
     expect(result).toHaveProperty('definitions')
   })
 
   it('throws on invalid ref path', () => {
-    expect(() => resolveRef(schema, '#/definitions/nonexistent')).toThrow()
+    expect(() => renderer.resolveRef('#/definitions/nonexistent')).toThrow()
   })
 })
 
@@ -125,48 +119,49 @@ describe('schemaTypeToTS', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('converts string type', () => {
-    expect(schemaTypeToTS({ type: ['string'] }, schema)).toBe('string')
+    expect(renderer.schemaTypeToTS({ type: ['string'] })).toBe('string')
   })
 
   it('converts nullable string', () => {
-    expect(schemaTypeToTS({ type: ['string', 'null'] }, schema)).toBe('string | null')
+    expect(renderer.schemaTypeToTS({ type: ['string', 'null'] })).toBe('string | null')
   })
 
   it('converts boolean type', () => {
-    expect(schemaTypeToTS({ type: ['boolean'] }, schema)).toBe('boolean')
+    expect(renderer.schemaTypeToTS({ type: ['boolean'] })).toBe('boolean')
   })
 
   it('converts integer to number', () => {
-    expect(schemaTypeToTS({ type: ['integer'] }, schema)).toBe('number')
+    expect(renderer.schemaTypeToTS({ type: ['integer'] })).toBe('number')
   })
 
   it('converts number type', () => {
-    expect(schemaTypeToTS({ type: ['number'] }, schema)).toBe('number')
+    expect(renderer.schemaTypeToTS({ type: ['number'] })).toBe('number')
   })
 
   it('converts nullable integer', () => {
-    expect(schemaTypeToTS({ type: ['integer', 'null'] }, schema)).toBe('number | null')
+    expect(renderer.schemaTypeToTS({ type: ['integer', 'null'] })).toBe('number | null')
   })
 
   it('converts nullable boolean', () => {
-    expect(schemaTypeToTS({ type: ['boolean', 'null'] }, schema)).toBe('boolean | null')
+    expect(renderer.schemaTypeToTS({ type: ['boolean', 'null'] })).toBe('boolean | null')
   })
 
   it('converts enum to string literal union', () => {
     const node: SchemaNode = { type: ['string'], enum: ['active', 'suspended'] }
-    expect(schemaTypeToTS(node, schema)).toBe("'active' | 'suspended'")
+    expect(renderer.schemaTypeToTS(node)).toBe("'active' | 'suspended'")
   })
 
   it('resolves $ref to sub-definition', () => {
     const node: SchemaNode = { $ref: '#/definitions/account/definitions/id' }
-    expect(schemaTypeToTS(node, schema)).toBe('string')
+    expect(renderer.schemaTypeToTS(node)).toBe('string')
   })
 
   it('resolves $ref to top-level resource as interface name', () => {
     const node: SchemaNode = { $ref: '#/definitions/app' }
-    expect(schemaTypeToTS(node, schema)).toBe('App')
+    expect(renderer.schemaTypeToTS(node)).toBe('App')
   })
 
   it('converts inline nested object with required/optional', () => {
@@ -178,7 +173,7 @@ describe('schemaTypeToTS', () => {
         name: { type: ['string'] },
       },
     }
-    const result = schemaTypeToTS(node, schema)
+    const result = renderer.schemaTypeToTS(node)
     expect(result).toContain('id: string')
     expect(result).toContain('name?: string')
     expect(result).toMatch(/^\{/)
@@ -192,7 +187,7 @@ describe('schemaTypeToTS', () => {
         id: { type: ['string'] },
       },
     }
-    const result = schemaTypeToTS(node, schema)
+    const result = renderer.schemaTypeToTS(node)
     expect(result).toContain('id: string')
     expect(result).toContain('| null')
   })
@@ -204,12 +199,12 @@ describe('schemaTypeToTS', () => {
         '^\\w+$': { type: ['string', 'null'] },
       },
     }
-    expect(schemaTypeToTS(node, schema)).toBe('Record<string, string | null>')
+    expect(renderer.schemaTypeToTS(node)).toBe('Record<string, string | null>')
   })
 
   it('converts plain object without properties as Record<string, unknown>', () => {
     const node: SchemaNode = { type: ['object'] }
-    expect(schemaTypeToTS(node, schema)).toBe('Record<string, unknown>')
+    expect(renderer.schemaTypeToTS(node)).toBe('Record<string, unknown>')
   })
 
   it('converts array with items', () => {
@@ -217,7 +212,7 @@ describe('schemaTypeToTS', () => {
       type: ['array'],
       items: { type: ['string'] },
     }
-    expect(schemaTypeToTS(node, schema)).toBe('Array<string>')
+    expect(renderer.schemaTypeToTS(node)).toBe('Array<string>')
   })
 
   it('converts array with $ref items', () => {
@@ -225,7 +220,7 @@ describe('schemaTypeToTS', () => {
       type: ['array'],
       items: { $ref: '#/definitions/app' },
     }
-    expect(schemaTypeToTS(node, schema)).toBe('Array<App>')
+    expect(renderer.schemaTypeToTS(node)).toBe('Array<App>')
   })
 
   it('converts nullable array', () => {
@@ -233,12 +228,12 @@ describe('schemaTypeToTS', () => {
       type: ['array', 'null'],
       items: { type: ['string'] },
     }
-    expect(schemaTypeToTS(node, schema)).toBe('Array<string> | null')
+    expect(renderer.schemaTypeToTS(node)).toBe('Array<string> | null')
   })
 
   it('converts array without items as unknown[]', () => {
     const node: SchemaNode = { type: ['array'] }
-    expect(schemaTypeToTS(node, schema)).toBe('unknown[]')
+    expect(renderer.schemaTypeToTS(node)).toBe('unknown[]')
   })
 
   it('converts anyOf to union', () => {
@@ -248,7 +243,7 @@ describe('schemaTypeToTS', () => {
         { $ref: '#/definitions/account/definitions/name' },
       ],
     }
-    expect(schemaTypeToTS(node, schema)).toBe('string | string | null')
+    expect(renderer.schemaTypeToTS(node)).toBe('string | string | null')
   })
 
   it('deduplicates anyOf members that resolve to the same type', () => {
@@ -258,7 +253,7 @@ describe('schemaTypeToTS', () => {
         { $ref: '#/definitions/account/definitions/id' },
       ],
     }
-    expect(schemaTypeToTS(node, schema)).toBe('string')
+    expect(renderer.schemaTypeToTS(node)).toBe('string')
   })
 
   it('deduplicates oneOf members that resolve to the same type', () => {
@@ -269,7 +264,7 @@ describe('schemaTypeToTS', () => {
         { type: ['integer'] },
       ],
     }
-    expect(schemaTypeToTS(node, schema)).toBe('string | number')
+    expect(renderer.schemaTypeToTS(node)).toBe('string | number')
   })
 
   it('resolves $ref chains through anyOf', () => {
@@ -289,7 +284,7 @@ describe('schemaTypeToTS', () => {
       },
     }
     const node: SchemaNode = { $ref: '#/definitions/account/definitions/identity' }
-    expect(schemaTypeToTS(node, schemaWithChain)).toBe('string')
+    expect(new TypeRenderer(schemaWithChain).schemaTypeToTS(node)).toBe('string')
   })
 
   it('converts allOf to intersection', () => {
@@ -299,14 +294,14 @@ describe('schemaTypeToTS', () => {
         { type: ['object'], properties: { extra: { type: ['string'] } } },
       ],
     }
-    const result = schemaTypeToTS(node, schema)
+    const result = renderer.schemaTypeToTS(node)
     expect(result).toContain('App')
     expect(result).toContain('&')
     expect(result).toContain('extra')
   })
 
   it('returns unknown for empty node', () => {
-    expect(schemaTypeToTS({}, schema)).toBe('unknown')
+    expect(renderer.schemaTypeToTS({})).toBe('unknown')
   })
 })
 
@@ -322,13 +317,14 @@ describe('renderProperties', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('renders properties with correct indentation', () => {
     const properties: Record<string, SchemaNode> = {
       id: { $ref: '#/definitions/account/definitions/id' },
       email: { $ref: '#/definitions/account/definitions/email' },
     }
-    const result = renderProperties(properties, schema, 1, ['id', 'email'])
+    const result = renderer.renderProperties(properties, 1, ['id', 'email'])
     expect(result).toBe('  id: string\n  email: string')
   })
 
@@ -337,7 +333,7 @@ describe('renderProperties', () => {
       id: { $ref: '#/definitions/account/definitions/id' },
       email: { $ref: '#/definitions/account/definitions/email' },
     }
-    const result = renderProperties(properties, schema, 1, ['id'])
+    const result = renderer.renderProperties(properties, 1, ['id'])
     expect(result).toBe('  id: string\n  email?: string')
   })
 
@@ -346,7 +342,7 @@ describe('renderProperties', () => {
       id: { type: ['string'] },
       name: { type: ['string'] },
     }
-    const result = renderProperties(properties, schema)
+    const result = renderer.renderProperties(properties)
     expect(result).toBe('  id?: string\n  name?: string')
   })
 
@@ -355,7 +351,7 @@ describe('renderProperties', () => {
       id: { type: ['string'], description: 'unique identifier' },
       name: { type: ['string'] },
     }
-    const result = renderProperties(properties, schema, 1, ['id', 'name'])
+    const result = renderer.renderProperties(properties, 1, ['id', 'name'])
     expect(result).toBe(
       '  /** unique identifier */\n  id: string\n  name: string',
     )
@@ -372,10 +368,11 @@ describe('renderProperties', () => {
         },
       },
     }
+    const r = new TypeRenderer(schemaWithDescs)
     const properties: Record<string, SchemaNode> = {
       id: { $ref: '#/definitions/account/definitions/id' },
     }
-    const result = renderProperties(properties, schemaWithDescs, 1, ['id'])
+    const result = r.renderProperties(properties, 1, ['id'])
     expect(result).toBe('  /** unique identifier */\n  id: string')
   })
 
@@ -385,7 +382,7 @@ describe('renderProperties', () => {
       'ca_signed?': { type: ['boolean'] },
       normal_key: { type: ['number'] },
     }
-    const result = renderProperties(properties, schema, 1, ['nav-data', 'ca_signed?', 'normal_key'])
+    const result = renderer.renderProperties(properties, 1, ['nav-data', 'ca_signed?', 'normal_key'])
     expect(result).toBe("  'nav-data': string\n  'ca_signed?': boolean\n  normal_key: number")
   })
 })
@@ -409,9 +406,10 @@ describe('renderResourceInterface', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('generates a complete interface with JSDoc and required/optional properties', () => {
-    const result = renderResourceInterface('account', schema.definitions['account'], schema)
+    const result = renderer.renderResourceInterface('account', schema.definitions['account'])
     expect(result).toBe(
       '/** An account represents an individual signed up to use the Heroku platform. */\n' +
       'export interface Account {\n' +
@@ -423,37 +421,37 @@ describe('renderResourceInterface', () => {
   })
 
   it('emits type alias for object without properties', () => {
-    const result = renderResourceInterface('app-webhook', { type: ['object'] }, schema)
+    const result = renderer.renderResourceInterface('app-webhook', { type: ['object'] })
     expect(result).toBe('export type AppWebhook = Record<string, unknown>')
   })
 
   it('emits type alias with patternProperties as Record', () => {
-    const result = renderResourceInterface('config-var', {
+    const result = renderer.renderResourceInterface('config-var', {
       type: ['object'],
       patternProperties: { '^\\w+$': { type: ['string', 'null'] } },
-    }, schema)
+    })
     expect(result).toBe('export type ConfigVar = Record<string, string | null>')
   })
 
   it('emits JSDoc on type aliases', () => {
-    const result = renderResourceInterface('app-webhook', {
+    const result = renderer.renderResourceInterface('app-webhook', {
       type: ['object'],
       description: 'Represents a webhook.',
-    }, schema)
+    })
     expect(result).toBe('/** Represents a webhook. */\nexport type AppWebhook = Record<string, unknown>')
   })
 
   it('returns empty string for definitions without properties or type', () => {
-    const result = renderResourceInterface('unknown', {}, schema)
+    const result = renderer.renderResourceInterface('unknown', {})
     expect(result).toBe('')
   })
 
   it('converts hyphenated names to PascalCase', () => {
-    const result = renderResourceInterface('add-on-attachment', {
+    const result = renderer.renderResourceInterface('add-on-attachment', {
       properties: {
         id: { type: ['string'] },
       },
-    }, schema)
+    })
     expect(result).toContain('export interface AddOnAttachment')
   })
 })
@@ -485,9 +483,10 @@ describe('renderResourceInterface with inline nested objects', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('renders inline nested objects with proper indentation and optionality', () => {
-    const result = renderResourceInterface('account', schema.definitions['account'], schema)
+    const result = renderer.renderResourceInterface('account', schema.definitions['account'])
     expect(result).toBe(
       'export interface Account {\n' +
       '  id: string\n' +
@@ -601,9 +600,10 @@ describe('renderLinkTypes', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('generates Opts interface for links with custom request schema', () => {
-    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const results = renderer.renderLinkTypes('app', schema.definitions['app'])
     const createOpts = results.find(r => r.includes('AppCreateOpts'))
     expect(createOpts).toBeDefined()
     expect(createOpts).toContain('name: string')
@@ -611,7 +611,7 @@ describe('renderLinkTypes', () => {
   })
 
   it('generates Result interface for links with custom targetSchema', () => {
-    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const results = renderer.renderLinkTypes('app', schema.definitions['app'])
     const updateResult = results.find(r => r.includes('AppUpdateResult'))
     expect(updateResult).toBeDefined()
     expect(updateResult).toContain('id: string')
@@ -619,7 +619,7 @@ describe('renderLinkTypes', () => {
   })
 
   it('does not generate Result for links whose targetSchema has no properties', () => {
-    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const results = renderer.renderLinkTypes('app', schema.definitions['app'])
     expect(results.find(r => r.includes('AppListResult'))).toBeUndefined()
   })
 
@@ -628,15 +628,15 @@ describe('renderLinkTypes', () => {
       ...schema.definitions['app'],
       links: [{ method: 'GET', href: '/apps' }],
     }
-    expect(renderLinkTypes('app', def, schema)).toEqual([])
+    expect(renderer.renderLinkTypes('app', def)).toEqual([])
   })
 
   it('returns empty array for definitions without links', () => {
-    expect(renderLinkTypes('app', { properties: {} }, schema)).toEqual([])
+    expect(renderer.renderLinkTypes('app', { properties: {} })).toEqual([])
   })
 
   it('includes JSDoc from link description', () => {
-    const results = renderLinkTypes('app', schema.definitions['app'], schema)
+    const results = renderer.renderLinkTypes('app', schema.definitions['app'])
     const createOpts = results.find(r => r.includes('AppCreateOpts'))
     expect(createOpts).toContain('/** Create a new app. */')
   })
@@ -664,27 +664,25 @@ describe('parseHRefParams', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('parses URL-encoded href params', () => {
-    const params = parseHRefParams(
+    const params = renderer.parseHRefParams(
       '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
-      schema,
     )
     expect(params).toEqual([{ name: 'appId', type: 'string' }])
   })
 
   it('parses non-encoded href params', () => {
-    const params = parseHRefParams(
+    const params = renderer.parseHRefParams(
       '/apps/{(#/definitions/app/definitions/id)}',
-      schema,
     )
     expect(params).toEqual([{ name: 'appId', type: 'string' }])
   })
 
   it('parses multiple params', () => {
-    const params = parseHRefParams(
+    const params = renderer.parseHRefParams(
       '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}/config/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fname)}',
-      schema,
     )
     expect(params).toHaveLength(2)
     expect(params[0].name).toBe('appId')
@@ -692,7 +690,7 @@ describe('parseHRefParams', () => {
   })
 
   it('returns empty array for href with no params', () => {
-    expect(parseHRefParams('/apps', schema)).toEqual([])
+    expect(renderer.parseHRefParams('/apps')).toEqual([])
   })
 
   it('uses preceding URL segment to disambiguate colliding param names', () => {
@@ -706,9 +704,9 @@ describe('parseHRefParams', () => {
         },
       },
     }
-    const params = parseHRefParams(
+    const r = new TypeRenderer(schemaWithIdp)
+    const params = r.parseHRefParams(
       '/identity-providers/{(%23%2Fdefinitions%2Fidentity-provider%2Fdefinitions%2Fidentity)}/certificates/{(%23%2Fdefinitions%2Fidentity-provider%2Fdefinitions%2Fidentity)}',
-      schemaWithIdp,
     )
     expect(params).toHaveLength(2)
     expect(params[0].name).toBe('identityProvidersIdentity')
@@ -718,9 +716,8 @@ describe('parseHRefParams', () => {
   })
 
   it('keeps default names when there are no collisions', () => {
-    const params = parseHRefParams(
+    const params = renderer.parseHRefParams(
       '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}/builds/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fname)}',
-      schema,
     )
     expect(params).toHaveLength(2)
     expect(params[0].name).toBe('appId')
@@ -774,35 +771,36 @@ describe('renderMethodSignatures', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('generates method with path params and request body', () => {
-    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const methods = renderer.renderMethodSignatures('app', schema.definitions['app'])
     const create = methods.find(m => m.includes('create('))
     expect(create).toContain('requestBody: AppCreateOpts')
     expect(create).toContain('Promise<App>')
   })
 
   it('generates method with path params for Info', () => {
-    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const methods = renderer.renderMethodSignatures('app', schema.definitions['app'])
     const info = methods.find(m => m.includes('info('))
     expect(info).toContain('appId: string')
     expect(info).toContain('Promise<App>')
   })
 
   it('generates list method returning array', () => {
-    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const methods = renderer.renderMethodSignatures('app', schema.definitions['app'])
     const list = methods.find(m => m.includes('list('))
     expect(list).toContain('Promise<App[]>')
   })
 
   it('generates void return for null targetSchema', () => {
-    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const methods = renderer.renderMethodSignatures('app', schema.definitions['app'])
     const del = methods.find(m => m.includes('delete('))
     expect(del).toContain('Promise<void>')
   })
 
   it('includes JSDoc from link description', () => {
-    const methods = renderMethodSignatures('app', schema.definitions['app'], schema)
+    const methods = renderer.renderMethodSignatures('app', schema.definitions['app'])
     const create = methods.find(m => m.includes('create('))
     expect(create).toContain('/** Create a new app. */')
   })
@@ -812,7 +810,7 @@ describe('renderMethodSignatures', () => {
       ...schema.definitions['app'],
       links: [{ title: 'Self', rel: 'self', href: '/schema', method: 'GET' }],
     }
-    expect(renderMethodSignatures('app', defWithSelf, schema)).toEqual([])
+    expect(renderer.renderMethodSignatures('app', defWithSelf)).toEqual([])
   })
 })
 
@@ -843,21 +841,22 @@ describe('renderClientInterface', () => {
       },
     },
   }
+  const renderer = new TypeRenderer(schema)
 
   it('generates a client interface with resource namespaces', () => {
-    const result = renderClientInterface(schema)
+    const result = renderer.renderClientInterface()
     expect(result).toContain('export interface HerokuClient')
     expect(result).toContain('app: {')
     expect(result).toContain('list(): Promise<App[]>')
   })
 
   it('skips resources with no links', () => {
-    const result = renderClientInterface(schema)
+    const result = renderer.renderClientInterface()
     expect(result).not.toContain('configVar')
   })
 
   it('includes resource JSDoc', () => {
-    const result = renderClientInterface(schema)
+    const result = renderer.renderClientInterface()
     expect(result).toContain('/** An app represents a program. */')
   })
 
@@ -867,7 +866,6 @@ describe('renderClientInterface', () => {
         account: { properties: { id: { type: ['string'] } } },
       },
     }
-    expect(renderClientInterface(noLinks)).toBe('')
+    expect(new TypeRenderer(noLinks).renderClientInterface()).toBe('')
   })
 })
-
