@@ -9,6 +9,7 @@ import {
   renderProperties,
   renderResourceInterface,
   renderLinkTypes,
+  disambiguateLinkTitles,
   parseHRefParams,
   renderMethodSignatures,
   renderClientInterface,
@@ -475,6 +476,38 @@ describe('renderResourceInterface with inline nested objects', () => {
       '  } | null\n' +
       '}',
     )
+  })
+})
+
+describe('disambiguateLinkTitles', () => {
+  it('returns titles unchanged when unique', () => {
+    const links = [
+      { title: 'Create', method: 'POST' },
+      { title: 'List', method: 'GET' },
+    ]
+    const result = disambiguateLinkTitles(links)
+    expect(result.get(links[0])).toBe('Create')
+    expect(result.get(links[1])).toBe('List')
+  })
+
+  it('appends method when titles collide (case-insensitive)', () => {
+    const links = [
+      { title: 'List', method: 'GET' },
+      { title: 'list', method: 'POST' },
+    ]
+    const result = disambiguateLinkTitles(links)
+    expect(result.get(links[0])).toBe('List-get')
+    expect(result.get(links[1])).toBe('list-post')
+  })
+
+  it('skips links without title', () => {
+    const links = [
+      { method: 'GET' },
+      { title: 'Create', method: 'POST' },
+    ]
+    const result = disambiguateLinkTitles(links)
+    expect(result.size).toBe(1)
+    expect(result.get(links[1])).toBe('Create')
   })
 })
 

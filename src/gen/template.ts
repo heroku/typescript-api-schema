@@ -216,6 +216,29 @@ export function renderResourceInterface(
   return `${doc}export interface ${interfaceName} {\n${body}\n}`
 }
 
+export function disambiguateLinkTitles(links: SchemaLink[]): Map<SchemaLink, string> {
+  // Count titles (case-insensitive)
+  const counts = new Map<string, number>()
+  for (const link of links) {
+    if (!link.title) continue
+    const lower = link.title.toLowerCase()
+    counts.set(lower, (counts.get(lower) ?? 0) + 1)
+  }
+
+  // Assign disambiguated suffixes: append method when title collides
+  const result = new Map<SchemaLink, string>()
+  for (const link of links) {
+    if (!link.title) continue
+    const lower = link.title.toLowerCase()
+    if ((counts.get(lower) ?? 0) > 1 && link.method) {
+      result.set(link, link.title + '-' + link.method.toLowerCase())
+    } else {
+      result.set(link, link.title)
+    }
+  }
+  return result
+}
+
 function hasCustomProperties(node: SchemaNode | undefined): boolean {
   if (!node) return false
   return !!node.properties && Object.keys(node.properties).length > 0
@@ -228,13 +251,15 @@ export function renderLinkTypes(
 ): string[] {
   if (!definition.links) return []
 
+  const titles = disambiguateLinkTitles(definition.links)
   const results: string[] = []
   for (const link of definition.links) {
-    if (!link.title) continue
+    const titleKey = titles.get(link)
+    if (!titleKey) continue
 
     // Generate Opts interface for links with a custom request schema
     if (hasCustomProperties(link.schema)) {
-      const optsName = toPascalCase(resourceName) + toPascalCase(link.title) + 'Opts'
+      const optsName = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts'
       const optsSchema = link.schema!
       const doc = renderJSDoc(link.description, '')
       const body = renderProperties(optsSchema.properties!, schema, 1, optsSchema.required ?? [])
@@ -243,7 +268,7 @@ export function renderLinkTypes(
 
     // Generate Result interface for links with a custom response schema
     if (hasCustomProperties(link.targetSchema) && link.targetSchema !== definition) {
-      const resultName = toPascalCase(resourceName) + toPascalCase(link.title) + 'Result'
+      const resultName = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
       const resultSchema = link.targetSchema!
       const doc = renderJSDoc(link.description, '')
       const body = renderProperties(resultSchema.properties!, schema, 1, resultSchema.required ?? [])
@@ -294,6 +319,7 @@ function linkReturnType(
   resourceName: string,
   definition: ResourceDefinition,
   link: SchemaLink,
+  titleKey: string,
   schema: HerokuSchema,
 ): string {
   if (!link.targetSchema) {
@@ -312,7 +338,7 @@ function linkReturnType(
     return schemaTypeToTS(ts, schema)
   }
   if (hasCustomProperties(ts) && ts !== definition) {
-    return toPascalCase(resourceName) + toPascalCase(link.title!) + 'Result'
+    return toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
   }
   return toPascalCase(resourceName)
 }
@@ -324,12 +350,14 @@ export function renderMethodSignatures(
 ): string[] {
   if (!definition.links) return []
 
+  const titles = disambiguateLinkTitles(definition.links)
   const lines: string[] = []
   for (const link of definition.links) {
-    if (!link.title) continue
+    const titleKey = titles.get(link)
+    if (!titleKey) continue
     if (link.rel === 'self') continue
 
-    const methodName = toCamelCase(link.title)
+    const methodName = toCamelCase(titleKey)
     const params: string[] = []
 
     // Path parameters from href
@@ -341,11 +369,11 @@ export function renderMethodSignatures(
 
     // Request body parameter
     if (hasCustomProperties(link.schema)) {
-      const optsType = toPascalCase(resourceName) + toPascalCase(link.title) + 'Opts'
+      const optsType = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts'
       params.push(`requestBody: ${optsType}`)
     }
 
-    const returnType = linkReturnType(resourceName, definition, link, schema)
+    const returnType = linkReturnType(resourceName, definition, link, titleKey, schema)
     const doc = renderJSDoc(link.description, '  ')
     lines.push(`${doc}  ${methodName}(${params.join(', ')}): Promise<${returnType}>`)
   }

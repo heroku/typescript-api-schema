@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateTypes, DuplicateLinkTitleError } from './generator.js'
+import { generateTypes } from './generator.js'
 import type { HerokuSchema } from './template.js'
 
 describe('generateTypes', () => {
@@ -104,37 +104,34 @@ describe('generateTypes', () => {
     expect(result).toContain('list(): Promise<App[]>')
   })
 
-  it('throws on duplicate link titles within a resource', () => {
+  it('disambiguates duplicate link titles by appending HTTP method', () => {
     const dupeSchema: HerokuSchema = {
       definitions: {
         app: {
+          required: ['id'],
           properties: { id: { type: ['string'] } },
           links: [
-            { title: 'Create', method: 'POST', href: '/apps' },
-            { title: 'create', method: 'POST', href: '/apps' },
+            {
+              title: 'List',
+              method: 'GET',
+              href: '/apps',
+              rel: 'instances',
+              schema: { properties: { filter: { type: ['string'] } } },
+            },
+            {
+              title: 'List',
+              method: 'POST',
+              href: '/apps',
+              schema: { properties: { query: { type: ['string'] } } },
+            },
           ],
         },
       },
     }
-    expect(() => generateTypes(dupeSchema)).toThrow(DuplicateLinkTitleError)
-    expect(() => generateTypes(dupeSchema)).toThrow(/duplicate link title "create" in resource "app"/)
-  })
-
-  it('allows same title across different resources', () => {
-    const schema: HerokuSchema = {
-      definitions: {
-        app: {
-          required: ['id'],
-          properties: { id: { type: ['string'] } },
-          links: [{ title: 'List', method: 'GET', href: '/apps', rel: 'instances' }],
-        },
-        addon: {
-          required: ['id'],
-          properties: { id: { type: ['string'] } },
-          links: [{ title: 'List', method: 'GET', href: '/addons', rel: 'instances' }],
-        },
-      },
-    }
-    expect(() => generateTypes(schema)).not.toThrow()
+    const result = generateTypes(dupeSchema)
+    expect(result).toContain('AppListGetOpts')
+    expect(result).toContain('AppListPostOpts')
+    expect(result).toContain('listGet(')
+    expect(result).toContain('listPost(')
   })
 })
