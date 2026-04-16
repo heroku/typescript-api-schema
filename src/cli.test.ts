@@ -1,11 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
-import { main, type MainDeps } from './cli.js'
+import { main, formatVerifyErrors, type MainDeps } from './cli.js'
 import { DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 
 function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
   return {
     fetchSchema: overrides.fetchSchema ?? vi.fn().mockResolvedValue({ definitions: {} }),
     generateTypes: overrides.generateTypes ?? vi.fn().mockReturnValue('// types'),
+    verifyTypes: overrides.verifyTypes ?? vi.fn().mockReturnValue([]),
     writeFile: overrides.writeFile ?? vi.fn(),
     log: overrides.log ?? vi.fn(),
     exit: overrides.exit ?? vi.fn(),
@@ -76,5 +77,57 @@ describe('main', () => {
 
     expect(deps.log).toHaveBeenCalledWith('network error')
     expect(deps.exit).toHaveBeenCalledWith(1)
+  })
+
+  it('verifies generated types before writing', async () => {
+    const deps = makeDeps({ argv: argv() })
+    await main(deps)
+
+    expect(deps.verifyTypes).toHaveBeenCalledWith('// types')
+    expect(deps.writeFile).toHaveBeenCalled()
+  })
+
+  it('does not write file when verification fails', async () => {
+    const deps = makeDeps({
+      argv: argv(),
+      verifyTypes: vi.fn().mockReturnValue([
+        { message: "Cannot find name 'Foo'.", line: 10, column: 3 },
+      ]),
+    })
+    await main(deps)
+
+    expect(deps.writeFile).not.toHaveBeenCalled()
+    expect(deps.exit).toHaveBeenCalledWith(1)
+  })
+
+  it('logs formatted verification errors', async () => {
+    const deps = makeDeps({
+      argv: argv(),
+      verifyTypes: vi.fn().mockReturnValue([
+        { message: "Cannot find name 'Foo'.", line: 10, column: 3 },
+        { message: "';' expected.", line: 25, column: 8 },
+      ]),
+    })
+    await main(deps)
+
+    expect(deps.log).toHaveBeenCalledWith(expect.stringContaining('Verification failed with 2 error(s)'))
+    expect(deps.log).toHaveBeenCalledWith(expect.stringContaining("Line 10, Column 3: Cannot find name 'Foo'."))
+    expect(deps.log).toHaveBeenCalledWith(expect.stringContaining("Line 25, Column 8: ';' expected."))
+  })
+})
+
+describe('formatVerifyErrors', () => {
+  it('formats errors with line and column', () => {
+    const result = formatVerifyErrors([
+      { message: 'some error', line: 5, column: 12 },
+    ])
+    expect(result).toBe('Verification failed with 1 error(s):\n  Line 5, Column 12: some error')
+  })
+
+  it('formats errors without location', () => {
+    const result = formatVerifyErrors([
+      { message: 'global error' },
+    ])
+    expect(result).toBe('Verification failed with 1 error(s):\n  global error')
   })
 })
