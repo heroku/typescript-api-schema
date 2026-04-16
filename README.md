@@ -17,7 +17,7 @@ import type { Account, Addon } from '@heroku/types'
 
 ## Generating Type Definitions
 
-The package includes a CLI that fetches the live Heroku API hyperschema and generates `.d.ts` files.
+The package includes a CLI that fetches the live Heroku API hyperschema and generates `.d.ts` files. Before writing the file to the file system, the output is verified against the Typescript type checker to ensure we're only writing a valid types definition file.
 
 ### Build the CLI
 
