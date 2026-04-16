@@ -250,6 +250,60 @@ describe('schemaTypeToTS', () => {
     expect(schemaTypeToTS(node, schema)).toBe('string | string | null')
   })
 
+  it('deduplicates anyOf members that resolve to the same type', () => {
+    const node: SchemaNode = {
+      anyOf: [
+        { $ref: '#/definitions/account/definitions/id' },
+        { $ref: '#/definitions/account/definitions/id' },
+      ],
+    }
+    expect(schemaTypeToTS(node, schema)).toBe('string')
+  })
+
+  it('deduplicates oneOf members that resolve to the same type', () => {
+    const node: SchemaNode = {
+      oneOf: [
+        { type: ['string'] },
+        { type: ['string'] },
+        { type: ['integer'] },
+      ],
+    }
+    expect(schemaTypeToTS(node, schema)).toBe('string | number')
+  })
+
+  it('resolves $ref chains through anyOf', () => {
+    const schemaWithChain: HerokuSchema = {
+      definitions: {
+        account: {
+          definitions: {
+            id: { type: ['string'] },
+            identity: {
+              anyOf: [
+                { $ref: '#/definitions/account/definitions/id' },
+              ],
+            },
+          },
+          properties: {},
+        },
+      },
+    }
+    const node: SchemaNode = { $ref: '#/definitions/account/definitions/identity' }
+    expect(schemaTypeToTS(node, schemaWithChain)).toBe('string')
+  })
+
+  it('converts allOf to intersection', () => {
+    const node: SchemaNode = {
+      allOf: [
+        { $ref: '#/definitions/app' },
+        { type: ['object'], properties: { extra: { type: ['string'] } } },
+      ],
+    }
+    const result = schemaTypeToTS(node, schema)
+    expect(result).toContain('App')
+    expect(result).toContain('&')
+    expect(result).toContain('extra')
+  })
+
   it('returns unknown for empty node', () => {
     expect(schemaTypeToTS({}, schema)).toBe('unknown')
   })

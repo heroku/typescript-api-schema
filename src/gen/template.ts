@@ -24,6 +24,7 @@ export interface SchemaNode {
   enum?: (string | number | boolean)[]
   anyOf?: SchemaNode[]
   oneOf?: SchemaNode[]
+  allOf?: SchemaNode[]
   properties?: Record<string, SchemaNode>
   required?: string[]
   strictProperties?: boolean
@@ -76,6 +77,10 @@ export function renderJSDoc(description: string | undefined, indent: string): st
   return `${indent}/**\n${lines.map(l => `${indent} * ${l}`).join('\n')}\n${indent} */\n`
 }
 
+function dedupeUnion(types: string[]): string {
+  return [...new Set(types)].join(' | ')
+}
+
 // --- Core template functions ---
 
 export function resolveRef(schema: HerokuSchema, ref: string): SchemaNode {
@@ -112,11 +117,15 @@ export function schemaTypeToTS(node: SchemaNode, schema: HerokuSchema, indent = 
   }
 
   if (node.anyOf) {
-    return node.anyOf.map(n => schemaTypeToTS(n, schema, indent)).join(' | ')
+    return dedupeUnion(node.anyOf.map(n => schemaTypeToTS(n, schema, indent)))
   }
 
   if (node.oneOf) {
-    return node.oneOf.map(n => schemaTypeToTS(n, schema, indent)).join(' | ')
+    return dedupeUnion(node.oneOf.map(n => schemaTypeToTS(n, schema, indent)))
+  }
+
+  if (node.allOf) {
+    return node.allOf.map(n => schemaTypeToTS(n, schema, indent)).join(' & ')
   }
 
   if (node.type) {
