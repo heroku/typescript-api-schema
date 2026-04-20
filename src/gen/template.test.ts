@@ -8,6 +8,7 @@ import {
   TypeRenderer,
   type HerokuSchema,
   type SchemaNode,
+  type RouteDefinition,
 } from './template.js'
 
 describe('toPascalCase', () => {
@@ -867,5 +868,129 @@ describe('renderClientInterface', () => {
       },
     }
     expect(new TypeRenderer(noLinks).renderClientInterface()).toBe('')
+  })
+})
+
+describe('renderRouteEntries', () => {
+  const schema: HerokuSchema = {
+    definitions: {
+      app: {
+        definitions: {
+          id: { type: ['string'] },
+          name: { type: ['string'] },
+        },
+        required: ['id', 'name'],
+        properties: {
+          id: { $ref: '#/definitions/app/definitions/id' },
+          name: { $ref: '#/definitions/app/definitions/name' },
+        },
+        links: [
+          {
+            title: 'Create',
+            method: 'POST',
+            href: '/apps',
+            schema: {
+              properties: { name: { type: ['string'] } },
+              required: ['name'],
+            },
+          },
+          {
+            title: 'Info',
+            method: 'GET',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+          },
+          {
+            title: 'List',
+            method: 'GET',
+            href: '/apps',
+            rel: 'instances',
+          },
+          {
+            title: 'Delete',
+            method: 'DELETE',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
+            targetSchema: { type: ['null'] },
+          },
+        ],
+      },
+    },
+  }
+  const renderer = new TypeRenderer(schema)
+
+  it('returns correct HTTP method from link', () => {
+    const entries = renderer.renderRouteEntries('app', schema.definitions['app'])
+    const create = entries.find(e => e.titleKey === 'Create')
+    expect(create?.method).toBe('POST')
+    const info = entries.find(e => e.titleKey === 'Info')
+    expect(info?.method).toBe('GET')
+    const del = entries.find(e => e.titleKey === 'Delete')
+    expect(del?.method).toBe('DELETE')
+  })
+
+  it('converts encoded href params to {paramName} in path', () => {
+    const entries = renderer.renderRouteEntries('app', schema.definitions['app'])
+    const info = entries.find(e => e.titleKey === 'Info')
+    expect(info?.path).toBe('/apps/{appId}')
+  })
+
+  it('preserves paths without params', () => {
+    const entries = renderer.renderRouteEntries('app', schema.definitions['app'])
+    const list = entries.find(e => e.titleKey === 'List')
+    expect(list?.path).toBe('/apps')
+  })
+
+  it('sets hasRequestBody when link.schema has properties', () => {
+    const entries = renderer.renderRouteEntries('app', schema.definitions['app'])
+    const create = entries.find(e => e.titleKey === 'Create')
+    expect(create?.hasRequestBody).toBe(true)
+  })
+
+  it('does not set hasRequestBody when there is no request schema', () => {
+    const entries = renderer.renderRouteEntries('app', schema.definitions['app'])
+    const info = entries.find(e => e.titleKey === 'Info')
+    expect(info?.hasRequestBody).toBeUndefined()
+  })
+
+  it('skips links with rel=self', () => {
+    const defWithSelf = {
+      ...schema.definitions['app'],
+      links: [{ title: 'Self', rel: 'self', href: '/schema', method: 'GET' }],
+    }
+    expect(renderer.renderRouteEntries('app', defWithSelf)).toEqual([])
+  })
+
+  it('skips links without href or method', () => {
+    const defNoHref = {
+      ...schema.definitions['app'],
+      links: [{ title: 'Broken' }],
+    }
+    expect(renderer.renderRouteEntries('app', defNoHref)).toEqual([])
+  })
+
+  it('returns empty array for definitions without links', () => {
+    const noLinks = { properties: { id: { type: ['string'] as string[] } } }
+    expect(renderer.renderRouteEntries('thing', noLinks)).toEqual([])
+  })
+
+  it('skips links with unsupported HTTP methods', () => {
+    const defOptions = {
+      ...schema.definitions['app'],
+      links: [{ title: 'Options', method: 'OPTIONS', href: '/apps' }],
+    }
+    expect(renderer.renderRouteEntries('app', defOptions)).toEqual([])
+  })
+
+  it('handles disambiguated title keys', () => {
+    const defAmbiguous = {
+      ...schema.definitions['app'],
+      links: [
+        { title: 'List', method: 'GET', href: '/apps', rel: 'instances' },
+        { title: 'List', method: 'POST', href: '/apps', schema: { properties: { name: { type: ['string'] } }, required: ['name'] } },
+      ],
+    }
+    const entries = renderer.renderRouteEntries('app', defAmbiguous)
+    const keys = entries.map(e => e.titleKey)
+    expect(keys).toContain('List-get')
+    expect(keys).toContain('List-post')
   })
 })

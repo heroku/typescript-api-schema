@@ -1,6 +1,6 @@
 // TypeRenderer: converts a Heroku hyperschema into TypeScript type definitions.
 
-import type { HerokuSchema, ResourceDefinition, SchemaNode, SchemaLink, HRefParam } from './schema-types.js'
+import type { HerokuSchema, ResourceDefinition, SchemaNode, SchemaLink, HRefParam, RouteDefinition, HttpMethod } from './schema-types.js'
 import { toPascalCase, toCamelCase, formatPropertyKey, renderJSDoc, disambiguateLinkTitles } from './utils.js'
 
 function dedupeUnion(types: string[]): string {
@@ -321,6 +321,45 @@ export class TypeRenderer {
       lines.push(`${doc}  ${methodName}(${params.join(', ')}): Promise<${returnType}>`)
     }
     return lines
+  }
+
+  renderRouteEntries(
+    resourceName: string,
+    definition: ResourceDefinition,
+  ): Array<{ titleKey: string } & RouteDefinition> {
+    const entries: Array<{ titleKey: string } & RouteDefinition> = []
+    const SUPPORTED_METHODS = new Set<HttpMethod>(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+
+    for (const { link, titleKey } of this.resolveLinks(definition)) {
+      if (link.rel === 'self') continue
+      if (!link.href || !link.method) continue
+
+      const method = link.method.toUpperCase()
+      if (!SUPPORTED_METHODS.has(method as HttpMethod)) continue
+
+      const params = this.parseHRefParams(link.href)
+      const placeholders = [...link.href.matchAll(HREF_PARAM)]
+
+      // Replace encoded placeholders with {paramName}, from last to first to preserve indices
+      let path = link.href
+      for (let i = placeholders.length - 1; i >= 0; i--) {
+        const match = placeholders[i]
+        path = path.slice(0, match.index) + `{${params[i].name}}` + path.slice(match.index! + match[0].length)
+      }
+
+      const entry: { titleKey: string } & RouteDefinition = {
+        titleKey,
+        method: method as HttpMethod,
+        path,
+      }
+
+      if (hasCustomProperties(link.schema)) {
+        entry.hasRequestBody = true
+      }
+
+      entries.push(entry)
+    }
+    return entries
   }
 
   renderClientInterface(): string {
