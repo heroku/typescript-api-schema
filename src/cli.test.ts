@@ -1,11 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
 import { main, formatVerifyErrors, type MainDeps } from './cli.js'
 import { DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
+import { GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
 
 function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
   return {
     fetchSchema: overrides.fetchSchema ?? vi.fn().mockResolvedValue({ definitions: {} }),
     generateTypes: overrides.generateTypes ?? vi.fn().mockReturnValue('// types'),
+    generateRoutes: overrides.generateRoutes ?? vi.fn().mockReturnValue({ js: '// routes', dts: '// routes dts' }),
     verifyTypes: overrides.verifyTypes ?? vi.fn().mockReturnValue([]),
     writeFile: overrides.writeFile ?? vi.fn(),
     log: overrides.log ?? vi.fn(),
@@ -25,7 +27,7 @@ describe('main', () => {
 
     expect(deps.fetchSchema).toHaveBeenCalledWith(undefined, DEFAULT_SCHEMA_VARIANT)
     expect(deps.generateTypes).toHaveBeenCalled()
-    expect(deps.writeFile).toHaveBeenCalledWith(`types/heroku-${DEFAULT_SCHEMA_VARIANT}.d.ts`, '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith(`types/heroku-${DEFAULT_SCHEMA_VARIANT}.d.ts`, GENERATED_CONTENT_PREAMBLE + '// types')
     expect(deps.exit).not.toHaveBeenCalled()
   })
 
@@ -40,7 +42,7 @@ describe('main', () => {
     const deps = makeDeps({ argv: argv('--variant', '3.platform') })
     await main(deps)
 
-    expect(deps.writeFile).toHaveBeenCalledWith('types/heroku-3.platform.d.ts', '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith('types/heroku-3.platform.d.ts', GENERATED_CONTENT_PREAMBLE + '// types')
   })
 
   it('prints usage and exits 0 on --help', async () => {
@@ -77,6 +79,14 @@ describe('main', () => {
 
     expect(deps.log).toHaveBeenCalledWith('network error')
     expect(deps.exit).toHaveBeenCalledWith(1)
+  })
+
+  it('writes route registry files', async () => {
+    const deps = makeDeps({ argv: argv() })
+    await main(deps)
+
+    expect(deps.writeFile).toHaveBeenCalledWith('types/routes.js', GENERATED_CONTENT_PREAMBLE + '// routes')
+    expect(deps.writeFile).toHaveBeenCalledWith('types/routes.d.ts', GENERATED_CONTENT_PREAMBLE + '// routes dts')
   })
 
   it('verifies generated types before writing', async () => {

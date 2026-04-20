@@ -4,6 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { generateTypes, GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
+import { generateRoutesJS, generateRoutesDTS } from './gen/route-generator.js'
 import { verifyTypes, type VerifyError } from './gen/verify.js'
 import type { HerokuSchema } from './gen/template.js'
 
@@ -17,6 +18,7 @@ export interface MainDeps {
   argv: string[]
   fetchSchema: (baseUrl?: string, variant?: string) => Promise<unknown>
   generateTypes: (schema: HerokuSchema) => string
+  generateRoutes: (schema: HerokuSchema) => { js: string; dts: string }
   verifyTypes: (content: string) => VerifyError[]
   writeFile: (path: string, content: string) => void
   log: (message: string) => void
@@ -27,6 +29,10 @@ const defaultDeps: MainDeps = {
   argv: process.argv,
   fetchSchema,
   generateTypes,
+  generateRoutes: (schema: HerokuSchema) => ({
+    js: generateRoutesJS(schema),
+    dts: generateRoutesDTS(),
+  }),
   verifyTypes,
   writeFile: writeFileSync,
   log: (message: string) => console.error(message),
@@ -81,7 +87,7 @@ export function formatVerifyErrors(errors: VerifyError[]): string {
 }
 
 export async function main(deps: Partial<MainDeps> = {}) {
-  const { argv, fetchSchema, generateTypes, verifyTypes, writeFile, log, exit } = { ...defaultDeps, ...deps }
+  const { argv, fetchSchema, generateTypes, generateRoutes, verifyTypes, writeFile, log, exit } = { ...defaultDeps, ...deps }
 
   try {
     const options = parseArgs(argv.slice(2))
@@ -102,13 +108,22 @@ export async function main(deps: Partial<MainDeps> = {}) {
       return
     }
 
+    const routes = generateRoutes(schema)
+
     const outputDir = 'types'
     mkdirSync(outputDir, { recursive: true })
-    const output = join(outputDir, `heroku-${options.variant}.d.ts`)
-    const fileContent = GENERATED_CONTENT_PREAMBLE + types
 
-    writeFile(output, fileContent)
-    log(`Wrote ${output}`)
+    const typesOutput = join(outputDir, `heroku-${options.variant}.d.ts`)
+    writeFile(typesOutput, GENERATED_CONTENT_PREAMBLE + types)
+    log(`Wrote ${typesOutput}`)
+
+    const routesJsOutput = join(outputDir, 'routes.js')
+    writeFile(routesJsOutput, GENERATED_CONTENT_PREAMBLE + routes.js)
+    log(`Wrote ${routesJsOutput}`)
+
+    const routesDtsOutput = join(outputDir, 'routes.d.ts')
+    writeFile(routesDtsOutput, GENERATED_CONTENT_PREAMBLE + routes.dts)
+    log(`Wrote ${routesDtsOutput}`)
   } catch (error) {
     log(error instanceof Error ? error.message : String(error))
     exit(1)

@@ -7,6 +7,10 @@
   "exports": {
     ".": {
       "types": "./types/heroku-3.sdk.d.ts"
+    },
+    "./routes": {
+      "types": "./types/routes.d.ts",
+      "default": "./types/routes.js"
     }
   },
   "files": [
