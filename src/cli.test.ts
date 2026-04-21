@@ -11,6 +11,7 @@ function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
     generateTypes: overrides.generateTypes ?? vi.fn().mockReturnValue('// types'),
     generateRoutes: overrides.generateRoutes ?? vi.fn().mockReturnValue({ js: '// routes', dts: '// routes dts' }),
     verifyTypes: overrides.verifyTypes ?? vi.fn().mockReturnValue([]),
+    mkdir: overrides.mkdir ?? vi.fn(),
     readFile: overrides.readFile ?? vi.fn().mockReturnValue(STUB_PACKAGE_JSON),
     writeFile: overrides.writeFile ?? vi.fn(),
     log: overrides.log ?? vi.fn(),

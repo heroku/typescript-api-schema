@@ -20,6 +20,7 @@ export interface MainDeps {
   generateTypes: (schema: HerokuSchema) => string
   generateRoutes: (schema: HerokuSchema) => { js: string; dts: string }
   verifyTypes: (content: string) => VerifyError[]
+  mkdir: (path: string) => void
   readFile: (path: string) => string
   writeFile: (path: string, content: string) => void
   log: (message: string) => void
@@ -35,6 +36,7 @@ const defaultDeps: MainDeps = {
     dts: generateRoutesDTS(schema),
   }),
   verifyTypes,
+  mkdir: (path: string) => mkdirSync(path, { recursive: true }),
   readFile: (path: string) => readFileSync(path, 'utf-8'),
   writeFile: writeFileSync,
   log: (message: string) => console.error(message),
@@ -107,7 +109,7 @@ export function updatePackageExports(
 }
 
 export async function main(deps: Partial<MainDeps> = {}) {
-  const { argv, fetchSchema, generateTypes, generateRoutes, verifyTypes, readFile, writeFile, log, exit } = { ...defaultDeps, ...deps }
+  const { argv, fetchSchema, generateTypes, generateRoutes, verifyTypes, mkdir, readFile, writeFile, log, exit } = { ...defaultDeps, ...deps }
 
   try {
     const options = parseArgs(argv.slice(2))
@@ -131,7 +133,7 @@ export async function main(deps: Partial<MainDeps> = {}) {
     const routes = generateRoutes(schema)
 
     const outputDir = options.variant!
-    mkdirSync(outputDir, { recursive: true })
+    mkdir(outputDir)
 
     const typesOutput = join(outputDir, 'types.d.ts')
     writeFile(typesOutput, GENERATED_CONTENT_PREAMBLE + types)
