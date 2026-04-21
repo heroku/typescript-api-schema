@@ -219,9 +219,11 @@ export class TypeRenderer {
     const placeholders = [...href.matchAll(HREF_PARAM)]
 
     interface RawParam {
-      refName: string      // name derived from $ref path (default)
-      contextName: string  // name derived from preceding URL segment (fallback)
+      refName: string
+      contextName: string
       type: string
+      matchIndex: number
+      matchLength: number
     }
 
     const raw: RawParam[] = []
@@ -234,10 +236,8 @@ export class TypeRenderer {
       const parts = decoded.replace(/^#\//, '').split('/')
       const fieldName = parts[parts.length - 1]
 
-      // Default name from $ref path: resource-field → camelCase
       const refName = toCamelCase(parts[parts.length - 3] + '-' + fieldName)
 
-      // Contextual name from preceding URL path segment
       const precedingText = segments[i] || ''
       const urlSegments = precedingText.split('/').filter(Boolean)
       const precedingSegment = urlSegments[urlSegments.length - 1] || parts[parts.length - 3]
@@ -251,10 +251,9 @@ export class TypeRenderer {
         // fallback to string
       }
 
-      raw.push({ refName, contextName, type })
+      raw.push({ refName, contextName, type, matchIndex: placeholders[i].index!, matchLength: match.length })
     }
 
-    // Check for collisions in refNames
     const refNameCounts = new Map<string, number>()
     for (const p of raw) {
       refNameCounts.set(p.refName, (refNameCounts.get(p.refName) ?? 0) + 1)
@@ -263,6 +262,8 @@ export class TypeRenderer {
     return raw.map(p => ({
       name: (refNameCounts.get(p.refName) ?? 0) > 1 ? p.contextName : p.refName,
       type: p.type,
+      matchIndex: p.matchIndex,
+      matchLength: p.matchLength,
     }))
   }
 
@@ -339,13 +340,11 @@ export class TypeRenderer {
       if (!SUPPORTED_METHODS.has(method as HttpMethod)) continue
 
       const params = this.parseHRefParams(link.href)
-      const placeholders = [...link.href.matchAll(HREF_PARAM)]
 
-      // Replace encoded placeholders with {paramName}, from last to first to preserve indices
       let path = link.href
-      for (let i = placeholders.length - 1; i >= 0; i--) {
-        const match = placeholders[i]
-        path = path.slice(0, match.index) + `{${params[i].name}}` + path.slice(match.index! + match[0].length)
+      for (let i = params.length - 1; i >= 0; i--) {
+        const p = params[i]
+        path = path.slice(0, p.matchIndex) + `{${p.name}}` + path.slice(p.matchIndex + p.matchLength)
       }
 
       const entry: { titleKey: string } & RouteDefinition = {

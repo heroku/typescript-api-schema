@@ -50,6 +50,8 @@ export interface SchemaLink {
 export interface HRefParam {
   name: string
   type: string
+  matchIndex: number
+  matchLength: number
 }
 
 export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
