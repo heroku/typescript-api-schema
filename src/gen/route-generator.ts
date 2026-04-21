@@ -1,4 +1,4 @@
-import { TypeRenderer, toCamelCase, type HerokuSchema } from './template.js'
+import { TypeRenderer, HTTP_METHODS, toCamelCase, type HerokuSchema } from './template.js'
 
 export function generateRoutesJS(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
@@ -30,12 +30,9 @@ export function generateRoutesJS(schema: HerokuSchema): string {
 
 export function generateRoutesDTS(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
+  const methodUnion = HTTP_METHODS.map(m => `'${m}'`).join(' | ')
   const declarations: string[] = [
-    `export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  path: string
-  hasRequestBody?: true
-}`,
+    `export interface RouteDefinition {\n  method: ${methodUnion}\n  path: string\n  hasRequestBody?: true\n}`,
   ]
 
   for (const [name, definition] of Object.entries(schema.definitions)) {

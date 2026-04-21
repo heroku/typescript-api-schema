@@ -1,5 +1,6 @@
 // TypeRenderer: converts a Heroku hyperschema into TypeScript type definitions.
 
+import { HTTP_METHODS } from './schema-types.js'
 import type { HerokuSchema, ResourceDefinition, SchemaNode, SchemaLink, HRefParam, RouteDefinition, HttpMethod } from './schema-types.js'
 import { toPascalCase, toCamelCase, formatPropertyKey, renderJSDoc, disambiguateLinkTitles } from './utils.js'
 
@@ -328,7 +329,7 @@ export class TypeRenderer {
     definition: ResourceDefinition,
   ): Array<{ titleKey: string } & RouteDefinition> {
     const entries: Array<{ titleKey: string } & RouteDefinition> = []
-    const SUPPORTED_METHODS = new Set<HttpMethod>(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+    const SUPPORTED_METHODS: ReadonlySet<string> = new Set(HTTP_METHODS)
 
     for (const { link, titleKey } of this.resolveLinks(definition)) {
       if (link.rel === 'self') continue
