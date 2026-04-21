@@ -1,23 +1,33 @@
 # @heroku/types
 
-This package provides Typescript types, based on and generated from the Heroku API Hyperschema. Type definition files are named for the API variant used to generate the file. For example, for the Heroku API variant: `3.sdk`, the type file is `heroku-3.sdk.d.ts`. This follows the pattern, `heroku-${variant}.d.ts`.
+This package provides TypeScript types and a runtime route registry, generated from the Heroku API Hyperschema. Generated files are organized by API variant. For example, the `3.sdk` variant outputs to `3.sdk/types.d.ts` and `3.sdk/routes.js`.
 
-> NOTE: For now, this package only provides `heroku-3.sdk.d.ts` types.
+> NOTE: For now, this package only provides the `3.sdk` variant.
+
 ## Installation
 
 ```sh
 npm install @heroku/types
 ```
 
-Types are available at the package root:
+Types are available under the variant subpath:
 
 ```ts
-import type { Account, Addon } from '@heroku/types'
+import type { Account, Addon } from '@heroku/types/3.sdk'
+```
+
+A runtime route registry is also available, providing method, path, and request-body metadata for each API endpoint:
+
+```ts
+import { app, dyno } from '@heroku/types/3.sdk/routes'
+
+console.log(app.create) // { method: 'POST', path: '/apps', hasRequestBody: true }
+console.log(dyno.list)  // { method: 'GET', path: '/apps/{appId}/dynos' }
 ```
 
 ## Generating Type Definitions
 
-The package includes a CLI that fetches the live Heroku API hyperschema and generates `.d.ts` files. Before writing the file to the file system, the output is verified against the Typescript type checker to ensure we're only writing a valid types definition file.
+The package includes a CLI that fetches the live Heroku API hyperschema and generates type definitions and a route registry. Before writing files to the file system, the type output is verified against the TypeScript type checker to ensure we're only writing valid definitions.
 
 ### Build the CLI
 
@@ -33,7 +43,7 @@ This compiles the TypeScript source into `dist/`.
 npm run generate
 ```
 
-This fetches the schema from `https://api.heroku.com/schema` and writes the type definitions to the `types/` directory.
+This fetches the schema from `https://api.heroku.com/schema` and writes the generated files to a directory named after the variant (e.g. `3.sdk/`). It also updates `package.json` exports automatically.
 
 #### CLI Options
 
