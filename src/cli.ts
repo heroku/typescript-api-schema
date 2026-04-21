@@ -157,4 +157,8 @@ export async function main(deps: Partial<MainDeps> = {}) {
   }
 }
 
-main()
+import { fileURLToPath } from 'node:url'
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main()
+}
