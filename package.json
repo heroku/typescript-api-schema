@@ -3,18 +3,17 @@
   "version": "0.1.0",
   "description": "Generates Typescript types from API hyperschema",
   "type": "module",
-  "types": "./types/heroku-3.sdk.d.ts",
   "exports": {
-    ".": {
-      "types": "./types/heroku-3.sdk.d.ts"
+    "./3.sdk": {
+      "types": "./3.sdk/types.d.ts"
     },
-    "./routes": {
-      "types": "./types/routes.d.ts",
-      "default": "./types/routes.js"
+    "./3.sdk/routes": {
+      "types": "./3.sdk/routes.d.ts",
+      "default": "./3.sdk/routes.js"
     }
   },
   "files": [
-    "types/"
+    "3.sdk/"
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",

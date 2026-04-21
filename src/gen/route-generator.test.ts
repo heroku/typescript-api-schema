@@ -52,59 +52,51 @@ const schema: HerokuSchema = {
 }
 
 describe('generateRoutesJS', () => {
-  it('produces valid JS with export const routes', () => {
+  it('emits per-resource named exports', () => {
     const js = generateRoutesJS(schema)
-    expect(js).toMatch(/^export const routes = \{/)
+    expect(js).toContain('export const app = {')
   })
 
-  it('uses camelCase resource keys', () => {
+  it('does not emit a single routes object', () => {
     const js = generateRoutesJS(schema)
-    expect(js).toContain('"app"')
-  })
-
-  it('uses camelCase method keys', () => {
-    const js = generateRoutesJS(schema)
-    expect(js).toContain('"create"')
-    expect(js).toContain('"info"')
-    expect(js).toContain('"list"')
-    expect(js).toContain('"delete"')
+    expect(js).not.toContain('export const routes')
   })
 
   it('includes correct method and path for each route', () => {
     const js = generateRoutesJS(schema)
-    const routes = parseRoutes(js)
-    expect(routes.app.create).toEqual({ method: 'POST', path: '/apps', hasRequestBody: true })
-    expect(routes.app.info).toEqual({ method: 'GET', path: '/apps/{appId}' })
-    expect(routes.app.list).toEqual({ method: 'GET', path: '/apps' })
-    expect(routes.app.delete).toEqual({ method: 'DELETE', path: '/apps/{appId}' })
+    const app = parseExport(js, 'app')
+    expect(app.create).toEqual({ method: 'POST', path: '/apps', hasRequestBody: true })
+    expect(app.info).toEqual({ method: 'GET', path: '/apps/{appId}' })
+    expect(app.list).toEqual({ method: 'GET', path: '/apps' })
+    expect(app.delete).toEqual({ method: 'DELETE', path: '/apps/{appId}' })
   })
 
   it('skips resources with no links', () => {
     const js = generateRoutesJS(schema)
     expect(js).not.toContain('configVar')
   })
-
-  it('is parseable as a JS module', () => {
-    const js = generateRoutesJS(schema)
-    // Strip the export keyword and evaluate as an expression
-    const expression = js.replace('export const routes = ', '')
-    expect(() => JSON.parse(expression)).not.toThrow()
-  })
 })
 
 describe('generateRoutesDTS', () => {
   it('exports RouteDefinition interface', () => {
-    const dts = generateRoutesDTS()
+    const dts = generateRoutesDTS(schema)
     expect(dts).toContain('export interface RouteDefinition')
   })
 
-  it('exports routes declaration', () => {
-    const dts = generateRoutesDTS()
-    expect(dts).toContain('export declare const routes: Record<string, Record<string, RouteDefinition>>')
+  it('emits per-resource declarations', () => {
+    const dts = generateRoutesDTS(schema)
+    expect(dts).toContain('export declare const app: Record<string, RouteDefinition>')
+  })
+
+  it('skips resources with no links', () => {
+    const dts = generateRoutesDTS(schema)
+    expect(dts).not.toContain('configVar')
   })
 })
 
-function parseRoutes(js: string): Record<string, Record<string, Record<string, unknown>>> {
-  const expression = js.replace('export const routes = ', '')
-  return JSON.parse(expression)
+function parseExport(js: string, name: string): Record<string, Record<string, unknown>> {
+  const re = new RegExp(`export const ${name} = (\\{[\\s\\S]*?\\n\\})`)
+  const match = js.match(re)
+  if (!match) throw new Error(`Export "${name}" not found`)
+  return JSON.parse(match[1])
 }

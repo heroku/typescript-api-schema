@@ -2,7 +2,7 @@ import { TypeRenderer, toCamelCase, type HerokuSchema } from './template.js'
 
 export function generateRoutesJS(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
-  const registry: Record<string, Record<string, Record<string, unknown>>> = {}
+  const exports: string[] = []
 
   for (const [name, definition] of Object.entries(schema.definitions)) {
     const entries = renderer.renderRouteEntries(name, definition)
@@ -21,19 +21,28 @@ export function generateRoutesJS(schema: HerokuSchema): string {
       methods[methodName] = route
     }
 
-    registry[toCamelCase(name)] = methods
+    const resourceName = toCamelCase(name)
+    exports.push(`export const ${resourceName} = ${JSON.stringify(methods, null, 2)}`)
   }
 
-  return `export const routes = ${JSON.stringify(registry, null, 2)}\n`
+  return exports.join('\n\n') + '\n'
 }
 
-export function generateRoutesDTS(): string {
-  return `export interface RouteDefinition {
+export function generateRoutesDTS(schema: HerokuSchema): string {
+  const renderer = new TypeRenderer(schema)
+  const declarations: string[] = [
+    `export interface RouteDefinition {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   path: string
   hasRequestBody?: true
-}
+}`,
+  ]
 
-export declare const routes: Record<string, Record<string, RouteDefinition>>
-`
+  for (const [name, definition] of Object.entries(schema.definitions)) {
+    const entries = renderer.renderRouteEntries(name, definition)
+    if (entries.length === 0) continue
+    declarations.push(`export declare const ${toCamelCase(name)}: Record<string, RouteDefinition>`)
+  }
+
+  return declarations.join('\n\n') + '\n'
 }

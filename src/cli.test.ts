@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
-import { main, formatVerifyErrors, type MainDeps } from './cli.js'
+import { main, formatVerifyErrors, updatePackageExports, type MainDeps } from './cli.js'
 import { DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
+
+const STUB_PACKAGE_JSON = JSON.stringify({ name: '@heroku/types', exports: {}, files: [] })
 
 function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
   return {
@@ -9,6 +11,7 @@ function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
     generateTypes: overrides.generateTypes ?? vi.fn().mockReturnValue('// types'),
     generateRoutes: overrides.generateRoutes ?? vi.fn().mockReturnValue({ js: '// routes', dts: '// routes dts' }),
     verifyTypes: overrides.verifyTypes ?? vi.fn().mockReturnValue([]),
+    readFile: overrides.readFile ?? vi.fn().mockReturnValue(STUB_PACKAGE_JSON),
     writeFile: overrides.writeFile ?? vi.fn(),
     log: overrides.log ?? vi.fn(),
     exit: overrides.exit ?? vi.fn(),
@@ -27,7 +30,7 @@ describe('main', () => {
 
     expect(deps.fetchSchema).toHaveBeenCalledWith(undefined, DEFAULT_SCHEMA_VARIANT)
     expect(deps.generateTypes).toHaveBeenCalled()
-    expect(deps.writeFile).toHaveBeenCalledWith(`types/heroku-${DEFAULT_SCHEMA_VARIANT}.d.ts`, GENERATED_CONTENT_PREAMBLE + '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith(`${DEFAULT_SCHEMA_VARIANT}/types.d.ts`, GENERATED_CONTENT_PREAMBLE + '// types')
     expect(deps.exit).not.toHaveBeenCalled()
   })
 
@@ -42,7 +45,7 @@ describe('main', () => {
     const deps = makeDeps({ argv: argv('--variant', '3.platform') })
     await main(deps)
 
-    expect(deps.writeFile).toHaveBeenCalledWith('types/heroku-3.platform.d.ts', GENERATED_CONTENT_PREAMBLE + '// types')
+    expect(deps.writeFile).toHaveBeenCalledWith('3.platform/types.d.ts', GENERATED_CONTENT_PREAMBLE + '// types')
   })
 
   it('prints usage and exits 0 on --help', async () => {
@@ -85,8 +88,21 @@ describe('main', () => {
     const deps = makeDeps({ argv: argv() })
     await main(deps)
 
-    expect(deps.writeFile).toHaveBeenCalledWith('types/routes.js', GENERATED_CONTENT_PREAMBLE + '// routes')
-    expect(deps.writeFile).toHaveBeenCalledWith('types/routes.d.ts', GENERATED_CONTENT_PREAMBLE + '// routes dts')
+    expect(deps.writeFile).toHaveBeenCalledWith(`${DEFAULT_SCHEMA_VARIANT}/routes.js`, GENERATED_CONTENT_PREAMBLE + '// routes')
+    expect(deps.writeFile).toHaveBeenCalledWith(`${DEFAULT_SCHEMA_VARIANT}/routes.d.ts`, GENERATED_CONTENT_PREAMBLE + '// routes dts')
+  })
+
+  it('updates package.json exports for the variant', async () => {
+    const deps = makeDeps({ argv: argv('--variant', '3.platform') })
+    await main(deps)
+
+    const writeFile = deps.writeFile as ReturnType<typeof vi.fn>
+    const pkgCall = writeFile.mock.calls.find((c: unknown[]) => c[0] === 'package.json')
+    expect(pkgCall).toBeDefined()
+    const written = JSON.parse(pkgCall![1] as string)
+    expect(written.exports['./3.platform']).toEqual({ types: './3.platform/types.d.ts' })
+    expect(written.exports['./3.platform/routes']).toEqual({ types: './3.platform/routes.d.ts', default: './3.platform/routes.js' })
+    expect(written.files).toContain('3.platform/')
   })
 
   it('verifies generated types before writing', async () => {
@@ -123,6 +139,43 @@ describe('main', () => {
     expect(deps.log).toHaveBeenCalledWith(expect.stringContaining('Verification failed with 2 error(s)'))
     expect(deps.log).toHaveBeenCalledWith(expect.stringContaining("Line 10, Column 3: Cannot find name 'Foo'."))
     expect(deps.log).toHaveBeenCalledWith(expect.stringContaining("Line 25, Column 8: ';' expected."))
+  })
+})
+
+describe('updatePackageExports', () => {
+  it('adds variant exports and files entry', () => {
+    const pkg = { name: '@heroku/types', exports: {}, files: [] }
+    const result = updatePackageExports(pkg, '3.sdk')
+    expect(result.exports).toEqual({
+      './3.sdk': { types: './3.sdk/types.d.ts' },
+      './3.sdk/routes': { types: './3.sdk/routes.d.ts', default: './3.sdk/routes.js' },
+    })
+    expect(result.files).toEqual(['3.sdk/'])
+  })
+
+  it('preserves existing variant exports when adding a new one', () => {
+    const pkg = {
+      name: '@heroku/types',
+      exports: {
+        './3.sdk': { types: './3.sdk/types.d.ts' },
+        './3.sdk/routes': { types: './3.sdk/routes.d.ts', default: './3.sdk/routes.js' },
+      },
+      files: ['3.sdk/'],
+    }
+    const result = updatePackageExports(pkg, '3.platform')
+    expect(result.exports).toEqual({
+      './3.sdk': { types: './3.sdk/types.d.ts' },
+      './3.sdk/routes': { types: './3.sdk/routes.d.ts', default: './3.sdk/routes.js' },
+      './3.platform': { types: './3.platform/types.d.ts' },
+      './3.platform/routes': { types: './3.platform/routes.d.ts', default: './3.platform/routes.js' },
+    })
+    expect(result.files).toEqual(['3.sdk/', '3.platform/'])
+  })
+
+  it('does not duplicate files entry on repeated runs', () => {
+    const pkg = { name: '@heroku/types', exports: {}, files: ['3.sdk/'] }
+    const result = updatePackageExports(pkg, '3.sdk')
+    expect(result.files).toEqual(['3.sdk/'])
   })
 })
 
