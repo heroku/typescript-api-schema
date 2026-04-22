@@ -4525,8 +4525,15 @@ export interface Usage {
 }
 
 export interface HerokuClient {
+  /** A Heroku account becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent accounts if their invoices remain unpaid. */
+  accountDelinquency: {
+  /** Account delinquency information. */
+  info(): Promise<AccountDelinquency>
+  }
   /** An account feature represents a Heroku labs capability that can be enabled or disabled for an account on Heroku. */
   accountFeature: {
+  /** Info for an existing account feature. */
+  info(accountFeatureIdentity: string): Promise<AccountFeature>
   /** List existing account features. */
   list(): Promise<Array<AccountFeature>>
   /** Update an existing account feature. */
@@ -4534,10 +4541,14 @@ export interface HerokuClient {
   }
   /** An account represents an individual signed up to use the Heroku platform. */
   account: {
+  /** Info for account. */
+  info(): Promise<Account>
   /** Update account. */
   update(requestBody: AccountUpdateOpts): Promise<Account>
   /** Delete account. Note that this action cannot be undone. Note: This endpoint requires the HTTP_HEROKU_PASSWORD or HTTP_HEROKU_PASSWORD_BASE64 header be set correctly for the user account. */
   delete(): Promise<Account>
+  /** Info for account. */
+  infoByUser(accountIdentity: string | '~'): Promise<Account>
   /** Update account. */
   updateByUser(accountIdentity: string | '~', requestBody: AccountUpdateByUserOpts): Promise<Account>
   /** Delete account. Note that this action cannot be undone. Note: This endpoint requires the HTTP_HEROKU_PASSWORD or HTTP_HEROKU_PASSWORD_BASE64 header be set correctly for the user account. */
@@ -4560,12 +4571,16 @@ export interface HerokuClient {
   create(requestBody: AddOnAttachmentCreateOpts): Promise<AddOnAttachment>
   /** Delete an existing add-on attachment. */
   delete(addOnAttachmentIdentity: string): Promise<AddOnAttachment>
+  /** Info for existing add-on attachment. */
+  info(addOnAttachmentIdentity: string): Promise<AddOnAttachment>
   /** List existing add-on attachments. */
   list(): Promise<Array<AddOnAttachment>>
   /** List existing add-on attachments for an add-on. */
   listByAddOn(addOnIdentity: string): Promise<Array<AddOnAttachment>>
   /** List existing add-on attachments for an app. */
   listByApp(appIdentity: string): Promise<Array<AddOnAttachment>>
+  /** Info for existing add-on attachment for an app. */
+  infoByApp(appIdentity: string, addOnAttachmentScopedIdentity: string): Promise<AddOnAttachment>
   /** Resolve an add-on attachment from a name, optionally passing an app name. If there are matches it returns at least one add-on attachment (exact match) or many. */
   resolution(requestBody: AddOnAttachmentResolutionOpts): Promise<Array<AddOnAttachment>>
   }
@@ -4587,16 +4602,22 @@ export interface HerokuClient {
   }
   /** Add-on services represent add-ons that may be provisioned for apps. Endpoints under add-on services can be accessed without authentication. */
   addOnService: {
+  /** Info for existing add-on-service. */
+  info(addOnServiceIdentity: string): Promise<AddOnService>
   /** List existing add-on-services. */
   list(): Promise<Array<AddOnService>>
   }
   /** Represents the delivery of a webhook notification, including its current status. */
   addOnWebhookDelivery: {
+  /** Returns the info for an existing delivery.  Can only be accessed by the add-on partner providing this add-on. */
+  info(addOnIdentity: string, appWebhookDeliveryIdentity: string): Promise<AddOnWebhookDelivery>
   /** Lists existing deliveries for an add-on.  Can only be accessed by the add-on partner providing this add-on. */
   list(addOnIdentity: string): Promise<Array<AppWebhookDelivery>>
   }
   /** Represents a webhook event that occurred. */
   addOnWebhookEvent: {
+  /** Returns the info for a specified webhook event.  Can only be accessed by the add-on partner providing this add-on. */
+  info(addOnIdentity: string, appWebhookEventIdentity: string): Promise<AddOnWebhookEvent>
   /** Lists existing webhook events for an add-on.  Can only be accessed by the add-on partner providing this add-on. */
   list(addOnIdentity: string): Promise<Array<AppWebhookEvent>>
   }
@@ -4606,6 +4627,8 @@ export interface HerokuClient {
   create(addOnIdentity: string, requestBody: AddOnWebhookCreateOpts): Promise<AddOnWebhook>
   /** Removes an add-on webhook subscription.  Can only be accessed by the add-on partner providing this add-on. */
   delete(addOnIdentity: string, appWebhookIdentity: string): Promise<AddOnWebhook>
+  /** Returns the info for an add-on webhook subscription.  Can only be accessed by the add-on partner providing this add-on. */
+  info(addOnIdentity: string, appWebhookIdentity: string): Promise<AddOnWebhook>
   /** List all webhook subscriptions for a particular add-on.  Can only be accessed by the add-on partner providing this add-on. */
   list(addOnIdentity: string): Promise<Array<{
   /** identity of add-on. Only used for add-on partner webhooks. */
@@ -4635,10 +4658,14 @@ export interface HerokuClient {
   addOn: {
   /** List all existing add-ons. */
   list(): Promise<Array<AddOn>>
+  /** Info for an existing add-on. */
+  info(addOnIdentity: string): Promise<AddOn>
   /** Create a new add-on. */
   create(appIdentity: string, requestBody: AddOnCreateOpts): Promise<AddOn>
   /** Delete an existing add-on. */
   delete(appIdentity: string, addOnIdentity: string): Promise<AddOn>
+  /** Info for an existing add-on. */
+  infoByApp(appIdentity: string, addOnIdentity: string): Promise<AddOn>
   /** List existing add-ons for an app. */
   listByApp(appIdentity: string): Promise<Array<AddOn>>
   /** Change add-on plan. Some add-ons may not support changing plans. In that case, an error will be returned. */
@@ -4661,6 +4688,8 @@ export interface HerokuClient {
   }
   /** An app feature represents a Heroku labs capability that can be enabled or disabled for an app on Heroku. */
   appFeature: {
+  /** Info for an existing app feature. */
+  info(appIdentity: string, appFeatureIdentity: string): Promise<AppFeature>
   /** List existing app features. */
   list(appIdentity: string): Promise<Array<AppFeature>>
   /** Update an existing app feature. */
@@ -4670,6 +4699,8 @@ export interface HerokuClient {
   appSetup: {
   /** Create a new app setup from a gzipped tar archive containing an app.json manifest file. */
   create(requestBody: AppSetupCreateOpts): Promise<AppSetup>
+  /** Get the status of an app setup. */
+  info(appSetupIdentity: string): Promise<AppSetup>
   }
   /** An app transfer represents a two party interaction for transferring ownership of an app. */
   appTransfer: {
@@ -4677,6 +4708,8 @@ export interface HerokuClient {
   create(requestBody: AppTransferCreateOpts): Promise<AppTransfer>
   /** Delete an existing app transfer */
   delete(appTransferIdentity: string): Promise<AppTransfer>
+  /** Info for existing app transfer. */
+  info(appTransferIdentity: string): Promise<AppTransfer>
   /** List existing apps transfers. */
   list(): Promise<Array<AppTransfer>>
   /** Update an existing app transfer. */
@@ -4684,11 +4717,15 @@ export interface HerokuClient {
   }
   /** Represents the delivery of a webhook notification, including its current status. */
   appWebhookDelivery: {
+  /** Returns the info for an existing delivery. */
+  info(appIdentity: string, appWebhookDeliveryIdentity: string): Promise<AppWebhookDelivery>
   /** Lists existing deliveries for an app. */
   list(appIdentity: string): Promise<Array<AppWebhookDelivery>>
   }
   /** Represents a webhook event that occurred. */
   appWebhookEvent: {
+  /** Returns the info for a specified webhook event. */
+  info(appIdentity: string, appWebhookEventIdentity: string): Promise<AppWebhookEvent>
   /** Lists existing webhook events for an app. */
   list(appIdentity: string): Promise<Array<AppWebhookEvent>>
   }
@@ -4698,6 +4735,8 @@ export interface HerokuClient {
   create(appIdentity: string, requestBody: AppWebhookCreateOpts): Promise<AppWebhook>
   /** Removes an app webhook subscription. */
   delete(appIdentity: string, appWebhookIdentity: string): Promise<AppWebhook>
+  /** Returns the info for an app webhook subscription. */
+  info(appIdentity: string, appWebhookIdentity: string): Promise<AppWebhook>
   /** List all webhook subscriptions for a particular app. */
   list(appIdentity: string): Promise<Array<{
   /** identity of app. Only used for customer webhooks. */
@@ -4729,6 +4768,8 @@ export interface HerokuClient {
   create(requestBody: AppCreateOpts): Promise<App>
   /** Delete an existing app. */
   delete(appIdentity: string): Promise<App>
+  /** Info for existing app. */
+  info(appIdentity: string): Promise<App>
   /** List existing apps. */
   list(): Promise<Array<App>>
   /** List owned and collaborated apps (excludes team apps). */
@@ -4744,6 +4785,8 @@ export interface HerokuClient {
   }
   /** An audit trail archive represents a monthly json zipped file containing events */
   archive: {
+  /** Get archive for a single month. */
+  info(enterpriseAccountIdentity: string, archiveYear: number, archiveMonth: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12'): Promise<Archive>
   /** List existing archives. */
   list(enterpriseAccountIdentity: string): Promise<Archive[]>
   }
@@ -4756,10 +4799,14 @@ export interface HerokuClient {
   build: {
   /** Create a new build. */
   create(appIdentity: string, requestBody: BuildCreateOpts): Promise<Build>
+  /** Info for existing build. */
+  info(appIdentity: string, buildIdentity: string): Promise<Build>
   /** List existing build. */
   list(appIdentity: string): Promise<Array<Build>>
   /** Destroy a build cache. */
   deleteCache(appIdentity: string): Promise<Build>
+  /** Cancel running build. */
+  cancel(appIdentity: string, buildIdentity: string): Promise<Build>
   }
   /** A buildpack installation represents a buildpack that will be run against an app. */
   buildpackInstallation: {
@@ -4774,11 +4821,17 @@ export interface HerokuClient {
   create(appIdentity: string, requestBody: CollaboratorCreateOpts): Promise<Collaborator>
   /** Delete an existing collaborator. */
   delete(appIdentity: string, collaboratorIdentity: string): Promise<Collaborator>
+  /** Info for existing collaborator. */
+  info(appIdentity: string, collaboratorIdentity: string): Promise<Collaborator>
   /** List existing collaborators. */
   list(appIdentity: string): Promise<Array<Collaborator>>
   }
   /** Config Vars allow you to manage the configuration information provided to an app on Heroku. */
   configVar: {
+  /** Get config-vars for app. */
+  infoForApp(appIdentity: string): Promise<ConfigVar>
+  /** Get config-vars for a release. */
+  infoForAppRelease(appIdentity: string, releaseIdentity: string | number): Promise<ConfigVar>
   /** Update config-vars for app. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
   update(appIdentity: string): Promise<ConfigVar>
   }
@@ -4786,6 +4839,8 @@ export interface HerokuClient {
   credit: {
   /** Create a new credit. */
   create(requestBody: CreditCreateOpts): Promise<Credit>
+  /** Info for existing credit. */
+  info(creditIdentity: string): Promise<Credit>
   /** List existing credits. */
   list(): Promise<Array<Credit>>
   }
@@ -4797,11 +4852,15 @@ export interface HerokuClient {
   update(appIdentity: string, domainIdentity: string, requestBody: DomainUpdateOpts): Promise<Domain>
   /** Delete an existing domain */
   delete(appIdentity: string, domainIdentity: string): Promise<Domain>
+  /** Info for existing domain. */
+  info(appIdentity: string, domainIdentity: string): Promise<Domain>
   /** List existing domains. */
   list(appIdentity: string): Promise<Array<Domain>>
   }
   /** Dyno sizes are the values and details of sizes that can be assigned to dynos. This information can also be found at : [https://devcenter.heroku.com/articles/dyno-types](https://devcenter.heroku.com/articles/dyno-types). */
   dynoSize: {
+  /** Info for existing dyno size. */
+  info(dynoSizeIdentity: string): Promise<DynoSize>
   /** List existing dyno sizes. */
   list(): Promise<Array<DynoSize>>
   /** List available dyno sizes for an app */
@@ -4821,6 +4880,8 @@ export interface HerokuClient {
   stop(appIdentity: string, dynoIdentity: string): Promise<Dyno>
   /** Stop dynos of a given formation type. */
   stopFormation(appIdentity: string, dynoFormationType: string): Promise<Dyno>
+  /** Info for existing dyno. */
+  info(appIdentity: string, dynoIdentity: string): Promise<Dyno>
   /** List existing dynos. */
   list(appIdentity: string): Promise<Array<Dyno>>
   }
@@ -4899,6 +4960,8 @@ export interface HerokuClient {
   enterpriseAccount: {
   /** List enterprise accounts in which you are a member. */
   list(): Promise<Array<EnterpriseAccount>>
+  /** Information about an enterprise account. */
+  info(enterpriseAccountIdentity: string): Promise<EnterpriseAccount>
   /** Update enterprise account properties */
   update(enterpriseAccountIdentity: string, requestBody: EnterpriseAccountUpdateOpts): Promise<EnterpriseAccount>
   }
@@ -4909,6 +4972,8 @@ export interface HerokuClient {
   }
   /** The formation of processes that should be maintained for an app. Update the formation to scale processes or change dyno sizes. Available process type names and commands are defined by the `process_types` attribute for the [slug](#slug) currently released on an app. */
   formation: {
+  /** Info for a process type */
+  info(appIdentity: string, formationIdentity: string): Promise<Formation>
   /** List process type formation */
   list(appIdentity: string): Promise<Array<Formation>>
   /** Batch update process types */
@@ -4918,6 +4983,8 @@ export interface HerokuClient {
   }
   /** A generation represents a version of the Heroku platform that includes the app execution environment, routing, telemetry, and build systems. */
   generation: {
+  /** Info for generation. */
+  info(stackIdentity: string): Promise<Generation>
   /** List available generations. */
   listGet(): Promise<Array<Generation>>
   /** List available generations for a team. */
@@ -4925,6 +4992,8 @@ export interface HerokuClient {
   }
   /** Identity Providers represent the SSO configuration of an Enterprise Account or Team. */
   identityProvider: {
+  /** Info for an Identity Provider */
+  info(identityProviderIdentity: string): Promise<IdentityProvider>
   /** Create an Identity Provider */
   create(requestBody: IdentityProviderCreateOpts): Promise<IdentityProvider>
   /** Update an Identity Provider */
@@ -4932,18 +5001,33 @@ export interface HerokuClient {
   }
   /** An inbound-ruleset is a collection of rules that specify what hosts can or cannot connect to an application. */
   inboundRuleset: {
+  /** Current inbound ruleset for a space */
+  current(spaceIdentity: string): Promise<InboundRuleset>
+  /** Info on an existing Inbound Ruleset */
+  info(spaceIdentity: string, inboundRulesetIdentity: string): Promise<InboundRuleset>
   /** List all inbound rulesets for a space */
   list(spaceIdentity: string): Promise<Array<InboundRuleset>>
   /** Create a new inbound ruleset */
   create(spaceIdentity: string, requestBody: InboundRulesetCreateOpts): Promise<InboundRuleset>
   }
+  /** An invoice address represents the address that should be listed on an invoice. */
+  invoiceAddress: {
+  /** Retrieve existing invoice address. */
+  info(): Promise<InvoiceAddress>
+  /** Update invoice address for an account. */
+  update(requestBody: InvoiceAddressUpdateOpts): Promise<InvoiceAddress>
+  }
   /** An invoice is an itemized bill of goods for an account which includes pricing and charges. */
   invoice: {
+  /** Info for existing invoice. */
+  info(invoiceIdentity: number): Promise<Invoice>
   /** List existing invoices. */
   list(): Promise<Array<Invoice>>
   }
   /** Keys represent public SSH keys associated with an account and are used to authorize accounts as they are performing git operations. */
   key: {
+  /** Info for existing key. */
+  info(keyIdentity: string): Promise<Key>
   /** List existing keys. */
   list(): Promise<Array<Key>>
   }
@@ -4955,6 +5039,8 @@ export interface HerokuClient {
   update(addOnIdentity: string, logDrainQueryIdentity: string, requestBody: LogDrainUpdateOpts): Promise<LogDrain>
   /** Delete an existing log drain. Log drains added by add-ons can only be removed by removing the add-on. */
   delete(appIdentity: string, logDrainQueryIdentity: string): Promise<LogDrain>
+  /** Info for existing log drain. */
+  info(appIdentity: string, logDrainQueryIdentity: string): Promise<LogDrain>
   /** List existing log drains for an add-on. */
   listByAddOn(addOnIdentity: string): Promise<Array<LogDrain>>
   /** List existing log drains. */
@@ -4971,6 +5057,8 @@ export interface HerokuClient {
   create(requestBody: OauthAuthorizationCreateOpts): Promise<OauthAuthorization>
   /** Delete OAuth authorization. */
   delete(oauthAuthorizationIdentity: string): Promise<OauthAuthorization>
+  /** Info for an OAuth authorization. */
+  info(oauthAuthorizationIdentity: string): Promise<OauthAuthorization>
   /** Update an existing OAuth authorization. */
   update(oauthAuthorizationIdentity: string, requestBody: OauthAuthorizationUpdateOpts): Promise<OauthAuthorization>
   /** List OAuth authorizations. */
@@ -4984,6 +5072,8 @@ export interface HerokuClient {
   create(requestBody: OauthClientCreateOpts): Promise<OauthClient>
   /** Delete OAuth client. */
   delete(oauthClientIdentity: string): Promise<OauthClient>
+  /** Info for an OAuth client. The output for unauthenticated requests excludes the `secret` parameter. */
+  info(oauthClientIdentity: string): Promise<OauthClient>
   /** List OAuth clients */
   list(): Promise<Array<OauthClient>>
   /** Update OAuth client */
@@ -5000,13 +5090,24 @@ export interface HerokuClient {
   }
   /** An OCI (Open Container Initiative) image is a standardized format for packaging and distributing containerized applications, ready to run on the platform. */
   ociImage: {
+  /** Info for the OCI images of an app, filtered by identifier. */
+  info(appIdentity: string, ociImageIdentity: string): Promise<Array<OciImage>>
   /** Create an new OCI image of an app */
   create(appIdentity: string, requestBody: OciImageCreateOpts): Promise<OciImage>
+  }
+  /** A password reset represents a in-process password reset attempt. */
+  passwordReset: {
+  /** Reset account's password. This will send a reset password link to the user's email address. */
+  resetPassword(requestBody: PasswordResetResetPasswordOpts): Promise<PasswordReset>
+  /** Complete password reset. */
+  completeResetPassword(passwordResetResetPasswordToken: string, requestBody: PasswordResetCompleteResetPasswordOpts): Promise<PasswordReset>
   }
   /** [Peering](https://devcenter.heroku.com/articles/private-space-vpc-peering?preview=1) provides a way to peer your Private Space VPC to another AWS VPC. */
   peering: {
   /** Provides the necessary information to establish an AWS VPC Peering with your private space. */
   info(spaceIdentity: string): Promise<Peering>
+  /** List peering connections of a private space. */
+  list(spaceIdentity: string): Promise<Array<Peering>>
   /** Accept a pending peering connection with a private space. */
   accept(spaceIdentity: string, requestBody: PeeringAcceptOpts): Promise<Peering>
   /** Destroy an active peering connection with a private space. */
@@ -5024,6 +5125,8 @@ export interface HerokuClient {
   }
   /** Pipeline config vars in Heroku CI and review apps used to manage the configuration information for a pipeline. */
   pipelineConfigVar: {
+  /** Get config-vars for a pipeline stage. */
+  infoForApp(pipelineId: string, pipelineCouplingStage: 'test' | 'review' | 'development' | 'staging' | 'production'): Promise<PipelineConfigVar>
   /** Update config-vars for a pipeline stage. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
   update(pipelineId: string, pipelineCouplingStage: 'test' | 'review' | 'development' | 'staging' | 'production'): Promise<PipelineConfigVar>
   }
@@ -5039,10 +5142,14 @@ export interface HerokuClient {
   listByTeam(teamIdentity: string): Promise<Array<PipelineCoupling>>
   /** Create a new pipeline coupling. */
   create(requestBody: PipelineCouplingCreateOpts): Promise<PipelineCoupling>
+  /** Info for an existing pipeline coupling. */
+  info(pipelineCouplingIdentity: string): Promise<PipelineCoupling>
   /** Delete an existing pipeline coupling. */
   delete(pipelineCouplingIdentity: string): Promise<PipelineCoupling>
   /** Update an existing pipeline coupling. */
   update(pipelineCouplingIdentity: string, requestBody: PipelineCouplingUpdateOpts): Promise<PipelineCoupling>
+  /** Info for an existing pipeline coupling. */
+  infoByApp(appIdentity: string): Promise<PipelineCoupling>
   }
   /** Information about the latest deployment of each app in a pipeline. A deployment is the process of moving the build artifacts to a target environment. */
   pipelineDeployment: {
@@ -5058,11 +5165,18 @@ export interface HerokuClient {
   pipelinePromotion: {
   /** Create a new promotion. */
   create(requestBody: PipelinePromotionCreateOpts): Promise<PipelinePromotion>
+  /** Info for existing pipeline promotion. */
+  info(pipelinePromotionIdentity: string): Promise<PipelinePromotion>
   }
   /** Information about the latest release of each app in a pipeline. A release makes a deployment available to end-users. */
   pipelineRelease: {
   /** List latest releases for each app in a pipeline */
   list(pipelineId: string): Promise<Array<Release>>
+  }
+  /** A pipeline's stack is determined by the apps in the pipeline. This is used during creation of CI and Review Apps that have no stack defined in app.json */
+  pipelineStack: {
+  /** The stack for a given pipeline, used for CI and Review Apps that have no stack defined in app.json. */
+  defaultStack(pipelineId: string): Promise<PipelineStack>
   }
   /** A pipeline transfer is the process of changing pipeline ownership along with the contained apps. */
   pipelineTransfer: {
@@ -5073,6 +5187,8 @@ export interface HerokuClient {
   pipeline: {
   /** Create a new pipeline. */
   create(requestBody: PipelineCreateOpts): Promise<Pipeline>
+  /** Info for existing pipeline. */
+  info(pipelineIdentity: string): Promise<Pipeline>
   /** Delete an existing pipeline. */
   delete(pipelineId: string): Promise<Pipeline>
   /** Update an existing pipeline. */
@@ -5082,16 +5198,29 @@ export interface HerokuClient {
   }
   /** Plans represent different configurations of add-ons that may be added to apps. Endpoints under add-on services can be accessed without authentication. */
   plan: {
+  /** Info for existing plan. */
+  info(planIdentity: string): Promise<Plan>
+  /** Info for existing plan by Add-on. */
+  infoByAddOn(addOnServiceIdentity: string, planIdentity: string): Promise<Plan>
   /** List existing plans by Add-on. */
   listByAddOn(addOnServiceIdentity: string): Promise<Array<Plan>>
   }
+  /** Rate Limit represents the number of request tokens each account holds. Requests to this endpoint do not count towards the rate limit. */
+  rateLimit: {
+  /** Info for rate limits. */
+  info(): Promise<RateLimit>
+  }
   /** A region represents a geographic location in which your application may run. */
   region: {
+  /** Info for existing region. */
+  info(regionIdentity: string): Promise<Region>
   /** List existing regions. */
   list(): Promise<Array<Region>>
   }
   /** A release represents a combination of code, config vars and add-ons for an app on Heroku. */
   release: {
+  /** Info for existing release. */
+  info(appIdentity: string, releaseIdentity: string | number): Promise<Release>
   /** List existing releases. */
   list(appIdentity: string): Promise<Array<Release>>
   /** Create new release. */
@@ -5116,6 +5245,8 @@ export interface HerokuClient {
   reviewAppConfig: {
   /** Enable review apps for a pipeline */
   enable(pipelineId: string, requestBody: ReviewAppConfigEnableOpts): Promise<ReviewAppConfig>
+  /** Get review apps configuration for a pipeline */
+  info(pipelineId: string): Promise<ReviewAppConfig>
   /** Update review app configuration for a pipeline */
   update(pipelineId: string, requestBody: ReviewAppConfigUpdateOpts): Promise<ReviewAppConfig>
   /** Disable review apps for a pipeline */
@@ -5123,8 +5254,19 @@ export interface HerokuClient {
   }
   /** A slug is a snapshot of your application code that is ready to run on the platform. */
   slug: {
+  /** Info for existing slug. */
+  info(appIdentity: string, slugIdentity: string): Promise<Slug>
   /** Create a new slug. For more information please refer to [Deploying Slugs using the Platform API](https://devcenter.heroku.com/articles/platform-api-deploying-slugs). */
   create(appIdentity: string, requestBody: SlugCreateOpts): Promise<Slug>
+  }
+  /** SMS numbers are used for recovery on accounts with two-factor authentication enabled. */
+  smsNumber: {
+  /** Recover an account using an SMS recovery code */
+  sMSNumber(accountIdentity: string | '~'): Promise<SmsNumber>
+  /** Recover an account using an SMS recovery code */
+  recover(accountIdentity: string | '~'): Promise<SmsNumber>
+  /** Confirm an SMS number change with a confirmation code */
+  confirm(accountIdentity: string | '~'): Promise<SmsNumber>
   }
   /** SNI Endpoint is a public address serving a custom SSL cert for HTTPS traffic, using the SNI TLS extension, to a Heroku app. */
   sniEndpoint: {
@@ -5132,6 +5274,8 @@ export interface HerokuClient {
   create(appIdentity: string, requestBody: SniEndpointCreateOpts): Promise<SniEndpoint>
   /** Delete existing SNI endpoint. */
   delete(appIdentity: string, sniEndpointIdentity: string): Promise<SniEndpoint>
+  /** Info for existing SNI endpoint. */
+  info(appIdentity: string, sniEndpointIdentity: string): Promise<SniEndpoint>
   /** List existing SNI endpoints. */
   list(appIdentity: string): Promise<Array<SniEndpoint>>
   /** Update an existing SNI endpoint. */
@@ -5146,10 +5290,22 @@ export interface HerokuClient {
   }
   /** Space access represents the permissions a particular user has on a particular space. */
   spaceAppAccess: {
+  /** List permissions for a given user on a given space. */
+  info(spaceIdentity: string, accountIdentity: string | '~'): Promise<SpaceAppAccess>
   /** Update an existing user's set of permissions on a space. */
   update(spaceIdentity: string, accountIdentity: string | '~', requestBody: SpaceAppAccessUpdateOpts): Promise<SpaceAppAccess>
   /** List all users and their permissions on a space. */
   list(spaceIdentity: string): Promise<Array<SpaceAppAccess>>
+  }
+  /** Network address translation (NAT) for stable outbound IP addresses from a space */
+  spaceNat: {
+  /** Current state of network address translation for a space. */
+  info(spaceIdentity: string): Promise<SpaceNat>
+  }
+  /** Space Topology provides you with a mechanism for viewing all the running dynos, formations and applications for a space. This is the same data thats used to power our DNS Service Discovery. */
+  spaceTopology: {
+  /** Current space topology */
+  topology(spaceIdentity: string): Promise<SpaceTopology>
   }
   /** Transfer spaces between enterprise teams with the same Enterprise Account. */
   spaceTransfer: {
@@ -5160,6 +5316,8 @@ export interface HerokuClient {
   space: {
   /** List existing spaces. */
   list(): Promise<Array<Space>>
+  /** Info for existing space. */
+  info(spaceIdentity: string): Promise<Space>
   /** Update an existing space. */
   update(spaceIdentity: string, requestBody: SpaceUpdateOpts): Promise<Space>
   /** Delete an existing space. */
@@ -5169,6 +5327,8 @@ export interface HerokuClient {
   }
   /** Stacks are the different application execution environments available in the Heroku platform. */
   stack: {
+  /** Stack info. */
+  info(stackIdentity: string): Promise<Stack>
   /** List available stacks. */
   listGet(): Promise<Array<Stack>>
   /** List available app stacks for an app. */
@@ -5184,6 +5344,8 @@ export interface HerokuClient {
   create(appIdentity: string, requestBody: TeamAppCollaboratorCreateOpts): Promise<TeamAppCollaborator>
   /** Delete an existing collaborator from a team app. */
   delete(teamAppIdentity: string, teamAppCollaboratorIdentity: string): Promise<TeamAppCollaborator>
+  /** Info for a collaborator on a team app. */
+  info(teamAppIdentity: string, teamAppCollaboratorIdentity: string): Promise<TeamAppCollaborator>
   /** Update an existing collaborator from a team app. */
   update(teamAppIdentity: string, teamAppCollaboratorIdentity: string, requestBody: TeamAppCollaboratorUpdateOpts): Promise<TeamAppCollaborator>
   /** List collaborators on a team app. */
@@ -5198,6 +5360,8 @@ export interface HerokuClient {
   teamApp: {
   /** Create a new app in the specified team, in the default team if unspecified, or in personal account, if default team is not set. */
   create(requestBody: TeamAppCreateOpts): Promise<TeamApp>
+  /** Info for a team app. */
+  info(teamAppIdentity: string): Promise<TeamApp>
   /** Lock or unlock a team app. */
   updateLocked(teamAppIdentity: string, requestBody: TeamAppUpdateLockedOpts): Promise<TeamApp>
   /** Transfer an existing team app to another Heroku account. */
@@ -5215,8 +5379,15 @@ export interface HerokuClient {
    */
   info(teamId: string, requestBody: TeamDailyUsageInfoOpts): Promise<Array<TeamDailyUsage>>
   }
+  /** A Heroku team becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent teams if their invoices remain unpaid. */
+  teamDelinquency: {
+  /** Team delinquency information. */
+  info(teamIdentity: string): Promise<TeamDelinquency>
+  }
   /** A team feature represents a feature enabled on a team account. */
   teamFeature: {
+  /** Info for an existing team feature. */
+  info(teamIdentity: string, teamFeatureIdentity: string): Promise<TeamFeature>
   /** List existing team features. */
   list(teamIdentity: string): Promise<Array<TeamFeature>>
   }
@@ -5226,6 +5397,8 @@ export interface HerokuClient {
   list(teamName: string): Promise<Array<TeamInvitation>>
   /** Create Team Invitation */
   create(teamIdentity: string, requestBody: TeamInvitationCreateOpts): Promise<TeamInvitation>
+  /** Revoke a team invitation. */
+  revoke(teamIdentity: string, teamInvitationIdentity: string): Promise<TeamInvitation>
   /** Get an invitation by its token */
   get(teamInvitationToken: string): Promise<TeamInvitation>
   /** Accept Team Invitation */
@@ -5233,6 +5406,8 @@ export interface HerokuClient {
   }
   /** A Team Invoice is an itemized bill of goods for a team which includes pricing and charges. */
   teamInvoice: {
+  /** Info for existing invoice. */
+  info(teamIdentity: string, teamInvoiceIdentity: number): Promise<TeamInvoice>
   /** List existing invoices. */
   list(teamIdentity: string): Promise<Array<TeamInvoice>>
   }
@@ -5261,6 +5436,8 @@ export interface HerokuClient {
   }
   /** Tracks a Team's Preferences */
   teamPreferences: {
+  /** Retrieve Team Preferences */
+  list(teamPreferencesIdentity: string): Promise<TeamPreferences>
   /** Update Team Preferences */
   update(teamPreferencesIdentity: string, requestBody: TeamPreferencesUpdateOpts): Promise<TeamPreferences>
   }
@@ -5273,6 +5450,8 @@ export interface HerokuClient {
   team: {
   /** List teams in which you are a member. */
   list(): Promise<Array<Team>>
+  /** Info for a team. */
+  info(teamIdentity: string): Promise<Team>
   /** Update team properties. */
   update(teamIdentity: string, requestBody: TeamUpdateOpts): Promise<Team>
   /** Create a new team. */
@@ -5296,6 +5475,8 @@ export interface HerokuClient {
   update(telemetryDrainIdentity: string, requestBody: TelemetryDrainUpdateOpts): Promise<TelemetryDrain>
   /** Delete a telemetry drain. */
   delete(telemetryDrainIdentity: string): Promise<TelemetryDrain>
+  /** Info for a telemetry drain. */
+  info(telemetryDrainIdentity: string): Promise<TelemetryDrain>
   }
   /** A single test case belonging to a test run */
   testCase: {
@@ -5311,11 +5492,19 @@ export interface HerokuClient {
   testRun: {
   /** Create a new test-run. */
   create(requestBody: TestRunCreateOpts): Promise<TestRun>
+  /** Info for existing test-run. */
+  info(testRunId: string): Promise<TestRun>
   /** List existing test-runs for a pipeline. */
   list(pipelineId: string): Promise<TestRun>
+  /** Info for existing test-run by Pipeline */
+  infoByPipeline(pipelineId: string, testRunNumber: number): Promise<TestRun>
+  /** Update a test-run's status. */
+  update(testRunNumber: number, requestBody: TestRunUpdateOpts): Promise<TestRun>
   }
   /** Tracks a user's preferences and message dismissals */
   userPreferences: {
+  /** Retrieve User Preferences */
+  list(userPreferencesIdentity: '~'): Promise<UserPreferences>
   /** Update User Preferences */
   update(userPreferencesIdentity: '~', requestBody: UserPreferencesUpdateOpts): Promise<UserPreferences>
   }
@@ -5327,8 +5516,33 @@ export interface HerokuClient {
   destroy(spaceIdentity: string, vpnConnectionIdentity: string): Promise<VpnConnection>
   /** List VPN connections for a space. */
   list(spaceIdentity: string): Promise<Array<VpnConnection>>
+  /** Info for an existing vpn-connection. */
+  info(spaceIdentity: string, vpnConnectionIdentity: string): Promise<VpnConnection>
   /** Update a VPN connection in a private space. */
   update(spaceIdentity: string, vpnConnectionIdentity: string, requestBody: VpnConnectionUpdateOpts): Promise<VpnConnection>
+  }
+  /** Add-on Single Sign-on generates URL that allows a customer to log in to an Add-on Service's web dashboard. */
+  addOnSso: {
+  /** Generate a timestamp-based single sign-on URL. */
+  addOnSSO(addOnIdentity: string): Promise<AddOnSso>
+  /** Generate a timestamp-based single sign-on URL. */
+  addOnSSOByApp(appIdentity: string, addOnIdentity: string): Promise<AddOnSso>
+  }
+  /** Build metadata contains the reference data for building the associated App. */
+  buildMetadata: {
+  /** Build metadata for app. */
+  info(appIdentity: string): Promise<BuildMetadata>
+  }
+  /** A capability represents a requested capability on a resource along with whether the requesting user has that capability */
+  capability: {
+  /**
+   * Request to check a list of capabilities the current user (yourself). An capability is a tuple of
+   * (capability, resource_id, resource_type). The endpoint will then respond with a `capable` boolean
+   * true or false for each requested capability. This boolean indicates whether the authenticated user
+   * has the requested capability on the resource.
+   * 
+   */
+  capabilities(requestBody: CapabilityCapabilitiesOpts): Promise<CapabilityCapabilitiesResult>
   }
   /** The Config Vars Settings endpoints enable you to view and manage the configuration provided to an app on Heroku. These endpoints are similar to /config-vars but also allow you to check which config vars you can mask, and which are currently masked. */
   configVarsSettings: {
@@ -5341,6 +5555,23 @@ export interface HerokuClient {
   dynoProcesses: {
   /** Create a new process in an existing dyno. */
   create(appIdentity: string, dynoIdentity: string, requestBody: DynoProcessesCreateOpts): Promise<DynoProcesses>
+  }
+  /** Contains a set of information useful for identifying a user and the type of access this user is allowed to have. */
+  gatewayToken: {
+  /**
+   * Generate a gateway token for a user. Note that a JWT version of the
+   * token will be available in `Heroku-Gateway-Token` header.
+   * 
+   */
+  create(): Promise<GatewayToken>
+  /**
+   * Generates a Proxy oauth acccess tokens for the passed in gateway token.
+   * This new proxy token is designed to have a shorter lifetime than the
+   * user supplied token so it is safe to pass to futher downstream services
+   * without increasing the breadth of the long lived tokens.
+   * 
+   */
+  oAuthToken(): Promise<GatewayToken>
   }
   /** Actions taken on Identity Providers, the SSO configuration representation. */
   identityProviderActions: {
@@ -5355,11 +5586,22 @@ export interface HerokuClient {
   create(identityProviderIdentity: string, requestBody: IdentityProviderCertificateCreateOpts): Promise<IdentityProviderCertificate>
   /** Update a Certificate */
   update(identityProvidersIdentity: string, certificatesIdentity: string, requestBody: IdentityProviderCertificateUpdateOpts): Promise<IdentityProviderCertificate>
+  /** Get a Certificate */
+  info(identityProvidersIdentity: string, certificatesIdentity: string): Promise<IdentityProviderCertificate>
   }
   /** The on file payment method for an account */
   paymentMethod: {
   /** Update an existing payment method for an account. */
   update(requestBody: PaymentMethodUpdateOpts): Promise<PaymentMethod>
+  /** Get the current payment method for an account. */
+  get(): Promise<PaymentMethod>
+  }
+  /** A payment represents money collected for an account */
+  payment: {
+  /** Create a payment on an existing account */
+  createPost(requestBody: PaymentCreatePostOpts): Promise<Payment>
+  /** Create a payment on an existing team */
+  createPost(teamIdentity: string, requestBody: PaymentCreatePostOpts): Promise<Payment>
   }
   /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
   spaceHost: {
@@ -5368,6 +5610,8 @@ export interface HerokuClient {
   }
   /** Single log drain for all apps in a Private Space */
   spaceLogDrain: {
+  /** Current log drain for a space. */
+  info(spaceIdentity: string): Promise<SpaceLogDrain>
   /** Update log drain for a space. */
   update(spaceIdentity: string, requestBody: SpaceLogDrainUpdateOpts): Promise<SpaceLogDrain>
   }

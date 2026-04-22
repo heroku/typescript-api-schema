@@ -8,6 +8,8 @@ export interface RouteDefinition {
   hasRequestBody?: true
 }
 
+export declare const accountDelinquency: Record<string, RouteDefinition>
+
 export declare const accountFeature: Record<string, RouteDefinition>
 
 export declare const account: Record<string, RouteDefinition>
@@ -84,6 +86,8 @@ export declare const identityProvider: Record<string, RouteDefinition>
 
 export declare const inboundRuleset: Record<string, RouteDefinition>
 
+export declare const invoiceAddress: Record<string, RouteDefinition>
+
 export declare const invoice: Record<string, RouteDefinition>
 
 export declare const key: Record<string, RouteDefinition>
@@ -99,6 +103,8 @@ export declare const oauthClient: Record<string, RouteDefinition>
 export declare const oauthToken: Record<string, RouteDefinition>
 
 export declare const ociImage: Record<string, RouteDefinition>
+
+export declare const passwordReset: Record<string, RouteDefinition>
 
 export declare const peering: Record<string, RouteDefinition>
 
@@ -118,11 +124,15 @@ export declare const pipelinePromotion: Record<string, RouteDefinition>
 
 export declare const pipelineRelease: Record<string, RouteDefinition>
 
+export declare const pipelineStack: Record<string, RouteDefinition>
+
 export declare const pipelineTransfer: Record<string, RouteDefinition>
 
 export declare const pipeline: Record<string, RouteDefinition>
 
 export declare const plan: Record<string, RouteDefinition>
+
+export declare const rateLimit: Record<string, RouteDefinition>
 
 export declare const region: Record<string, RouteDefinition>
 
@@ -134,11 +144,17 @@ export declare const reviewAppConfig: Record<string, RouteDefinition>
 
 export declare const slug: Record<string, RouteDefinition>
 
+export declare const smsNumber: Record<string, RouteDefinition>
+
 export declare const sniEndpoint: Record<string, RouteDefinition>
 
 export declare const source: Record<string, RouteDefinition>
 
 export declare const spaceAppAccess: Record<string, RouteDefinition>
+
+export declare const spaceNat: Record<string, RouteDefinition>
+
+export declare const spaceTopology: Record<string, RouteDefinition>
 
 export declare const spaceTransfer: Record<string, RouteDefinition>
 
@@ -155,6 +171,8 @@ export declare const teamAppPermission: Record<string, RouteDefinition>
 export declare const teamApp: Record<string, RouteDefinition>
 
 export declare const teamDailyUsage: Record<string, RouteDefinition>
+
+export declare const teamDelinquency: Record<string, RouteDefinition>
 
 export declare const teamFeature: Record<string, RouteDefinition>
 
@@ -184,15 +202,25 @@ export declare const userPreferences: Record<string, RouteDefinition>
 
 export declare const vpnConnection: Record<string, RouteDefinition>
 
+export declare const addOnSso: Record<string, RouteDefinition>
+
+export declare const buildMetadata: Record<string, RouteDefinition>
+
+export declare const capability: Record<string, RouteDefinition>
+
 export declare const configVarsSettings: Record<string, RouteDefinition>
 
 export declare const dynoProcesses: Record<string, RouteDefinition>
+
+export declare const gatewayToken: Record<string, RouteDefinition>
 
 export declare const identityProviderActions: Record<string, RouteDefinition>
 
 export declare const identityProviderCertificate: Record<string, RouteDefinition>
 
 export declare const paymentMethod: Record<string, RouteDefinition>
+
+export declare const payment: Record<string, RouteDefinition>
 
 export declare const spaceHost: Record<string, RouteDefinition>
 

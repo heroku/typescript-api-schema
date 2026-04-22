@@ -300,8 +300,6 @@ export class TypeRenderer {
   ): string[] {
     const lines: string[] = []
     for (const { link, titleKey } of this.resolveLinks(definition)) {
-      if (link.rel === 'self') continue
-
       const methodName = toCamelCase(titleKey)
       const params: string[] = []
 
@@ -333,7 +331,6 @@ export class TypeRenderer {
     const SUPPORTED_METHODS: ReadonlySet<string> = new Set(HTTP_METHODS)
 
     for (const { link, titleKey } of this.resolveLinks(definition)) {
-      if (link.rel === 'self') continue
       if (!link.href || !link.method) continue
 
       const method = link.method.toUpperCase()

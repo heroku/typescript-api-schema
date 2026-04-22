@@ -2,7 +2,18 @@
  * NOTE: the contents of this file are generated. Do not modify this file.
  */
 
+export const accountDelinquency = {
+  "info": {
+    "method": "GET",
+    "path": "/account/delinquency"
+  }
+}
+
 export const accountFeature = {
+  "info": {
+    "method": "GET",
+    "path": "/account/features/{accountFeatureIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/account/features"
@@ -15,6 +26,10 @@ export const accountFeature = {
 }
 
 export const account = {
+  "info": {
+    "method": "GET",
+    "path": "/account"
+  },
   "update": {
     "method": "PATCH",
     "path": "/account",
@@ -23,6 +38,10 @@ export const account = {
   "delete": {
     "method": "DELETE",
     "path": "/account"
+  },
+  "infoByUser": {
+    "method": "GET",
+    "path": "/users/{accountIdentity}"
   },
   "updateByUser": {
     "method": "PATCH",
@@ -65,6 +84,10 @@ export const addOnAttachment = {
     "method": "DELETE",
     "path": "/addon-attachments/{addOnAttachmentIdentity}"
   },
+  "info": {
+    "method": "GET",
+    "path": "/addon-attachments/{addOnAttachmentIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/addon-attachments"
@@ -76,6 +99,10 @@ export const addOnAttachment = {
   "listByApp": {
     "method": "GET",
     "path": "/apps/{appIdentity}/addon-attachments"
+  },
+  "infoByApp": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/addon-attachments/{addOnAttachmentScopedIdentity}"
   },
   "resolution": {
     "method": "POST",
@@ -112,6 +139,10 @@ export const addOnRegionCapability = {
 }
 
 export const addOnService = {
+  "info": {
+    "method": "GET",
+    "path": "/addon-services/{addOnServiceIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/addon-services"
@@ -119,6 +150,10 @@ export const addOnService = {
 }
 
 export const addOnWebhookDelivery = {
+  "info": {
+    "method": "GET",
+    "path": "/addons/{addOnIdentity}/webhook-deliveries/{appWebhookDeliveryIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/addons/{addOnIdentity}/webhook-deliveries"
@@ -126,6 +161,10 @@ export const addOnWebhookDelivery = {
 }
 
 export const addOnWebhookEvent = {
+  "info": {
+    "method": "GET",
+    "path": "/addons/{addOnIdentity}/webhook-events/{appWebhookEventIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/addons/{addOnIdentity}/webhook-events"
@@ -140,6 +179,10 @@ export const addOnWebhook = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/addons/{addOnIdentity}/webhooks/{appWebhookIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/addons/{addOnIdentity}/webhooks/{appWebhookIdentity}"
   },
   "list": {
@@ -158,6 +201,10 @@ export const addOn = {
     "method": "GET",
     "path": "/addons"
   },
+  "info": {
+    "method": "GET",
+    "path": "/addons/{addOnIdentity}"
+  },
   "create": {
     "method": "POST",
     "path": "/apps/{appIdentity}/addons",
@@ -165,6 +212,10 @@ export const addOn = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/apps/{appIdentity}/addons/{addOnIdentity}"
+  },
+  "infoByApp": {
+    "method": "GET",
     "path": "/apps/{appIdentity}/addons/{addOnIdentity}"
   },
   "listByApp": {
@@ -208,6 +259,10 @@ export const allowedAddOnService = {
 }
 
 export const appFeature = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/features/{appFeatureIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/features"
@@ -224,6 +279,10 @@ export const appSetup = {
     "method": "POST",
     "path": "/app-setups",
     "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/app-setups/{appSetupIdentity}"
   }
 }
 
@@ -235,6 +294,10 @@ export const appTransfer = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/account/app-transfers/{appTransferIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/account/app-transfers/{appTransferIdentity}"
   },
   "list": {
@@ -249,6 +312,10 @@ export const appTransfer = {
 }
 
 export const appWebhookDelivery = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/webhook-deliveries/{appWebhookDeliveryIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/webhook-deliveries"
@@ -256,6 +323,10 @@ export const appWebhookDelivery = {
 }
 
 export const appWebhookEvent = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/webhook-events/{appWebhookEventIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/webhook-events"
@@ -270,6 +341,10 @@ export const appWebhook = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/apps/{appIdentity}/webhooks/{appWebhookIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/apps/{appIdentity}/webhooks/{appWebhookIdentity}"
   },
   "list": {
@@ -291,6 +366,10 @@ export const app = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/apps/{appIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/apps/{appIdentity}"
   },
   "list": {
@@ -321,6 +400,10 @@ export const app = {
 }
 
 export const archive = {
+  "info": {
+    "method": "GET",
+    "path": "/enterprise-accounts/{enterpriseAccountIdentity}/archives/{archiveYear}/{archiveMonth}"
+  },
   "list": {
     "method": "GET",
     "path": "/enterprise-accounts/{enterpriseAccountIdentity}/archives"
@@ -340,6 +423,10 @@ export const build = {
     "path": "/apps/{appIdentity}/builds",
     "hasRequestBody": true
   },
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/builds/{buildIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/builds"
@@ -347,6 +434,10 @@ export const build = {
   "deleteCache": {
     "method": "DELETE",
     "path": "/apps/{appIdentity}/build-cache"
+  },
+  "cancel": {
+    "method": "DELETE",
+    "path": "/apps/{appIdentity}/builds/{buildIdentity}"
   }
 }
 
@@ -372,6 +463,10 @@ export const collaborator = {
     "method": "DELETE",
     "path": "/apps/{appIdentity}/collaborators/{collaboratorIdentity}"
   },
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/collaborators/{collaboratorIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/collaborators"
@@ -379,6 +474,14 @@ export const collaborator = {
 }
 
 export const configVar = {
+  "infoForApp": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/config-vars"
+  },
+  "infoForAppRelease": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/releases/{releaseIdentity}/config-vars"
+  },
   "update": {
     "method": "PATCH",
     "path": "/apps/{appIdentity}/config-vars"
@@ -390,6 +493,10 @@ export const credit = {
     "method": "POST",
     "path": "/account/credits",
     "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/account/credits/{creditIdentity}"
   },
   "list": {
     "method": "GET",
@@ -412,6 +519,10 @@ export const domain = {
     "method": "DELETE",
     "path": "/apps/{appIdentity}/domains/{domainIdentity}"
   },
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/domains/{domainIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/domains"
@@ -419,6 +530,10 @@ export const domain = {
 }
 
 export const dynoSize = {
+  "info": {
+    "method": "GET",
+    "path": "/dyno-sizes/{dynoSizeIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/dyno-sizes"
@@ -454,6 +569,10 @@ export const dyno = {
   "stopFormation": {
     "method": "POST",
     "path": "/apps/{appIdentity}/formations/{dynoFormationType}/actions/stop"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/dynos/{dynoIdentity}"
   },
   "list": {
     "method": "GET",
@@ -503,6 +622,10 @@ export const enterpriseAccount = {
     "method": "GET",
     "path": "/enterprise-accounts"
   },
+  "info": {
+    "method": "GET",
+    "path": "/enterprise-accounts/{enterpriseAccountIdentity}"
+  },
   "update": {
     "method": "PATCH",
     "path": "/enterprise-accounts/{enterpriseAccountIdentity}",
@@ -518,6 +641,10 @@ export const filterApps = {
 }
 
 export const formation = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/formation/{formationIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/formation"
@@ -535,6 +662,10 @@ export const formation = {
 }
 
 export const generation = {
+  "info": {
+    "method": "GET",
+    "path": "/generations/{stackIdentity}"
+  },
   "listGet": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/available-generations"
@@ -542,6 +673,10 @@ export const generation = {
 }
 
 export const identityProvider = {
+  "info": {
+    "method": "GET",
+    "path": "/identity-providers/{identityProviderIdentity}"
+  },
   "create": {
     "method": "POST",
     "path": "/identity-providers",
@@ -555,6 +690,14 @@ export const identityProvider = {
 }
 
 export const inboundRuleset = {
+  "current": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/inbound-ruleset"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/inbound-rulesets/{inboundRulesetIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/spaces/{spaceIdentity}/inbound-rulesets"
@@ -566,7 +709,23 @@ export const inboundRuleset = {
   }
 }
 
+export const invoiceAddress = {
+  "info": {
+    "method": "GET",
+    "path": "/account/invoice-address"
+  },
+  "update": {
+    "method": "PUT",
+    "path": "/account/invoice-address",
+    "hasRequestBody": true
+  }
+}
+
 export const invoice = {
+  "info": {
+    "method": "GET",
+    "path": "/account/invoices/{invoiceIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/account/invoices"
@@ -574,6 +733,10 @@ export const invoice = {
 }
 
 export const key = {
+  "info": {
+    "method": "GET",
+    "path": "/account/keys/{keyIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/account/keys"
@@ -593,6 +756,10 @@ export const logDrain = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/apps/{appIdentity}/log-drains/{logDrainQueryIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/apps/{appIdentity}/log-drains/{logDrainQueryIdentity}"
   },
   "listByAddOn": {
@@ -623,6 +790,10 @@ export const oauthAuthorization = {
     "method": "DELETE",
     "path": "/oauth/authorizations/{oauthAuthorizationIdentity}"
   },
+  "info": {
+    "method": "GET",
+    "path": "/oauth/authorizations/{oauthAuthorizationIdentity}"
+  },
   "update": {
     "method": "PATCH",
     "path": "/oauth/authorizations/{oauthAuthorizationIdentity}",
@@ -646,6 +817,10 @@ export const oauthClient = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/oauth/clients/{oauthClientIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/oauth/clients/{oauthClientIdentity}"
   },
   "list": {
@@ -676,9 +851,26 @@ export const oauthToken = {
 }
 
 export const ociImage = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/oci-images/{ociImageIdentity}"
+  },
   "create": {
     "method": "POST",
     "path": "/apps/{appIdentity}/oci-images",
+    "hasRequestBody": true
+  }
+}
+
+export const passwordReset = {
+  "resetPassword": {
+    "method": "POST",
+    "path": "/password-resets",
+    "hasRequestBody": true
+  },
+  "completeResetPassword": {
+    "method": "POST",
+    "path": "/password-resets/{passwordResetResetPasswordToken}/actions/finalize",
     "hasRequestBody": true
   }
 }
@@ -687,6 +879,10 @@ export const peering = {
   "info": {
     "method": "GET",
     "path": "/spaces/{spaceIdentity}/peering-info"
+  },
+  "list": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/peerings"
   },
   "accept": {
     "method": "POST",
@@ -714,6 +910,10 @@ export const pipelineBuild = {
 }
 
 export const pipelineConfigVar = {
+  "infoForApp": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineId}/stage/{pipelineCouplingStage}/config-vars"
+  },
   "update": {
     "method": "PATCH",
     "path": "/pipelines/{pipelineId}/stage/{pipelineCouplingStage}/config-vars"
@@ -742,6 +942,10 @@ export const pipelineCoupling = {
     "path": "/pipeline-couplings",
     "hasRequestBody": true
   },
+  "info": {
+    "method": "GET",
+    "path": "/pipeline-couplings/{pipelineCouplingIdentity}"
+  },
   "delete": {
     "method": "DELETE",
     "path": "/pipeline-couplings/{pipelineCouplingIdentity}"
@@ -750,6 +954,10 @@ export const pipelineCoupling = {
     "method": "PATCH",
     "path": "/pipeline-couplings/{pipelineCouplingIdentity}",
     "hasRequestBody": true
+  },
+  "infoByApp": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/pipeline-couplings"
   }
 }
 
@@ -772,6 +980,10 @@ export const pipelinePromotion = {
     "method": "POST",
     "path": "/pipeline-promotions",
     "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/pipeline-promotions/{pipelinePromotionIdentity}"
   }
 }
 
@@ -779,6 +991,13 @@ export const pipelineRelease = {
   "list": {
     "method": "GET",
     "path": "/pipelines/{pipelineId}/latest-releases"
+  }
+}
+
+export const pipelineStack = {
+  "defaultStack": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineId}/pipeline-stack"
   }
 }
 
@@ -796,6 +1015,10 @@ export const pipeline = {
     "path": "/pipelines",
     "hasRequestBody": true
   },
+  "info": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineIdentity}"
+  },
   "delete": {
     "method": "DELETE",
     "path": "/pipelines/{pipelineId}"
@@ -812,13 +1035,32 @@ export const pipeline = {
 }
 
 export const plan = {
+  "info": {
+    "method": "GET",
+    "path": "/plans/{planIdentity}"
+  },
+  "infoByAddOn": {
+    "method": "GET",
+    "path": "/addon-services/{addOnServiceIdentity}/plans/{planIdentity}"
+  },
   "listByAddOn": {
     "method": "GET",
     "path": "/addon-services/{addOnServiceIdentity}/plans"
   }
 }
 
+export const rateLimit = {
+  "info": {
+    "method": "GET",
+    "path": "/account/rate-limits"
+  }
+}
+
 export const region = {
+  "info": {
+    "method": "GET",
+    "path": "/regions/{regionIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/regions"
@@ -826,6 +1068,10 @@ export const region = {
 }
 
 export const release = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/releases/{releaseIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/apps/{appIdentity}/releases"
@@ -872,6 +1118,10 @@ export const reviewAppConfig = {
     "path": "/pipelines/{pipelineId}/review-app-config",
     "hasRequestBody": true
   },
+  "info": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineId}/review-app-config"
+  },
   "update": {
     "method": "PATCH",
     "path": "/pipelines/{pipelineId}/review-app-config",
@@ -884,10 +1134,29 @@ export const reviewAppConfig = {
 }
 
 export const slug = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/slugs/{slugIdentity}"
+  },
   "create": {
     "method": "POST",
     "path": "/apps/{appIdentity}/slugs",
     "hasRequestBody": true
+  }
+}
+
+export const smsNumber = {
+  "sMSNumber": {
+    "method": "GET",
+    "path": "/users/{accountIdentity}/sms-number"
+  },
+  "recover": {
+    "method": "POST",
+    "path": "/users/{accountIdentity}/sms-number/actions/recover"
+  },
+  "confirm": {
+    "method": "POST",
+    "path": "/users/{accountIdentity}/sms-number/actions/confirm"
   }
 }
 
@@ -899,6 +1168,10 @@ export const sniEndpoint = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/apps/{appIdentity}/sni-endpoints/{sniEndpointIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/apps/{appIdentity}/sni-endpoints/{sniEndpointIdentity}"
   },
   "list": {
@@ -924,6 +1197,10 @@ export const source = {
 }
 
 export const spaceAppAccess = {
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/members/{accountIdentity}"
+  },
   "update": {
     "method": "PATCH",
     "path": "/spaces/{spaceIdentity}/members/{accountIdentity}",
@@ -932,6 +1209,20 @@ export const spaceAppAccess = {
   "list": {
     "method": "GET",
     "path": "/spaces/{spaceIdentity}/members"
+  }
+}
+
+export const spaceNat = {
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/nat"
+  }
+}
+
+export const spaceTopology = {
+  "topology": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/topology"
   }
 }
 
@@ -947,6 +1238,10 @@ export const space = {
   "list": {
     "method": "GET",
     "path": "/spaces"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}"
   },
   "update": {
     "method": "PATCH",
@@ -965,6 +1260,10 @@ export const space = {
 }
 
 export const stack = {
+  "info": {
+    "method": "GET",
+    "path": "/stacks/{stackIdentity}"
+  },
   "listGet": {
     "method": "GET",
     "path": "/apps/{appIdentity}/available-stacks"
@@ -986,6 +1285,10 @@ export const teamAppCollaborator = {
   },
   "delete": {
     "method": "DELETE",
+    "path": "/teams/apps/{teamAppIdentity}/collaborators/{teamAppCollaboratorIdentity}"
+  },
+  "info": {
+    "method": "GET",
     "path": "/teams/apps/{teamAppIdentity}/collaborators/{teamAppCollaboratorIdentity}"
   },
   "update": {
@@ -1011,6 +1314,10 @@ export const teamApp = {
     "method": "POST",
     "path": "/teams/apps",
     "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/teams/apps/{teamAppIdentity}"
   },
   "updateLocked": {
     "method": "PATCH",
@@ -1041,7 +1348,18 @@ export const teamDailyUsage = {
   }
 }
 
+export const teamDelinquency = {
+  "info": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/delinquency"
+  }
+}
+
 export const teamFeature = {
+  "info": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/features/{teamFeatureIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/features"
@@ -1058,6 +1376,10 @@ export const teamInvitation = {
     "path": "/teams/{teamIdentity}/invitations",
     "hasRequestBody": true
   },
+  "revoke": {
+    "method": "DELETE",
+    "path": "/teams/{teamIdentity}/invitations/{teamInvitationIdentity}"
+  },
   "get": {
     "method": "GET",
     "path": "/teams/invitations/{teamInvitationToken}"
@@ -1069,6 +1391,10 @@ export const teamInvitation = {
 }
 
 export const teamInvoice = {
+  "info": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/invoices/{teamInvoiceIdentity}"
+  },
   "list": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/invoices"
@@ -1114,6 +1440,10 @@ export const teamMonthlyUsage = {
 }
 
 export const teamPreferences = {
+  "list": {
+    "method": "GET",
+    "path": "/teams/{teamPreferencesIdentity}/preferences"
+  },
   "update": {
     "method": "PATCH",
     "path": "/teams/{teamPreferencesIdentity}/preferences",
@@ -1132,6 +1462,10 @@ export const team = {
   "list": {
     "method": "GET",
     "path": "/teams"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}"
   },
   "update": {
     "method": "PATCH",
@@ -1180,6 +1514,10 @@ export const telemetryDrain = {
   "delete": {
     "method": "DELETE",
     "path": "/telemetry-drains/{telemetryDrainIdentity}"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/telemetry-drains/{telemetryDrainIdentity}"
   }
 }
 
@@ -1203,13 +1541,30 @@ export const testRun = {
     "path": "/test-runs",
     "hasRequestBody": true
   },
+  "info": {
+    "method": "GET",
+    "path": "/test-runs/{testRunId}"
+  },
   "list": {
     "method": "GET",
     "path": "/pipelines/{pipelineId}/test-runs"
+  },
+  "infoByPipeline": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineId}/test-runs/{testRunNumber}"
+  },
+  "update": {
+    "method": "PATCH",
+    "path": "/test-runs/{testRunNumber}",
+    "hasRequestBody": true
   }
 }
 
 export const userPreferences = {
+  "list": {
+    "method": "GET",
+    "path": "/users/{userPreferencesIdentity}/preferences"
+  },
   "update": {
     "method": "PATCH",
     "path": "/users/{userPreferencesIdentity}/preferences",
@@ -1231,9 +1586,39 @@ export const vpnConnection = {
     "method": "GET",
     "path": "/spaces/{spaceIdentity}/vpn-connections"
   },
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/vpn-connections/{vpnConnectionIdentity}"
+  },
   "update": {
     "method": "PATCH",
     "path": "/spaces/{spaceIdentity}/vpn-connections/{vpnConnectionIdentity}",
+    "hasRequestBody": true
+  }
+}
+
+export const addOnSso = {
+  "addOnSSO": {
+    "method": "GET",
+    "path": "/addons/{addOnIdentity}/sso"
+  },
+  "addOnSSOByApp": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/addons/{addOnIdentity}/sso"
+  }
+}
+
+export const buildMetadata = {
+  "info": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/build-metadata"
+  }
+}
+
+export const capability = {
+  "capabilities": {
+    "method": "PUT",
+    "path": "/users/~/capabilities",
     "hasRequestBody": true
   }
 }
@@ -1258,6 +1643,17 @@ export const dynoProcesses = {
   }
 }
 
+export const gatewayToken = {
+  "create": {
+    "method": "POST",
+    "path": "/users/~/gateway-tokens"
+  },
+  "oAuthToken": {
+    "method": "POST",
+    "path": "/users/~/gateway-tokens/oauth-authorization"
+  }
+}
+
 export const identityProviderActions = {
   "update": {
     "method": "POST",
@@ -1279,6 +1675,10 @@ export const identityProviderCertificate = {
     "method": "PATCH",
     "path": "/identity-providers/{identityProvidersIdentity}/certificates/{certificatesIdentity}",
     "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/identity-providers/{identityProvidersIdentity}/certificates/{certificatesIdentity}"
   }
 }
 
@@ -1286,6 +1686,18 @@ export const paymentMethod = {
   "update": {
     "method": "PATCH",
     "path": "/account/payment-method",
+    "hasRequestBody": true
+  },
+  "get": {
+    "method": "GET",
+    "path": "/account/payment-method"
+  }
+}
+
+export const payment = {
+  "createPost": {
+    "method": "POST",
+    "path": "/teams/{teamIdentity}/payments",
     "hasRequestBody": true
   }
 }
@@ -1298,6 +1710,10 @@ export const spaceHost = {
 }
 
 export const spaceLogDrain = {
+  "info": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/log-drain"
+  },
   "update": {
     "method": "PUT",
     "path": "/spaces/{spaceIdentity}/log-drain",

@@ -804,12 +804,14 @@ describe('renderMethodSignatures', () => {
     expect(create).toContain('/** Create a new app. */')
   })
 
-  it('skips links with rel=self', () => {
+  it('includes links with rel=self', () => {
     const defWithSelf = {
       ...schema.definitions['app'],
-      links: [{ title: 'Self', rel: 'self', href: '/schema', method: 'GET' }],
+      links: [{ title: 'Info', rel: 'self', href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}', method: 'GET' }],
     }
-    expect(renderer.renderMethodSignatures('app', defWithSelf)).toEqual([])
+    const methods = renderer.renderMethodSignatures('app', defWithSelf)
+    expect(methods.length).toBe(1)
+    expect(methods[0]).toContain('info(')
   })
 })
 
@@ -949,12 +951,15 @@ describe('renderRouteEntries', () => {
     expect(info?.hasRequestBody).toBeUndefined()
   })
 
-  it('skips links with rel=self', () => {
+  it('includes links with rel=self', () => {
     const defWithSelf = {
       ...schema.definitions['app'],
-      links: [{ title: 'Self', rel: 'self', href: '/schema', method: 'GET' }],
+      links: [{ title: 'Info', rel: 'self', href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}', method: 'GET' }],
     }
-    expect(renderer.renderRouteEntries('app', defWithSelf)).toEqual([])
+    const entries = renderer.renderRouteEntries('app', defWithSelf)
+    expect(entries.length).toBe(1)
+    expect(entries[0].titleKey).toBe('Info')
+    expect(entries[0].method).toBe('GET')
   })
 
   it('skips links without href or method', () => {
