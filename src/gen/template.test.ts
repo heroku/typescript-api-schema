@@ -624,6 +624,86 @@ describe('renderLinkTypes', () => {
     expect(results.find(r => r.includes('AppListResult'))).toBeUndefined()
   })
 
+  it('generates Result interface when targetSchema is a $ref to a sub-definition', () => {
+    const schemaWithRef: HerokuSchema = {
+      definitions: {
+        'add-on-webhook': {
+          definitions: {
+            addon_webhook: {
+              properties: {
+                id: { type: ['string'] },
+                url: { type: ['string'] },
+              },
+              required: ['id'],
+            },
+          },
+          type: ['object'],
+          links: [
+            {
+              title: 'Create',
+              description: 'Create a webhook.',
+              method: 'POST',
+              href: '/add-on-webhooks',
+              targetSchema: { $ref: '#/definitions/add-on-webhook/definitions/addon_webhook' },
+            },
+          ],
+        },
+      },
+    }
+    const r = new TypeRenderer(schemaWithRef)
+    const results = r.renderLinkTypes('add-on-webhook', schemaWithRef.definitions['add-on-webhook'])
+    const createResult = results.find(r => r.includes('AddOnWebhookCreateResult'))
+    expect(createResult).toBeDefined()
+    expect(createResult).toContain('id: string')
+    expect(createResult).toContain('url?: string')
+  })
+
+  it('does not generate Result when targetSchema $ref points to the same resource', () => {
+    const accountDef = {
+      definitions: { id: { type: ['string'] as string[] } },
+      required: ['id'],
+      properties: { id: { $ref: '#/definitions/account/definitions/id' } },
+      links: [
+        {
+          title: 'Info',
+          method: 'GET',
+          href: '/account',
+          targetSchema: { $ref: '#/definitions/account' },
+        },
+      ],
+    }
+    const schemaWithSelfRef: HerokuSchema = { definitions: { account: accountDef } }
+    const r = new TypeRenderer(schemaWithSelfRef)
+    const results = r.renderLinkTypes('account', accountDef)
+    expect(results.find(r => r.includes('Result'))).toBeUndefined()
+  })
+
+  it('does not generate Result when targetSchema $ref points to a different top-level resource', () => {
+    const schemaWithCrossRef: HerokuSchema = {
+      definitions: {
+        'add-on': {
+          definitions: { id: { type: ['string'] } },
+          required: ['id'],
+          properties: { id: { $ref: '#/definitions/add-on/definitions/id' } },
+        },
+        'team-add-on': {
+          type: ['object'],
+          links: [
+            {
+              title: 'Info',
+              method: 'GET',
+              href: '/team-add-ons',
+              targetSchema: { $ref: '#/definitions/add-on' },
+            },
+          ],
+        },
+      },
+    }
+    const r = new TypeRenderer(schemaWithCrossRef)
+    const results = r.renderLinkTypes('team-add-on', schemaWithCrossRef.definitions['team-add-on'])
+    expect(results.find(r => r.includes('Result'))).toBeUndefined()
+  })
+
   it('does not generate types for links without title', () => {
     const def = {
       ...schema.definitions['app'],
@@ -812,6 +892,61 @@ describe('renderMethodSignatures', () => {
     const methods = renderer.renderMethodSignatures('app', defWithSelf)
     expect(methods.length).toBe(1)
     expect(methods[0]).toContain('info(')
+  })
+
+  it('returns Result type when targetSchema $ref points to a sub-definition', () => {
+    const schemaWithRef: HerokuSchema = {
+      definitions: {
+        'add-on-webhook': {
+          definitions: {
+            addon_webhook: {
+              properties: { id: { type: ['string'] }, url: { type: ['string'] } },
+              required: ['id'],
+            },
+          },
+          type: ['object'],
+          links: [
+            {
+              title: 'Create',
+              method: 'POST',
+              href: '/add-on-webhooks',
+              targetSchema: { $ref: '#/definitions/add-on-webhook/definitions/addon_webhook' },
+            },
+          ],
+        },
+      },
+    }
+    const r = new TypeRenderer(schemaWithRef)
+    const methods = r.renderMethodSignatures('add-on-webhook', schemaWithRef.definitions['add-on-webhook'])
+    const create = methods.find(m => m.includes('create('))
+    expect(create).toContain('Promise<AddOnWebhookCreateResult>')
+  })
+
+  it('returns cross-referenced resource type when targetSchema $ref points to another resource', () => {
+    const schemaWithCrossRef: HerokuSchema = {
+      definitions: {
+        'add-on': {
+          definitions: { id: { type: ['string'] } },
+          required: ['id'],
+          properties: { id: { $ref: '#/definitions/add-on/definitions/id' } },
+        },
+        'team-add-on': {
+          type: ['object'],
+          links: [
+            {
+              title: 'Info',
+              method: 'GET',
+              href: '/team-add-ons',
+              targetSchema: { $ref: '#/definitions/add-on' },
+            },
+          ],
+        },
+      },
+    }
+    const r = new TypeRenderer(schemaWithCrossRef)
+    const methods = r.renderMethodSignatures('team-add-on', schemaWithCrossRef.definitions['team-add-on'])
+    const info = methods.find(m => m.includes('info('))
+    expect(info).toContain('Promise<AddOn>')
   })
 })
 

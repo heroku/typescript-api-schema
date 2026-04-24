@@ -14,11 +14,10 @@ function hasCustomProperties(node: SchemaNode | undefined): boolean {
 }
 
 /**
- * True when a link's targetSchema defines its own properties distinct from the
- * parent resource definition. The parsed JSON schema reuses the same object
- * reference when a link's targetSchema IS the resource definition itself —
- * reference equality detects this so we emit the resource type name instead of
- * a redundant Result interface.
+ * True when a resolved targetSchema defines its own properties distinct from
+ * the parent resource definition. Callers must resolve any $ref before passing
+ * the schema here. Reference equality detects self-references (the parsed JSON
+ * reuses the same object when a definition refers to itself).
  */
 function hasDistinctResultSchema(
   targetSchema: SchemaNode | undefined,
@@ -45,6 +44,34 @@ export class TypeRenderer {
       throw new Error(`Could not resolve $ref: ${ref}`)
     }
     return current as SchemaNode
+  }
+
+  /**
+   * Resolves a link's targetSchema, following any $ref. Returns the resolved
+   * schema node and whether the $ref pointed to a top-level resource
+   * (e.g. "#/definitions/app") as opposed to a sub-definition
+   * (e.g. "#/definitions/app-webhook/definitions/app_webhook").
+   *
+   * When the ref targets a top-level resource, the caller should use that
+   * resource's interface name directly rather than generating a Result type.
+   */
+  private resolveTargetSchema(
+    targetSchema: SchemaNode | undefined,
+  ): { resolved: SchemaNode | undefined; crossResourceRef: string | undefined } {
+    if (!targetSchema?.$ref) {
+      return { resolved: targetSchema, crossResourceRef: undefined }
+    }
+
+    const refParts = targetSchema.$ref.replace(/^#\//, '').split('/')
+    const resolved = this.resolveRef(targetSchema.$ref)
+
+    // Top-level resource ref (e.g. "#/definitions/account") — use resource name
+    if (refParts.length === 2 && refParts[0] === 'definitions') {
+      return { resolved, crossResourceRef: refParts[1] }
+    }
+
+    // Sub-definition ref (e.g. "#/definitions/add-on-webhook/definitions/addon_webhook")
+    return { resolved, crossResourceRef: undefined }
   }
 
   schemaTypeToTS(node: SchemaNode, indent = 0): string {
@@ -202,11 +229,11 @@ export class TypeRenderer {
       }
 
       // Generate Result interface for links with a custom response schema
-      if (hasDistinctResultSchema(link.targetSchema, definition)) {
+      const { resolved: resolvedTarget, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
+      if (!crossResourceRef && hasDistinctResultSchema(resolvedTarget, definition)) {
         const resultName = toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
-        const resultSchema = link.targetSchema!
         const doc = renderJSDoc(link.description, '')
-        const body = this.renderProperties(resultSchema.properties!, 1, resultSchema.required ?? [])
+        const body = this.renderProperties(resolvedTarget!.properties!, 1, resolvedTarget!.required ?? [])
         results.push(`${doc}export interface ${resultName} {\n${body}\n}`)
       }
     }
@@ -288,7 +315,11 @@ export class TypeRenderer {
     if (ts.type?.includes('array') && ts.items) {
       return this.schemaTypeToTS(ts)
     }
-    if (hasDistinctResultSchema(ts, definition)) {
+    const { resolved, crossResourceRef } = this.resolveTargetSchema(ts)
+    if (crossResourceRef) {
+      return toPascalCase(crossResourceRef)
+    }
+    if (hasDistinctResultSchema(resolved, definition)) {
       return toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result'
     }
     return toPascalCase(resourceName)
