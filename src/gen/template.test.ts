@@ -750,13 +750,13 @@ describe('parseHRefParams', () => {
   it('parses URL-encoded href params', () => {
     const href = '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}'
     const params = renderer.parseHRefParams(href)
-    expect(params).toEqual([{ name: 'appId', type: 'string', matchIndex: 6, matchLength: href.length - 6 }])
+    expect(params).toEqual([{ name: 'appId', type: 'string' }])
   })
 
   it('parses non-encoded href params', () => {
     const href = '/apps/{(#/definitions/app/definitions/id)}'
     const params = renderer.parseHRefParams(href)
-    expect(params).toEqual([{ name: 'appId', type: 'string', matchIndex: 6, matchLength: href.length - 6 }])
+    expect(params).toEqual([{ name: 'appId', type: 'string' }])
   })
 
   it('parses multiple params', () => {

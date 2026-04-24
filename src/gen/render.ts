@@ -28,11 +28,19 @@ function hasDistinctResultSchema(
 
 const HREF_PARAM = /\{[^}]*\}/g
 
+function parseRefPath(ref: string): string[] {
+  return ref.replace(/^#\//, '').split('/')
+}
+
+function isTopLevelResourceRef(refPath: string[]): boolean {
+  return refPath.length === 2 && refPath[0] === 'definitions'
+}
+
 export class TypeRenderer {
   constructor(private schema: HerokuSchema) {}
 
   resolveRef(ref: string): SchemaNode {
-    const path = ref.replace(/^#\//, '').split('/')
+    const path = parseRefPath(ref)
     let current: unknown = this.schema
     for (const segment of path) {
       if (current === null || typeof current !== 'object') {
@@ -62,11 +70,10 @@ export class TypeRenderer {
       return { resolved: targetSchema, crossResourceRef: undefined }
     }
 
-    const refParts = targetSchema.$ref.replace(/^#\//, '').split('/')
+    const refParts = parseRefPath(targetSchema.$ref)
     const resolved = this.resolveRef(targetSchema.$ref)
 
-    // Top-level resource ref (e.g. "#/definitions/account") — use resource name
-    if (refParts.length === 2 && refParts[0] === 'definitions') {
+    if (isTopLevelResourceRef(refParts)) {
       return { resolved, crossResourceRef: refParts[1] }
     }
 
@@ -76,9 +83,8 @@ export class TypeRenderer {
 
   schemaTypeToTS(node: SchemaNode, indent = 0): string {
     if (node.$ref) {
-      const refParts = node.$ref.replace(/^#\//, '').split('/')
-      // Top-level resource ref (e.g. "#/definitions/account") → use interface name
-      if (refParts.length === 2 && refParts[0] === 'definitions') {
+      const refParts = parseRefPath(node.$ref)
+      if (isTopLevelResourceRef(refParts)) {
         return toPascalCase(refParts[1])
       }
       // Sub-definition ref → resolve and convert
@@ -249,8 +255,6 @@ export class TypeRenderer {
       refName: string
       contextName: string
       type: string
-      matchIndex: number
-      matchLength: number
     }
 
     const raw: RawParam[] = []
@@ -260,7 +264,7 @@ export class TypeRenderer {
       if (!inner.startsWith('(') || !inner.endsWith(')')) continue
       const encoded = inner.slice(1, -1)
       const decoded = decodeURIComponent(encoded)
-      const parts = decoded.replace(/^#\//, '').split('/')
+      const parts = parseRefPath(decoded)
       const fieldName = parts[parts.length - 1]
 
       const refName = toCamelCase(parts[parts.length - 3] + '-' + fieldName)
@@ -278,7 +282,7 @@ export class TypeRenderer {
         // fallback to string
       }
 
-      raw.push({ refName, contextName, type, matchIndex: placeholders[i].index!, matchLength: match.length })
+      raw.push({ refName, contextName, type })
     }
 
     const refNameCounts = new Map<string, number>()
@@ -289,8 +293,6 @@ export class TypeRenderer {
     return raw.map(p => ({
       name: (refNameCounts.get(p.refName) ?? 0) > 1 ? p.contextName : p.refName,
       type: p.type,
-      matchIndex: p.matchIndex,
-      matchLength: p.matchLength,
     }))
   }
 
@@ -369,11 +371,12 @@ export class TypeRenderer {
 
       const params = this.parseHRefParams(link.href)
 
-      let path = link.href
-      for (let i = params.length - 1; i >= 0; i--) {
-        const p = params[i]
-        path = path.slice(0, p.matchIndex) + `{${p.name}}` + path.slice(p.matchIndex + p.matchLength)
-      }
+      let paramIdx = 0
+      const path = link.href.replace(HREF_PARAM, (match) => {
+        const inner = match.slice(1, -1)
+        if (!inner.startsWith('(') || !inner.endsWith(')')) return match
+        return `{${params[paramIdx++].name}}`
+      })
 
       const entry: { titleKey: string } & RouteDefinition = {
         titleKey,
