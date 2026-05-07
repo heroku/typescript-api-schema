@@ -10,6 +10,13 @@
     "./3.sdk/routes": {
       "types": "./3.sdk/routes.d.ts",
       "default": "./3.sdk/routes.js"
+    },
+    "./data": {
+      "types": "./data/types.d.ts"
+    },
+    "./data/routes": {
+      "types": "./data/routes.d.ts",
+      "default": "./data/routes.js"
     }
   },
   "files": [
