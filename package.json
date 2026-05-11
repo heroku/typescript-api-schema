@@ -1,6 +1,6 @@
 {
   "name": "@heroku/types",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Generates Typescript types from API hyperschema",
   "type": "module",
   "exports": {
@@ -25,6 +25,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "generate": "node dist/cli.js",
+    "generate:data": "node --experimental-strip-types src/gen-data-types.ts",
     "test": "vitest --run",
     "test:watch": "vitest"
   },

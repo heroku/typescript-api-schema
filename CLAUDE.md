@@ -20,7 +20,7 @@ No lint or format scripts are configured yet.
 
 - **Source:** `src/` — TypeScript source files (compiled with rootDir `src/`)
 - **Output:** `dist/` — compiled JS + declaration files (declaration generation enabled)
-- **Module system:** ES2020 modules with bundler resolution
+- **Module system:** esnext modules with bundler resolution
 - **Runtime:** Node 22 (via `.tool-versions`)
 - **Test framework:** Vitest (no custom config file — uses defaults)
 
