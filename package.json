@@ -20,7 +20,8 @@
     }
   },
   "files": [
-    "3.sdk/"
+    "3.sdk/",
+    "data/"
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
