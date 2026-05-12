@@ -35,7 +35,7 @@ The package includes a CLI that fetches the live Heroku API hyperschema and gene
 npm run build
 ```
 
-This compiles the TypeScript source into `dist/`.
+This compiles the TypeScript source into `build/`.
 
 ### Run the CLI
 

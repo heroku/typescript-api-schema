@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Run tests:** `npm test` (runs vitest)
 - **Run a single test:** `npm test -- src/path/to/file.test.ts`
 - **Type-check:** `npx tsc --noEmit`
-- **Build:** `npm run build` (outputs to `dist/`)
+- **Build:** `npm run build` (outputs to `build/`)
 - **Generate types:** `npm run generate` (runs CLI → fetches schema → writes types + routes into `<variant>/`)
 
 No lint or format scripts are configured yet.
@@ -19,7 +19,7 @@ No lint or format scripts are configured yet.
 ## Architecture
 
 - **Source:** `src/` — TypeScript source files (compiled with rootDir `src/`)
-- **Output:** `dist/` — compiled JS + declaration files (declaration generation enabled)
+- **Output:** `build/` — compiled JS + declaration files (declaration generation enabled)
 - **Module system:** esnext modules with bundler resolution
 - **Runtime:** Node 22 (via `.tool-versions`)
 - **Test framework:** Vitest (no custom config file — uses defaults)

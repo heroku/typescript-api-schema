@@ -24,9 +24,9 @@
     "data/"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "generate": "node dist/cli.js",
-    "generate:data": "node --experimental-strip-types src/gen-data-types.ts",
+    "build": "rm -rf build && tsc",
+    "generate": "node build/cli.js",
+    "generate:data": "node build/gen-data-types.js",
     "test": "vitest --run",
     "test:watch": "vitest"
   },
