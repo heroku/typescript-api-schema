@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './route-generator.js'
-import type { HerokuSchema } from './template.js'
+import type { HerokuSchema } from './schema-types.js'
 
 const schema: HerokuSchema = {
   definitions: {

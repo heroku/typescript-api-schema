@@ -1,4 +1,5 @@
-import { TypeRenderer, type HerokuSchema } from './template.js'
+import { TypeRenderer } from './render.js'
+import type { HerokuSchema } from './schema-types.js'
 
 export const GENERATED_CONTENT_PREAMBLE = `
 /**

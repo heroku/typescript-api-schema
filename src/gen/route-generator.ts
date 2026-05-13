@@ -1,4 +1,6 @@
-import { TypeRenderer, HTTP_METHODS, toCamelCase, type HerokuSchema } from './template.js'
+import { TypeRenderer } from './render.js'
+import { HTTP_METHODS, type HerokuSchema } from './schema-types.js'
+import { toCamelCase } from './utils.js'
 
 export function generateSharedTypesDTS(): string {
   const methodUnion = HTTP_METHODS.map(m => `'${m}'`).join(' | ')

@@ -7,7 +7,7 @@ import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { generateTypes, GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
 import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './gen/route-generator.js'
 import { verifyTypes, type VerifyError, type VerifyFile } from './gen/verify.js'
-import type { HerokuSchema } from './gen/template.js'
+import type { HerokuSchema } from './gen/schema-types.js'
 
 interface CliOptions {
   variant?: string
