@@ -97,4 +97,20 @@ export interface App {
     const errors = verifyTypes(content)
     expect(errors.length).toBeGreaterThan(0)
   })
+
+  it('resolves cross-file imports when given multiple files', () => {
+    const errors = verifyTypes([
+      { name: 'types.d.ts', content: `export interface RouteDefinition { method: 'GET'; path: string }\n` },
+      { name: '3.sdk/routes.d.ts', content: `import type { RouteDefinition } from '../types'\nexport declare const app: Record<string, RouteDefinition>\n` },
+    ])
+    expect(errors).toEqual([])
+  })
+
+  it('reports unresolved cross-file imports', () => {
+    const errors = verifyTypes([
+      { name: '3.sdk/routes.d.ts', content: `import type { RouteDefinition } from '../types'\nexport declare const app: Record<string, RouteDefinition>\n` },
+    ])
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors[0].file).toBe('3.sdk/routes.d.ts')
+  })
 })

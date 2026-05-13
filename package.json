@@ -5,23 +5,26 @@
   "type": "module",
   "exports": {
     "./3.sdk": {
-      "types": "./3.sdk/types.d.ts"
+      "types": "./dist/3.sdk/types.d.ts"
     },
     "./3.sdk/routes": {
-      "types": "./3.sdk/routes.d.ts",
-      "default": "./3.sdk/routes.js"
+      "types": "./dist/3.sdk/routes.d.ts",
+      "default": "./dist/3.sdk/routes.js"
     },
     "./data": {
-      "types": "./data/types.d.ts"
+      "types": "./dist/data/types.d.ts"
     },
     "./data/routes": {
-      "types": "./data/routes.d.ts",
-      "default": "./data/routes.js"
+      "types": "./dist/data/routes.d.ts",
+      "default": "./dist/data/routes.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts"
     }
   },
   "files": [
-    "3.sdk/",
-    "data/"
+    "dist/",
+    "3.sdk/"
   ],
   "scripts": {
     "build": "rm -rf build && tsc",

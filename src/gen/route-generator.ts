@@ -1,5 +1,10 @@
 import { TypeRenderer, HTTP_METHODS, toCamelCase, type HerokuSchema } from './template.js'
 
+export function generateSharedTypesDTS(): string {
+  const methodUnion = HTTP_METHODS.map(m => `'${m}'`).join(' | ')
+  return `export interface RouteDefinition {\n  method: ${methodUnion}\n  path: string\n  hasRequestBody?: true\n}\n`
+}
+
 export function generateRoutesJS(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
   const exports: string[] = []
@@ -30,9 +35,8 @@ export function generateRoutesJS(schema: HerokuSchema): string {
 
 export function generateRoutesDTS(schema: HerokuSchema): string {
   const renderer = new TypeRenderer(schema)
-  const methodUnion = HTTP_METHODS.map(m => `'${m}'`).join(' | ')
   const declarations: string[] = [
-    `export interface RouteDefinition {\n  method: ${methodUnion}\n  path: string\n  hasRequestBody?: true\n}`,
+    `import type { RouteDefinition } from '../types'`,
   ]
 
   for (const [name, definition] of Object.entries(schema.definitions)) {

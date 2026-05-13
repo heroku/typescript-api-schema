@@ -23,10 +23,10 @@ interface JsonSchema { type?: string | string[]; properties?: Record<string, Jso
 interface RouteSchema { request: JsonSchema | null; responses: Record<string, JsonSchema>; request_example_count: number; response_example_count: number }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(HERE, "..");
+const ROOT = resolve(HERE, "../dist");
 const ROUTES_PATH = resolve(ROOT, "data/routes.js");
-const OUT_PATH    = resolve(ROOT, "data/types.d.ts");
-const SCHEMA_PATH = process.env.SHOGUN_SCHEMA_PATH ?? resolve(ROOT, "../shogun/tmp/api_schemas.json");
+const OUT_PATH = resolve(ROOT, "data/types.d.ts");
+const SCHEMA_PATH = process.env.SHOGUN_SCHEMA_PATH ?? resolve('.', "../shogun/tmp/api_schemas.json");
 
 const PARAM_RE = /\{(\w+)\}/g;
 const normalizeRoute = (key: string): string => key.replace(PARAM_RE, ":$1");
@@ -59,13 +59,13 @@ function renderType(schema: JsonSchema | null | undefined, indent = "  "): strin
   } else {
     const t = nonNull[0];
     switch (t) {
-      case "string":  core = "string"; break;
+      case "string": core = "string"; break;
       case "integer":
-      case "number":  core = "number"; break;
+      case "number": core = "number"; break;
       case "boolean": core = "boolean"; break;
-      case "array":   core = `Array<${renderType(schema.items, indent)}>`; break;
-      case "object":  core = renderObject(schema, indent); break;
-      default:        core = "unknown";
+      case "array": core = `Array<${renderType(schema.items, indent)}>`; break;
+      case "object": core = renderObject(schema, indent); break;
+      default: core = "unknown";
     }
   }
   return nullable ? `${core} | null` : core;
@@ -127,8 +127,8 @@ function plan(routesByResource: Record<string, Record<string, RouteDef>>, schema
 
   for (const [resource, methods] of Object.entries(routesByResource)) {
     for (const [method, route] of Object.entries(methods)) {
-      const key  = norm(`${route.method} ${route.path}`);
-      const sch  = indexed[key] ?? null;
+      const key = norm(`${route.method} ${route.path}`);
+      const sch = indexed[key] ?? null;
       const stem = `${toPascal(resource)}${toPascal(method)}`;
       out.push({
         resource,

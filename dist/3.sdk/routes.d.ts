@@ -2,11 +2,7 @@
  * NOTE: the contents of this file are generated. Do not modify this file.
  */
 
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  path: string
-  hasRequestBody?: true
-}
+import type { RouteDefinition } from '../types'
 
 export declare const accountDelinquency: Record<string, RouteDefinition>
 
@@ -221,6 +217,8 @@ export declare const identityProviderCertificate: Record<string, RouteDefinition
 export declare const paymentMethod: Record<string, RouteDefinition>
 
 export declare const payment: Record<string, RouteDefinition>
+
+export declare const planMeter: Record<string, RouteDefinition>
 
 export declare const spaceHost: Record<string, RouteDefinition>
 
