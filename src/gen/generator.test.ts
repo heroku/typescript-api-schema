@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { generateTypes } from './generator.js'
-import type { HerokuSchema } from './template.js'
+import type { HerokuSchema } from './schema-types.js'
 
 describe('generateTypes', () => {
   const schema: HerokuSchema = {

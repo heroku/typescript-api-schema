@@ -30,7 +30,7 @@ TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imp
 
 - `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url` args. Orchestrates fetch → generate → verify → write. Also updates `package.json` exports/files for the variant.
 - `src/gen/schema.ts` — Fetches the hyperschema from Heroku API (default variant `3.sdk`).
-- `src/gen/template.ts` — Barrel re-export for the rendering pipeline. The actual implementations are split across:
+- The rendering pipeline is split across three focused modules. Each is imported directly by callers (no barrel):
   - `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, `RouteDefinition`, `HttpMethod`, etc.).
   - `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `renderJSDoc`, `disambiguateLinkTitles`).
   - `src/gen/render.ts` — `TypeRenderer` class that converts a parsed hyperschema into `.d.ts` content (resource interfaces, link Opts/Result types, `HerokuClient` interface) and route entries via `renderRouteEntries()`.

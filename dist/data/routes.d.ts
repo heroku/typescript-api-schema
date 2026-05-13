@@ -1,8 +1,4 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  path: string
-  hasRequestBody?: true
-}
+import type { RouteDefinition } from "../types"
 
 export declare const transfer: Record<string, RouteDefinition>
 export declare const database: Record<string, RouteDefinition>

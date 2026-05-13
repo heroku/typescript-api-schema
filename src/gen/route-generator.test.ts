@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { generateRoutesJS, generateRoutesDTS } from './route-generator.js'
-import type { HerokuSchema } from './template.js'
+import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './route-generator.js'
+import type { HerokuSchema } from './schema-types.js'
 
 const schema: HerokuSchema = {
   definitions: {
@@ -78,9 +78,14 @@ describe('generateRoutesJS', () => {
 })
 
 describe('generateRoutesDTS', () => {
-  it('exports RouteDefinition interface', () => {
+  it('imports RouteDefinition from the shared types file', () => {
     const dts = generateRoutesDTS(schema)
-    expect(dts).toContain('export interface RouteDefinition')
+    expect(dts).toContain(`import type { RouteDefinition } from '../types'`)
+  })
+
+  it('does not inline the RouteDefinition interface', () => {
+    const dts = generateRoutesDTS(schema)
+    expect(dts).not.toContain('export interface RouteDefinition')
   })
 
   it('emits per-resource declarations', () => {
@@ -91,6 +96,18 @@ describe('generateRoutesDTS', () => {
   it('skips resources with no links', () => {
     const dts = generateRoutesDTS(schema)
     expect(dts).not.toContain('configVar')
+  })
+})
+
+describe('generateSharedTypesDTS', () => {
+  it('exports the RouteDefinition interface', () => {
+    const dts = generateSharedTypesDTS()
+    expect(dts).toContain('export interface RouteDefinition')
+  })
+
+  it('builds the method union from HTTP_METHODS', () => {
+    const dts = generateSharedTypesDTS()
+    expect(dts).toContain(`method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'`)
   })
 })
 

@@ -498,7 +498,18 @@ export interface AddOn {
     id?: string
     /** unique name of this plan */
     name?: string
-  } | Plan
+    /** metered pricing information for this add-on */
+    meters?: Array<{
+      /** unique identifier of this plan meter */
+      id?: string
+      /** name of this meter */
+      name?: string
+      /** price in cents per billing unit (may be a rate like "0.015/1000") */
+      price_cents?: string
+      /** human-readable description of how usage is billed */
+      billing_description?: string
+    }>
+  }
   /** id of this add-on with its provider */
   provider_id: string
   /** A provision message */
@@ -2116,6 +2127,16 @@ export interface OauthAuthorizationUpdateOpts {
     /** secret used to obtain OAuth authorizations under this client */
     secret?: string
   }
+}
+
+/** Create a new team OAuth authorization. */
+export interface OauthAuthorizationTeamCreateOpts {
+  /** human-friendly description of this OAuth authorization */
+  description?: string
+  /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
+  expires_in?: number | null
+  /** The scope of access OAuth authorization allows */
+  scope?: Array<string>
 }
 
 /** OAuth clients are applications that Heroku users can authorize to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth). */
@@ -4608,6 +4629,38 @@ export interface PaymentCreatePostOpts {
   uuid: string
 }
 
+/** Plan meters describe how a metered add-on plan bills for usage. */
+export interface PlanMeter {
+  /** unique identifier of this plan meter */
+  id?: string
+  /** name of this meter */
+  name?: string
+  /** price in cents per billing unit (may be a rate like "0.015/1000") */
+  price_cents?: string
+  /** human-readable product name */
+  product_description?: string
+  /** human-readable description of how usage is billed */
+  billing_description?: string
+  /** rate unit for discrete-rate meters (e.g. "token"); null for time-based meters */
+  rate_period?: string | null
+  /** billing period for time-based meters (e.g. "month"); null for rate-based meters */
+  billing_period?: string | null
+  /** billing unit for time-based meters (e.g. "compute"); null when not applicable */
+  billing_unit?: string | null
+  /** how usage is aggregated */
+  aggregation?: string
+  /** number of units included at no charge per billing period */
+  included_units?: number
+  /** when this meter becomes effective */
+  start_time?: string
+  /** when this meter is no longer effective, or null if open-ended */
+  end_time?: string | null
+  /** when this meter was created */
+  created_at?: string
+  /** when this meter was last updated */
+  updated_at?: string
+}
+
 /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
 export interface SpaceHost {
   /** unique identifier of this host */
@@ -5271,6 +5324,10 @@ export interface HerokuClient {
   list(): Promise<Array<OauthAuthorization>>
   /** Regenerate OAuth tokens. This endpoint is only available to direct authorizations or privileged OAuth clients. */
   regenerate(oauthAuthorizationIdentity: string): Promise<OauthAuthorization>
+  /** List team OAuth authorizations. */
+  teamList(teamIdentity: string): Promise<Array<OauthAuthorization>>
+  /** Create a new team OAuth authorization. */
+  teamCreate(teamIdentity: string, requestBody: OauthAuthorizationTeamCreateOpts): Promise<OauthAuthorization>
   }
   /** OAuth clients are applications that Heroku users can authorize to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth). */
   oauthClient: {
@@ -5808,6 +5865,13 @@ export interface HerokuClient {
   createPost(requestBody: PaymentCreatePostOpts): Promise<Payment>
   /** Create a payment on an existing team */
   createPost(teamIdentity: string, requestBody: PaymentCreatePostOpts): Promise<Payment>
+  }
+  /** Plan meters describe how a metered add-on plan bills for usage. */
+  planMeter: {
+  /** List active meters for an existing plan. */
+  list(planIdentity: string): Promise<Array<PlanMeter>>
+  /** Info for an existing plan meter. Meter identifier may be either the meter's uuid (unique across all meters) or name (unique within the plan). */
+  info(planIdentity: string, planMeterIdentity: string): Promise<PlanMeter>
   }
   /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
   spaceHost: {

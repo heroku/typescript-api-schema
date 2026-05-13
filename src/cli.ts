@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
 import { generateTypes, GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
-import { generateRoutesJS, generateRoutesDTS } from './gen/route-generator.js'
-import { verifyTypes, type VerifyError } from './gen/verify.js'
-import type { HerokuSchema } from './gen/template.js'
+import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './gen/route-generator.js'
+import { verifyTypes, type VerifyError, type VerifyFile } from './gen/verify.js'
+import type { HerokuSchema } from './gen/schema-types.js'
 
 interface CliOptions {
   variant?: string
@@ -19,7 +20,8 @@ export interface MainDeps {
   fetchSchema: (baseUrl?: string, variant?: string) => Promise<unknown>
   generateTypes: (schema: HerokuSchema) => string
   generateRoutes: (schema: HerokuSchema) => { js: string; dts: string }
-  verifyTypes: (content: string) => VerifyError[]
+  generateSharedTypes: () => string
+  verifyTypes: (input: string | VerifyFile[]) => VerifyError[]
   mkdir: (path: string) => void
   readFile: (path: string) => string
   writeFile: (path: string, content: string) => void
@@ -35,6 +37,7 @@ const defaultDeps: MainDeps = {
     js: generateRoutesJS(schema),
     dts: generateRoutesDTS(schema),
   }),
+  generateSharedTypes: generateSharedTypesDTS,
   verifyTypes,
   mkdir: (path: string) => mkdirSync(path, { recursive: true }),
   readFile: (path: string) => readFileSync(path, 'utf-8'),
@@ -42,6 +45,9 @@ const defaultDeps: MainDeps = {
   log: (message: string) => console.error(message),
   exit: (code: number) => process.exit(code),
 }
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const DIST = resolve(HERE, '../dist')
 
 const USAGE = `Usage: heroku-types [options]
 
@@ -97,19 +103,19 @@ export function updatePackageExports(
   const exports = (packageJson.exports ?? {}) as Record<string, unknown>
   const files = (packageJson.files ?? []) as string[]
 
-  exports[`./${variant}`] = { types: `./${variant}/types.d.ts` }
-  exports[`./${variant}/routes`] = { types: `./${variant}/routes.d.ts`, default: `./${variant}/routes.js` }
+  exports['./types'] = { types: './dist/types.d.ts' }
+  exports[`./${variant}`] = { types: `./dist/${variant}/types.d.ts` }
+  exports[`./${variant}/routes`] = { types: `./dist/${variant}/routes.d.ts`, default: `./dist/${variant}/routes.js` }
 
-  const dir = `${variant}/`
-  if (!files.includes(dir)) {
-    files.push(dir)
+  if (!files.includes('dist/')) {
+    files.push('dist/')
   }
 
   return { ...packageJson, exports, files }
 }
 
 export async function main(deps: Partial<MainDeps> = {}) {
-  const { argv, fetchSchema, generateTypes, generateRoutes, verifyTypes, mkdir, readFile, writeFile, log, exit } = { ...defaultDeps, ...deps }
+  const { argv, fetchSchema, generateTypes, generateRoutes, generateSharedTypes, verifyTypes, mkdir, readFile, writeFile, log, exit } = { ...defaultDeps, ...deps }
 
   try {
     const options = parseArgs(argv.slice(2))
@@ -122,17 +128,28 @@ export async function main(deps: Partial<MainDeps> = {}) {
 
     const schema = await fetchSchema(options.baseUrl, options.variant) as HerokuSchema
     const types = generateTypes(schema)
+    const routes = generateRoutes(schema)
+    const sharedTypes = generateSharedTypes()
 
-    const errors = verifyTypes(types)
+    const errors = [
+      ...verifyTypes(types),
+      ...verifyTypes([
+        { name: 'types.d.ts', content: sharedTypes },
+        { name: `${options.variant}/routes.d.ts`, content: routes.dts },
+      ]),
+    ]
     if (errors.length > 0) {
       log(formatVerifyErrors(errors))
       exit(1)
       return
     }
 
-    const routes = generateRoutes(schema)
+    mkdir(DIST)
+    const sharedTypesOutput = join(DIST, 'types.d.ts')
+    writeFile(sharedTypesOutput, GENERATED_CONTENT_PREAMBLE + sharedTypes)
+    log(`Wrote ${sharedTypesOutput}`)
 
-    const outputDir = options.variant!
+    const outputDir = join(DIST, options.variant!)
     mkdir(outputDir)
 
     const typesOutput = join(outputDir, 'types.d.ts')
@@ -156,8 +173,6 @@ export async function main(deps: Partial<MainDeps> = {}) {
     exit(1)
   }
 }
-
-import { fileURLToPath } from 'node:url'
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main()

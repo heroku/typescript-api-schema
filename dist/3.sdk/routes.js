@@ -806,6 +806,15 @@ export const oauthAuthorization = {
   "regenerate": {
     "method": "POST",
     "path": "/oauth/authorizations/{oauthAuthorizationIdentity}/actions/regenerate-tokens"
+  },
+  "teamList": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/oauth/authorizations"
+  },
+  "teamCreate": {
+    "method": "POST",
+    "path": "/teams/{teamIdentity}/oauth/authorizations",
+    "hasRequestBody": true
   }
 }
 
@@ -1699,6 +1708,17 @@ export const payment = {
     "method": "POST",
     "path": "/teams/{teamIdentity}/payments",
     "hasRequestBody": true
+  }
+}
+
+export const planMeter = {
+  "list": {
+    "method": "GET",
+    "path": "/plans/{planIdentity}/meters"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/plans/{planIdentity}/meters/{planMeterIdentity}"
   }
 }
 
