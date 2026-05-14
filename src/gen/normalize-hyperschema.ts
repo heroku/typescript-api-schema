@@ -392,7 +392,6 @@ class HyperschemaNormalizer {
         return {
           kind: 'array',
           items: { kind: 'reference', name: toPascalCase(resourceName) },
-          style: 'brackets',
         }
       }
       return { kind: 'reference', name: toPascalCase(resourceName) }

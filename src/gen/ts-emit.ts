@@ -110,9 +110,7 @@ function renderType(ref: TypeRef, indent: number): string {
     case 'reference':
       return ref.name
     case 'array':
-      if (!ref.items) return 'unknown[]'
-      if (ref.style === 'brackets') return `${renderType(ref.items, indent)}[]`
-      return `Array<${renderType(ref.items, indent)}>`
+      return ref.items ? `Array<${renderType(ref.items, indent)}>` : 'unknown[]'
     case 'record':
       return `Record<string, ${renderType(ref.valueType, indent)}>`
     case 'union':

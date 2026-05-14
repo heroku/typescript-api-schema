@@ -68,11 +68,7 @@ export interface PropertyModel {
 export type TypeRef =
   | { kind: 'primitive'; primitive: 'string' | 'number' | 'boolean' | 'unknown' | 'void' }
   | { kind: 'literal'; value: string | number | boolean }
-  // TODO(unify-generators PR-2): drop `style` once the byte-identity gate is
-  // removed. The original render.ts inconsistently emits `T[]` for `instances`
-  // link return types but `Array<T>` everywhere else; the field exists solely
-  // to preserve that asymmetry through PR-1's byte-identity check.
-  | { kind: 'array'; items?: TypeRef; style?: 'brackets' }
+  | { kind: 'array'; items?: TypeRef }
   | { kind: 'record'; valueType: TypeRef }
   | { kind: 'union'; members: TypeRef[] }
   | { kind: 'intersection'; members: TypeRef[] }
