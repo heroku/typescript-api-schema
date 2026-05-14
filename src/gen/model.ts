@@ -28,11 +28,9 @@ export type ResourceShape =
   | { kind: 'interface'; shape: ObjectShape }
   | { kind: 'alias'; type: TypeRef }
 
-export interface AuxType {
-  name: string
-  description?: string
-  shape: ObjectShape
-}
+export type AuxType =
+  | { kind: 'interface'; name: string; description?: string; shape: ObjectShape }
+  | { kind: 'alias'; name: string; description?: string; type: TypeRef }
 
 export interface ClientModel {
   resources: ClientResourceModel[]

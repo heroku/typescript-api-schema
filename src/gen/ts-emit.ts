@@ -60,6 +60,9 @@ function emitResourceShape(resource: ResourceModel): string {
 
 function emitAuxType(aux: AuxType): string {
   const doc = renderJSDoc(aux.description, '')
+  if (aux.kind === 'alias') {
+    return `${doc}export type ${aux.name} = ${renderType(aux.type, 0)}`
+  }
   const body = renderProperties(aux.shape, 1)
   return `${doc}export interface ${aux.name} {\n${body}\n}`
 }

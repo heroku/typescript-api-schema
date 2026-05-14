@@ -119,6 +119,7 @@ class HyperschemaNormalizer {
     for (const { link, titleKey } of this.resolveLinks(definition)) {
       if (hasCustomProperties(link.schema)) {
         auxTypes.push({
+          kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts',
           description: link.description,
           shape: this.buildObjectShape(
@@ -131,6 +132,7 @@ class HyperschemaNormalizer {
       const { resolved, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
       if (!crossResourceRef && hasDistinctResultSchema(resolved, definition)) {
         auxTypes.push({
+          kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result',
           description: link.description,
           shape: this.buildObjectShape(resolved!.properties!, resolved!.required ?? []),

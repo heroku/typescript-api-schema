@@ -17,6 +17,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { emitTypes } from "./gen/ts-emit.js";
+import { normalizeData } from "./gen/normalize-data.js";
 
 export interface RouteDef { method: string; path: string; hasRequestBody?: true }
 export interface JsonSchema { type?: string | string[]; properties?: Record<string, JsonSchema>; required?: string[]; items?: JsonSchema; anyOf?: JsonSchema[] }
@@ -136,6 +138,16 @@ export function plan(routesByResource: Record<string, Record<string, RouteDef>>,
   return out;
 }
 
+const BANNER = "/**\n * NOTE: the contents of this file are generated. Do not modify this file.\n */\n";
+
+export function generateDataTypes(
+  routesByResource: Record<string, Record<string, RouteDef>>,
+  schemas: Record<string, RouteSchema>,
+): string {
+  const model = normalizeData(routesByResource, schemas);
+  return BANNER + "\n" + emitTypes(model, { emitResourceShapes: false });
+}
+
 export function render(plans: MethodPlan[]): string {
   const interfaces: string[] = [];
   const optsEmitted = new Set<string>();
@@ -226,11 +238,10 @@ export async function main(deps: Partial<MainDeps> = {}) {
   }
 
   const schemas: Record<string, RouteSchema> = JSON.parse(readFile(schemaPath));
-  const plans = plan(routesByResource, schemas);
-  const output = render(plans);
+  const output = generateDataTypes(routesByResource, schemas);
   writeFile(outPath, output);
 
-  const s = summarize(plans);
+  const s = summarize(plan(routesByResource, schemas));
   log(`Wrote ${outPath}`);
   log(`  Methods total:        ${s.total}`);
   log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
