@@ -138,8 +138,13 @@ To add or rename a resource, edit `data/routes.js` (and optionally
 
 ### 5. Type generator (heroku-types)
 
-[`src/gen-data-types.ts`](../src/gen-data-types.ts) is a Node script
-invoked via `npm run generate:data`. It:
+[`src/gen-data-types.ts`](../src/gen-data-types.ts) is an import-safe
+module whose `main()` driver is invoked via `npm run generate:data`.
+The pure helpers (`renderType`, `renderObject`, `pickPrincipalResponse`,
+`extractPathParams`, `plan`, `render`, `summarize`) are exported for
+direct unit testing, and a `process.argv[1] === fileURLToPath(...)`
+guard at the bottom of the file ensures importing it does **not**
+trigger the filesystem reads or writes the script performs. It:
 
 1. Imports `data/routes.js` as an ES module (no parsing — the curated
    resources are read directly as JavaScript values).
