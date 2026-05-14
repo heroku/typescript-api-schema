@@ -7,6 +7,7 @@ export interface BackupCreateResult {
   from_type: string
   to_type: string
 }
+
 export interface BurstStatusInfoResult {
   addon_name: string
   addon_id: string
@@ -18,18 +19,22 @@ export interface BurstStatusInfoResult {
     }
   }
 }
+
 export interface ConnectionPoolingInfoResult {
   status: string
   message: string
 }
+
 export interface ConnectionPoolingCreateOpts {
   name?: string
   credential?: string
   app?: string
 }
+
 export interface ConnectionPoolingCreateResult {
   name?: string
 }
+
 export interface DatabaseInfoResult {
   addon_id?: string
   name?: string
@@ -49,7 +54,7 @@ export interface DatabaseInfoResult {
   available_for_ingress?: boolean
   resource_url?: string | null
   database_password?: string
-  "waiting?"?: boolean
+  'waiting?'?: boolean
   credentials?: number
   leader?: unknown | null
   info?: Array<{
@@ -60,38 +65,47 @@ export interface DatabaseInfoResult {
   valid?: string
   num_bytes?: number
 }
+
 export interface DatabaseConnectionResetResult {
   message: string
 }
+
 export interface DatabaseResetResult {
   message: string
 }
+
 export interface DatabaseUnfollowResult {
   message: string
 }
+
 export interface DatabaseCancelUpgradeResult {
   message: string
 }
+
 export interface DatabaseDryRunUpgradeResult {
   message: string
 }
+
 export interface DatabasePrepareUpgradeResult {
   message: string
 }
+
 export interface DatabaseRunUpgradeResult {
   message: string
 }
+
 export interface DatabaseWaitStatusResult {
   message: string
-  "waiting?": boolean
+  'waiting?': boolean
 }
-export interface LinkListResult {
-  [key: string]: unknown
-}
+
+export type LinkListResult = Record<string, unknown>
+
 export interface LinkCreateOpts {
   target: string
   as?: string
 }
+
 export interface LinkCreateResult {
   id: string
   created_at: string
@@ -102,6 +116,7 @@ export interface LinkCreateResult {
     attachment_name: string
   }
 }
+
 export interface LinkDeleteResult {
   id: string
   created_at: string
@@ -112,6 +127,7 @@ export interface LinkDeleteResult {
     attachment_name: string
   }
 }
+
 export interface LinkInfoResult {
   id: string
   created_at: string
@@ -122,6 +138,7 @@ export interface LinkInfoResult {
     attachment_name: string
   }
 }
+
 export interface MaintenanceInfoResult {
   addon: {
     uuid: string
@@ -147,6 +164,7 @@ export interface MaintenanceInfoResult {
   reason: string
   server_created_at: string
 }
+
 export interface MaintenanceInfoByAppResult {
   maintenances: Array<{
     addon: {
@@ -174,6 +192,7 @@ export interface MaintenanceInfoByAppResult {
     server_created_at: unknown | null
   }>
 }
+
 export interface MaintenanceHistoryResult {
   maintenances: Array<{
     addon: {
@@ -201,12 +220,15 @@ export interface MaintenanceHistoryResult {
     server_created_at: string | null
   }>
 }
+
 export interface MaintenanceRunResult {
   message: string
 }
+
 export interface MaintenanceScheduleOpts {
   delay_weeks: string
 }
+
 export interface MaintenanceScheduleResult {
   addon: {
     uuid: string
@@ -234,25 +256,28 @@ export interface MaintenanceScheduleResult {
   previously_scheduled_for: string
   customer_requested: boolean
 }
+
 export interface MaintenanceWindowResult {
   window: string
   previous_window: unknown | null
   scheduled_for: string | null
   previously_scheduled_for: unknown | null
 }
+
 export interface MaintenanceUpdateWindowOpts {
   time_of_day: string
   day_of_week: string
 }
+
 export interface MaintenanceUpdateWindowResult {
   window: string
   previous_window: string
   scheduled_for: unknown | null
   previously_scheduled_for: unknown | null
 }
-export interface MetricsInfoResult {
-  [key: string]: unknown
-}
+
+export type MetricsInfoResult = Record<string, unknown>
+
 export interface PostgresInfoResult {
   app: {
     id: string
@@ -329,19 +354,22 @@ export interface PostgresInfoResult {
     leader: unknown | null
   }
 }
+
 export interface PostgresWaitStatusResult {
   waiting: boolean
   message: unknown | null
 }
-export interface PostgresRotateCredentialsResult {
-  [key: string]: unknown
-}
+
+export type PostgresRotateCredentialsResult = Record<string, unknown>
+
 export interface PostgresRunUpgradeOpts {
   version?: string
 }
+
 export interface PostgresRunUpgradeResult {
   message: string
 }
+
 export interface PostgresCredentialListResult {
   items: Array<{
     id: string
@@ -359,9 +387,11 @@ export interface PostgresCredentialListResult {
     }>
   }>
 }
+
 export interface PostgresCredentialCreateOpts {
   name?: string
 }
+
 export interface PostgresCredentialCreateResult {
   id: string
   name: string
@@ -377,6 +407,7 @@ export interface PostgresCredentialCreateResult {
     state: string
   }>
 }
+
 export interface PostgresCredentialInfoResult {
   id: string
   name: string
@@ -392,9 +423,9 @@ export interface PostgresCredentialInfoResult {
     state: string
   }>
 }
-export interface PostgresCredentialRotateResult {
-  [key: string]: unknown
-}
+
+export type PostgresCredentialRotateResult = Record<string, unknown>
+
 export interface PostgresDatabaseConfigResult {
   log_lock_waits?: {
     value: boolean
@@ -478,7 +509,7 @@ export interface PostgresDatabaseConfigResult {
     desc: string
     default: boolean
   }
-  "auto_explain.log_format"?: {
+  'auto_explain.log_format'?: {
     value: string
     desc: string
     default: string
@@ -489,42 +520,44 @@ export interface PostgresDatabaseConfigResult {
       yaml: string
     }
   }
-  "auto_explain.log_min_duration"?: {
+  'auto_explain.log_min_duration'?: {
     value: number
     desc: string
     default: number
   }
-  "auto_explain.log_analyze"?: {
+  'auto_explain.log_analyze'?: {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_triggers"?: {
+  'auto_explain.log_triggers'?: {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_buffers"?: {
+  'auto_explain.log_buffers'?: {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_verbose"?: {
+  'auto_explain.log_verbose'?: {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_nested_statements"?: {
+  'auto_explain.log_nested_statements'?: {
     value: boolean
     desc: string
     default: boolean
   }
 }
+
 export interface PostgresDatabaseUpdateConfigOpts {
   track_functions?: string
   log_min_duration_statement?: number
   log_connections?: boolean
 }
+
 export interface PostgresDatabaseUpdateConfigResult {
   log_lock_waits: {
     value: boolean
@@ -608,7 +641,7 @@ export interface PostgresDatabaseUpdateConfigResult {
     desc: string
     default: boolean
   }
-  "auto_explain.log_format": {
+  'auto_explain.log_format': {
     value: string
     desc: string
     default: string
@@ -619,52 +652,56 @@ export interface PostgresDatabaseUpdateConfigResult {
       yaml: string
     }
   }
-  "auto_explain.log_min_duration": {
+  'auto_explain.log_min_duration': {
     value: number
     desc: string
     default: number
   }
-  "auto_explain.log_analyze": {
+  'auto_explain.log_analyze': {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_triggers": {
+  'auto_explain.log_triggers': {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_buffers": {
+  'auto_explain.log_buffers': {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_verbose": {
+  'auto_explain.log_verbose': {
     value: boolean
     desc: string
     default: boolean
   }
-  "auto_explain.log_nested_statements": {
+  'auto_explain.log_nested_statements': {
     value: boolean
     desc: string
     default: boolean
   }
 }
-export interface PostgresDatabaseListCredentialsResult {
-  [key: string]: unknown
-}
+
+export type PostgresDatabaseListCredentialsResult = Record<string, unknown>
+
 export interface PostgresDatabaseCreateCredentialsOpts {
   name: string
 }
+
 export interface PostgresDatabaseCreateCredentialsResult {
   message: string
 }
+
 export interface PostgresDatabaseRotateCredentialsResult {
   message: string
 }
+
 export interface PostgresDatabaseDeleteCredentialResult {
   message: string
 }
+
 export interface PostgresDatabaseInfoCredentialResult {
   uuid: string
   name: string
@@ -678,9 +715,11 @@ export interface PostgresDatabaseInfoCredentialResult {
     state: string
   }>
 }
+
 export interface PostgresDatabaseRotateCredentialResult {
   message: string
 }
+
 export interface PostgresLevelInfoResult {
   items: Array<{
     name: string
@@ -689,11 +728,13 @@ export interface PostgresLevelInfoResult {
     connection_limit: number
   }>
 }
+
 export interface PostgresPoolCreateOpts {
   name: string
   level?: string
   count?: number
 }
+
 export interface PostgresPoolCreateResult {
   id: string
   name: string
@@ -705,10 +746,12 @@ export interface PostgresPoolCreateResult {
   endpoints: Array<unknown>
   compute_instances: Array<unknown>
 }
+
 export interface PostgresPoolDeleteResult {
   id: string
   message: string
 }
+
 export interface PostgresPoolInfoResult {
   id: string
   name: string
@@ -724,11 +767,13 @@ export interface PostgresPoolInfoResult {
   }>
   compute_instances: Array<unknown>
 }
+
 export interface PostgresPoolUpdateOpts {
   count: number
   name?: string
   level?: string
 }
+
 export interface PostgresPoolUpdateResult {
   id: string
   name: string
@@ -744,6 +789,7 @@ export interface PostgresPoolUpdateResult {
   }>
   compute_instances: Array<unknown>
 }
+
 export interface PostgresQuotaListResult {
   items: Array<{
     type: string
@@ -754,6 +800,7 @@ export interface PostgresQuotaListResult {
     enforcement_action: string
   }>
 }
+
 export interface PostgresQuotaInfoResult {
   type: string
   current_gb: unknown | null
@@ -762,11 +809,13 @@ export interface PostgresQuotaInfoResult {
   enforcement_active: boolean
   enforcement_action: string
 }
+
 export interface PostgresQuotaUpdateOpts {
   enforcement_action?: string
   warning_gb?: number | string | null
   critical_gb?: number | null
 }
+
 export interface PostgresQuotaUpdateResult {
   type: string
   current_gb: unknown | null
@@ -775,6 +824,7 @@ export interface PostgresQuotaUpdateResult {
   enforcement_active: boolean
   enforcement_action: string
 }
+
 export interface PostgresSettingsInfoResult {
   items: Array<{
     name: string
@@ -785,9 +835,11 @@ export interface PostgresSettingsInfoResult {
     override: unknown | null
   }>
 }
+
 export interface PostgresSettingsUpdateOpts {
   settings: string
 }
+
 export interface PostgresSettingsUpdateResult {
   changes: Array<{
     name: string
@@ -795,6 +847,7 @@ export interface PostgresSettingsUpdateResult {
     current: boolean | number
   }>
 }
+
 export interface RedisInfoResult {
   addon_id: string
   name: string
@@ -814,6 +867,7 @@ export interface RedisInfoResult {
   version: string
   prefer_native_tls: boolean
 }
+
 export interface RedisConfigResult {
   maxmemory_policy: {
     value: string
@@ -821,13 +875,13 @@ export interface RedisConfigResult {
     default: string
     values: {
       noeviction: string
-      "allkeys-lru": string
-      "volatile-lru": string
-      "allkeys-random": string
-      "volatile-random": string
-      "volatile-ttl": string
-      "allkeys-lfu": string
-      "volatile-lfu": string
+      'allkeys-lru': string
+      'volatile-lru': string
+      'allkeys-random': string
+      'volatile-random': string
+      'volatile-ttl': string
+      'allkeys-lfu': string
+      'volatile-lfu': string
     }
   }
   notify_keyspace_events: {
@@ -846,10 +900,12 @@ export interface RedisConfigResult {
     default: boolean
   }
 }
+
 export interface RedisUpdateConfigOpts {
   timeout: number
   maxmemory_policy: string
 }
+
 export interface RedisUpdateConfigResult {
   maxmemory_policy: {
     value: string
@@ -857,13 +913,13 @@ export interface RedisUpdateConfigResult {
     default: string
     values: {
       noeviction: string
-      "allkeys-lru": string
-      "volatile-lru": string
-      "allkeys-random": string
-      "volatile-random": string
-      "volatile-ttl": string
-      "allkeys-lfu": string
-      "volatile-lfu": string
+      'allkeys-lru': string
+      'volatile-lru': string
+      'allkeys-random': string
+      'volatile-random': string
+      'volatile-ttl': string
+      'allkeys-lfu': string
+      'volatile-lfu': string
     }
   }
   notify_keyspace_events: {
@@ -882,30 +938,36 @@ export interface RedisUpdateConfigResult {
     default: boolean
   }
 }
+
 export interface RedisRotateCredentialsResult {
   message: string
 }
+
 export interface RedisResetStatsResult {
   message: string
 }
+
 export interface RedisUpgradeOpts {
   version?: string
 }
+
 export interface RedisUpgradeResult {
   message: string
 }
+
 export interface RedisWaitResult {
   message: string
-  "waiting?": boolean
+  'waiting?': boolean
 }
+
 export interface RestoreCreateResult {
   uuid: string
   from_type: string
   to_type: string
 }
-export interface TransferListByAppResult {
-  [key: string]: unknown
-}
+
+export type TransferListByAppResult = Record<string, unknown>
+
 export interface TransferInfoByAppResult {
   uuid: string
   num: string
@@ -932,41 +994,47 @@ export interface TransferInfoByAppResult {
   num_keep?: number
   logs?: Array<unknown>
 }
+
 export interface TransferDeleteByAppResult {
   uuid: string
   num: string
   from_type: string
   to_type: string
 }
+
 export interface TransferCancelResult {
   uuid: string
   num: string
   from_type: string
   to_type: string
 }
+
 export interface TransferPublicUrlResult {
   expires_at: string
   url: string
 }
+
 export interface TransferCreateOpts {
   from_url: string
   from_name: string
   to_url: string | null
   to_name?: string
 }
+
 export interface TransferCreateResult {
   uuid: string
   num?: string
   from_type: string
   to_type: string
 }
-export interface TransferScheduleListResult {
-  [key: string]: unknown
-}
+
+export type TransferScheduleListResult = Record<string, unknown>
+
 export interface TransferScheduleCreateOpts {
   hour: number
   timezone: string
 }
+
 export interface TransferScheduleCreateResult {
   uuid: string
   name: string
@@ -977,6 +1045,7 @@ export interface TransferScheduleCreateResult {
   retain_weeks: number
   retain_months: number
 }
+
 export interface TransferScheduleDeleteResult {
   uuid: string
   name: string
@@ -990,129 +1059,111 @@ export interface TransferScheduleDeleteResult {
 
 export interface HerokuClient {
   backup: {
-    create(name: string): Promise<BackupCreateResult>
+  create(name: string): Promise<BackupCreateResult>
   }
-
   burstStatus: {
-    info(name: string): Promise<BurstStatusInfoResult>
+  info(name: string): Promise<BurstStatusInfoResult>
   }
-
   connectionPooling: {
-    info(name: string): Promise<ConnectionPoolingInfoResult>
-    create(name: string, requestBody: ConnectionPoolingCreateOpts): Promise<ConnectionPoolingCreateResult>
+  info(name: string): Promise<ConnectionPoolingInfoResult>
+  create(name: string, requestBody: ConnectionPoolingCreateOpts): Promise<ConnectionPoolingCreateResult>
   }
-
   database: {
-    info(name: string): Promise<DatabaseInfoResult>
-    connectionReset(name: string): Promise<DatabaseConnectionResetResult>
-    reset(name: string): Promise<DatabaseResetResult>
-    unfollow(name: string): Promise<DatabaseUnfollowResult>
-    cancelUpgrade(name: string): Promise<DatabaseCancelUpgradeResult>
-    dryRunUpgrade(name: string): Promise<DatabaseDryRunUpgradeResult>
-    prepareUpgrade(name: string): Promise<DatabasePrepareUpgradeResult>
-    runUpgrade(name: string): Promise<DatabaseRunUpgradeResult>
-    upgradeWaitStatus(name: string): Promise<unknown>  // TODO: no spec coverage — schema unknown
-    waitStatus(name: string): Promise<DatabaseWaitStatusResult>
+  info(name: string): Promise<DatabaseInfoResult>
+  connectionReset(name: string): Promise<DatabaseConnectionResetResult>
+  reset(name: string): Promise<DatabaseResetResult>
+  unfollow(name: string): Promise<DatabaseUnfollowResult>
+  cancelUpgrade(name: string): Promise<DatabaseCancelUpgradeResult>
+  dryRunUpgrade(name: string): Promise<DatabaseDryRunUpgradeResult>
+  prepareUpgrade(name: string): Promise<DatabasePrepareUpgradeResult>
+  runUpgrade(name: string): Promise<DatabaseRunUpgradeResult>
+  upgradeWaitStatus(name: string): Promise<unknown>
+  waitStatus(name: string): Promise<DatabaseWaitStatusResult>
   }
-
   link: {
-    list(name: string): Promise<LinkListResult>
-    create(name: string, requestBody: LinkCreateOpts): Promise<LinkCreateResult>
-    delete(name: string, link_id: string): Promise<LinkDeleteResult>
-    info(name: string, link_id: string): Promise<LinkInfoResult>
+  list(name: string): Promise<LinkListResult>
+  create(name: string, requestBody: LinkCreateOpts): Promise<LinkCreateResult>
+  delete(name: string, link_id: string): Promise<LinkDeleteResult>
+  info(name: string, link_id: string): Promise<LinkInfoResult>
   }
-
   maintenance: {
-    info(uuid: string): Promise<MaintenanceInfoResult>
-    infoByApp(uuid: string): Promise<MaintenanceInfoByAppResult>
-    history(uuid: string): Promise<MaintenanceHistoryResult>
-    run(uuid: string): Promise<MaintenanceRunResult>
-    schedule(uuid: string, requestBody: MaintenanceScheduleOpts): Promise<MaintenanceScheduleResult>
-    window(uuid: string): Promise<MaintenanceWindowResult>
-    updateWindow(uuid: string, requestBody: MaintenanceUpdateWindowOpts): Promise<MaintenanceUpdateWindowResult>
+  info(uuid: string): Promise<MaintenanceInfoResult>
+  infoByApp(uuid: string): Promise<MaintenanceInfoByAppResult>
+  history(uuid: string): Promise<MaintenanceHistoryResult>
+  run(uuid: string): Promise<MaintenanceRunResult>
+  schedule(uuid: string, requestBody: MaintenanceScheduleOpts): Promise<MaintenanceScheduleResult>
+  window(uuid: string): Promise<MaintenanceWindowResult>
+  updateWindow(uuid: string, requestBody: MaintenanceUpdateWindowOpts): Promise<MaintenanceUpdateWindowResult>
   }
-
   metrics: {
-    info(name: string): Promise<MetricsInfoResult>
+  info(name: string): Promise<MetricsInfoResult>
   }
-
   postgres: {
-    info(uuid: string): Promise<PostgresInfoResult>
-    waitStatus(uuid: string): Promise<PostgresWaitStatusResult>
-    rotateCredentials(uuid: string): Promise<PostgresRotateCredentialsResult>
-    runUpgrade(uuid: string, requestBody: PostgresRunUpgradeOpts): Promise<PostgresRunUpgradeResult>
+  info(uuid: string): Promise<PostgresInfoResult>
+  waitStatus(uuid: string): Promise<PostgresWaitStatusResult>
+  rotateCredentials(uuid: string): Promise<PostgresRotateCredentialsResult>
+  runUpgrade(uuid: string, requestBody: PostgresRunUpgradeOpts): Promise<PostgresRunUpgradeResult>
   }
-
   postgresCredential: {
-    list(uuid: string): Promise<PostgresCredentialListResult>
-    create(uuid: string, requestBody: PostgresCredentialCreateOpts): Promise<PostgresCredentialCreateResult>
-    delete(uuid: string, cred_name: string): Promise<unknown>  // TODO: no spec coverage — schema unknown
-    info(uuid: string, cred_name: string): Promise<PostgresCredentialInfoResult>
-    rotate(uuid: string, cred_name: string): Promise<PostgresCredentialRotateResult>
+  list(uuid: string): Promise<PostgresCredentialListResult>
+  create(uuid: string, requestBody: PostgresCredentialCreateOpts): Promise<PostgresCredentialCreateResult>
+  delete(uuid: string, cred_name: string): Promise<unknown>
+  info(uuid: string, cred_name: string): Promise<PostgresCredentialInfoResult>
+  rotate(uuid: string, cred_name: string): Promise<PostgresCredentialRotateResult>
   }
-
   postgresDatabase: {
-    config(name: string): Promise<PostgresDatabaseConfigResult>
-    updateConfig(name: string, requestBody: PostgresDatabaseUpdateConfigOpts): Promise<PostgresDatabaseUpdateConfigResult>
-    listCredentials(name: string): Promise<PostgresDatabaseListCredentialsResult>
-    createCredentials(name: string, requestBody: PostgresDatabaseCreateCredentialsOpts): Promise<PostgresDatabaseCreateCredentialsResult>
-    rotateCredentials(name: string): Promise<PostgresDatabaseRotateCredentialsResult>
-    deleteCredential(name: string, cred_name: string): Promise<PostgresDatabaseDeleteCredentialResult>
-    infoCredential(name: string, cred_name: string): Promise<PostgresDatabaseInfoCredentialResult>
-    rotateCredential(name: string, cred_name: string): Promise<PostgresDatabaseRotateCredentialResult>
-    repairDefault(name: string): Promise<unknown>  // TODO: no spec coverage — schema unknown
+  config(name: string): Promise<PostgresDatabaseConfigResult>
+  updateConfig(name: string, requestBody: PostgresDatabaseUpdateConfigOpts): Promise<PostgresDatabaseUpdateConfigResult>
+  listCredentials(name: string): Promise<PostgresDatabaseListCredentialsResult>
+  createCredentials(name: string, requestBody: PostgresDatabaseCreateCredentialsOpts): Promise<PostgresDatabaseCreateCredentialsResult>
+  rotateCredentials(name: string): Promise<PostgresDatabaseRotateCredentialsResult>
+  deleteCredential(name: string, cred_name: string): Promise<PostgresDatabaseDeleteCredentialResult>
+  infoCredential(name: string, cred_name: string): Promise<PostgresDatabaseInfoCredentialResult>
+  rotateCredential(name: string, cred_name: string): Promise<PostgresDatabaseRotateCredentialResult>
+  repairDefault(name: string): Promise<unknown>
   }
-
   postgresLevel: {
-    info(tier: string): Promise<PostgresLevelInfoResult>
+  info(tier: string): Promise<PostgresLevelInfoResult>
   }
-
   postgresPool: {
-    create(uuid: string, requestBody: PostgresPoolCreateOpts): Promise<PostgresPoolCreateResult>
-    delete(uuid: string, pool_id: string): Promise<PostgresPoolDeleteResult>
-    info(uuid: string, pool_id: string): Promise<PostgresPoolInfoResult>
-    update(uuid: string, pool_id: string, requestBody: PostgresPoolUpdateOpts): Promise<PostgresPoolUpdateResult>
+  create(uuid: string, requestBody: PostgresPoolCreateOpts): Promise<PostgresPoolCreateResult>
+  delete(uuid: string, pool_id: string): Promise<PostgresPoolDeleteResult>
+  info(uuid: string, pool_id: string): Promise<PostgresPoolInfoResult>
+  update(uuid: string, pool_id: string, requestBody: PostgresPoolUpdateOpts): Promise<PostgresPoolUpdateResult>
   }
-
   postgresQuota: {
-    list(uuid: string): Promise<PostgresQuotaListResult>
-    info(uuid: string, quota_type: string): Promise<PostgresQuotaInfoResult>
-    update(uuid: string, quota_type: string, requestBody: PostgresQuotaUpdateOpts): Promise<PostgresQuotaUpdateResult>
+  list(uuid: string): Promise<PostgresQuotaListResult>
+  info(uuid: string, quota_type: string): Promise<PostgresQuotaInfoResult>
+  update(uuid: string, quota_type: string, requestBody: PostgresQuotaUpdateOpts): Promise<PostgresQuotaUpdateResult>
   }
-
   postgresSettings: {
-    info(uuid: string): Promise<PostgresSettingsInfoResult>
-    update(uuid: string, requestBody: PostgresSettingsUpdateOpts): Promise<PostgresSettingsUpdateResult>
+  info(uuid: string): Promise<PostgresSettingsInfoResult>
+  update(uuid: string, requestBody: PostgresSettingsUpdateOpts): Promise<PostgresSettingsUpdateResult>
   }
-
   redis: {
-    info(name: string): Promise<RedisInfoResult>
-    config(name: string): Promise<RedisConfigResult>
-    updateConfig(name: string, requestBody: RedisUpdateConfigOpts): Promise<RedisUpdateConfigResult>
-    rotateCredentials(name: string): Promise<RedisRotateCredentialsResult>
-    resetStats(name: string): Promise<RedisResetStatsResult>
-    upgrade(name: string, requestBody: RedisUpgradeOpts): Promise<RedisUpgradeResult>
-    wait(name: string): Promise<RedisWaitResult>
+  info(name: string): Promise<RedisInfoResult>
+  config(name: string): Promise<RedisConfigResult>
+  updateConfig(name: string, requestBody: RedisUpdateConfigOpts): Promise<RedisUpdateConfigResult>
+  rotateCredentials(name: string): Promise<RedisRotateCredentialsResult>
+  resetStats(name: string): Promise<RedisResetStatsResult>
+  upgrade(name: string, requestBody: RedisUpgradeOpts): Promise<RedisUpgradeResult>
+  wait(name: string): Promise<RedisWaitResult>
   }
-
   restore: {
-    create(name: string): Promise<RestoreCreateResult>
+  create(name: string): Promise<RestoreCreateResult>
   }
-
   transfer: {
-    listByApp(name: string): Promise<TransferListByAppResult>
-    infoByApp(name: string, xfer_id: string): Promise<TransferInfoByAppResult>
-    deleteByApp(name: string, xfer_id: string): Promise<TransferDeleteByAppResult>
-    cancel(name: string, xfer_id: string): Promise<TransferCancelResult>
-    publicUrl(name: string, xfer_id: string): Promise<TransferPublicUrlResult>
-    list(name: string): Promise<unknown>  // TODO: no spec coverage — schema unknown
-    create(name: string, requestBody: TransferCreateOpts): Promise<TransferCreateResult>
+  listByApp(name: string): Promise<TransferListByAppResult>
+  infoByApp(name: string, xfer_id: string): Promise<TransferInfoByAppResult>
+  deleteByApp(name: string, xfer_id: string): Promise<TransferDeleteByAppResult>
+  cancel(name: string, xfer_id: string): Promise<TransferCancelResult>
+  publicUrl(name: string, xfer_id: string): Promise<TransferPublicUrlResult>
+  list(name: string): Promise<unknown>
+  create(name: string, requestBody: TransferCreateOpts): Promise<TransferCreateResult>
   }
-
   transferSchedule: {
-    list(name: string): Promise<TransferScheduleListResult>
-    create(name: string, requestBody: TransferScheduleCreateOpts): Promise<TransferScheduleCreateResult>
-    delete(name: string, schedule_id: string): Promise<TransferScheduleDeleteResult>
+  list(name: string): Promise<TransferScheduleListResult>
+  create(name: string, requestBody: TransferScheduleCreateOpts): Promise<TransferScheduleCreateResult>
+  delete(name: string, schedule_id: string): Promise<TransferScheduleDeleteResult>
   }
-
 }
