@@ -48,11 +48,15 @@ flowchart TB
   subgraph HT["heroku-types repo"]
     direction TB
     ROUTES["data/routes.js<br/><i>curated grouping</i>"]
-    GEN["src/gen-data-types.ts"]
+    GEN["src/gen-data-types.ts<br/><i>driver</i>"]
+    NORM["src/gen/normalize-data.ts<br/><i>JSON-Schema → TypesModel</i>"]
+    EMIT["src/gen/ts-emit.ts<br/><i>shared emitter</i>"]
     TYPES["data/types.d.ts<br/><i>generated</i>"]
 
     ROUTES --> GEN
-    GEN --> TYPES
+    GEN --> NORM
+    NORM --> EMIT
+    EMIT --> TYPES
   end
 
   JSON -- "SHOGUN_SCHEMA_PATH" --> GEN
@@ -60,7 +64,7 @@ flowchart TB
   classDef artifact fill:#fef3c7,stroke:#d97706
   classDef code fill:#dbeafe,stroke:#2563eb
   class JSONL,JSON,TYPES,ROUTES artifact
-  class REC,INF,RAKE,GEN,R1,SP code
+  class REC,INF,RAKE,GEN,NORM,EMIT,R1,SP code
 ```
 
 ## Components
@@ -138,32 +142,32 @@ To add or rename a resource, edit `data/routes.js` (and optionally
 
 ### 5. Type generator (heroku-types)
 
-[`src/gen-data-types.ts`](../src/gen-data-types.ts) is an import-safe
-module whose `main()` driver is invoked via `npm run generate:data`.
-The pure helpers (`renderType`, `renderObject`, `pickPrincipalResponse`,
-`extractPathParams`, `plan`, `render`, `summarize`) are exported for
-direct unit testing, and a `process.argv[1] === fileURLToPath(...)`
-guard at the bottom of the file ensures importing it does **not**
-trigger the filesystem reads or writes the script performs. It:
+[`src/gen-data-types.ts`](../src/gen-data-types.ts) is a thin driver
+whose `main()` is invoked via `npm run generate:data`. A
+`process.argv[1] === fileURLToPath(...)` guard ensures importing the
+module does **not** trigger filesystem reads or writes. It:
 
 1. Imports `data/routes.js` as an ES module (no parsing — the curated
    resources are read directly as JavaScript values).
 2. Reads `tmp/api_schemas.json` from the Shogun checkout (path supplied
    via `SHOGUN_SCHEMA_PATH`).
-3. For each `(resource, methodName)`:
+3. Calls `generateDataTypes(routes, schemas)` which delegates to
+   [`src/gen/normalize-data.ts`](../src/gen/normalize-data.ts) +
+   [`src/gen/ts-emit.ts`](../src/gen/ts-emit.ts):
    - Normalizes route param syntax — Shogun emits both `{name}` and
-     `:name` forms; we collapse to `:name` before joining.
-   - Looks up the matching schema entry.
-   - Picks the principal response shape: `200`, then `201`/`202`, else the
-     first non-empty response.
-   - Renders `*Opts` (request body) and `*Result` (principal response)
-     interfaces using the same naming convention as `3.sdk/types.d.ts`
-     (`<ResourcePascal><MethodPascal>Opts` / `Result`).
-   - Emits the method signature in the `HerokuClient` interface, with
-     path params hoisted to positional `string` arguments and the request
-     body (if any) as the trailing `requestBody: ...Opts` parameter.
-4. Methods with no schema coverage are typed as `Promise<unknown>` and
-   annotated `// TODO: no spec coverage` so they're easy to find.
+     `:name` forms; both sides are collapsed to `:name` before lookup.
+   - Picks the principal response shape: `200`, then `201`/`202`, else
+     the first non-empty response.
+   - Produces `*Opts` (request body) and `*Result` (principal response)
+     types using the same naming convention as `3.sdk/types.d.ts`
+     (`<ResourcePascal><MethodPascal>Opts` / `Result`). Schemas without
+     properties become `export type X = Record<string, unknown>`
+     aliases rather than empty interfaces.
+   - Emits the `HerokuClient` interface, with path params hoisted to
+     positional `string` arguments and the request body (if any) as
+     the trailing `requestBody: ...Opts` parameter.
+4. Methods with no schema coverage are typed as `Promise<unknown>` so
+   they're easy to find with grep.
 5. Writes `data/types.d.ts`.
 
 ## Trust boundaries and failure modes
@@ -233,6 +237,30 @@ design choices, while the type bodies track the wire reality of Shogun.
   would make schema changes review as smaller, scoped diffs in PRs.
 - **Hyperschema emission.** With grouping curated and types inferred,
   a Hyperschema doc could be emitted for parity with `3.sdk`'s
-  pipeline — at which point the existing `src/gen/render.ts` could
-  consume it directly. Not necessary for the current goal, but a
-  natural extension.
+  pipeline. The shared emission core (`src/gen/model.ts` +
+  `src/gen/ts-emit.ts`) is now in place, so a Shogun-derived
+  hyperschema could simply be fed through `normalize-hyperschema.ts`
+  and the bespoke `normalize-data.ts` deleted entirely. Not necessary
+  for the current goal, but a natural extension.
+
+## Shared emission core
+
+Both the `data` and `3.sdk` pipelines feed the same emitter. Each
+pipeline normalizes its input into an intermediate `TypesModel`
+(`src/gen/model.ts`); `emitTypes(model)` in `src/gen/ts-emit.ts`
+turns that model into the `.d.ts` text. Output style choices —
+quoting, indentation, JSDoc form, identifier escaping, union
+ordering, `HerokuClient` assembly — live in one place.
+
+For the `data` variant specifically:
+
+- `src/gen/normalize-data.ts` is the JSON-Schema → `TypesModel`
+  step. Schemas with no properties become `Record<string, unknown>`
+  type aliases rather than empty interfaces, which matches how
+  nested empty objects are rendered.
+- `src/gen-data-types.ts` is a thin driver: load fixtures, call
+  `generateDataTypes()`, write `data/types.d.ts`.
+- The emitter is invoked with `emitResourceShapes: false` because
+  the `data` pipeline has no top-level resource interface (curated
+  routes don't carry a resource-level shape — only per-route
+  Opts/Result types).

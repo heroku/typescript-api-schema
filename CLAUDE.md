@@ -28,15 +28,24 @@ TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imp
 
 ### Key modules
 
+The two generator pipelines (hyperschema → `3.sdk`, Shogun + curated routes → `data`) share a single emitter. Each pipeline normalizes its input into an intermediate `TypesModel` and feeds it to `ts-emit.ts`.
+
 - `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url` args. Orchestrates fetch → generate → verify → write. Also updates `package.json` exports/files for the variant.
+- `src/gen-data-types.ts` — Driver for the `data` variant. Loads `data/routes.js` + Shogun `api_schemas.json`, calls `generateDataTypes()`, writes `data/types.d.ts`.
 - `src/gen/schema.ts` — Fetches the hyperschema from Heroku API (default variant `3.sdk`).
-- The rendering pipeline is split across three focused modules. Each is imported directly by callers (no barrel):
-  - `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, `RouteDefinition`, `HttpMethod`, etc.).
-  - `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `renderJSDoc`, `disambiguateLinkTitles`).
-  - `src/gen/render.ts` — `TypeRenderer` class that converts a parsed hyperschema into `.d.ts` content (resource interfaces, link Opts/Result types, `HerokuClient` interface) and route entries via `renderRouteEntries()`.
-- `src/gen/route-generator.ts` — Generates the route registry: `generateRoutesJS()` emits per-resource named exports with method/path/hasRequestBody, `generateRoutesDTS()` emits the corresponding `.d.ts`.
-- `src/gen/generator.ts` — Iterates schema definitions, drives `TypeRenderer`, and assembles the final type output with a generated-content preamble.
+- `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, `RouteDefinition`, `HttpMethod`, etc.).
+- `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `disambiguateLinkTitles`).
+- `src/gen/model.ts` — Intermediate model: `TypesModel`, `ResourceModel`, `MethodModel`, `AuxType`, `ObjectShape`, `TypeRef`. The contract between normalizers and the emitter.
+- `src/gen/ts-emit.ts` — `emitTypes(model, options?)` — pure model-to-text renderer. Owns every output style choice (quoting, indentation, JSDoc formatting, identifier escaping, union ordering, `HerokuClient` assembly).
+- `src/gen/normalize-hyperschema.ts` — Heroku hyperschema → `TypesModel`. Resolves `$ref`, disambiguates link titles, parses hRef params, detects cross-resource targetSchemas. Also exports `extractRouteEntries()` for the route registry.
+- `src/gen/normalize-data.ts` — Shogun JSON-Schemas + curated routes → `TypesModel`. Schemas without properties become `Record<string, unknown>` aliases. Also exports `summarizeCoverage()` for stats reporting.
+- `src/gen/route-generator.ts` — Generates the route registry: `generateRoutesJS()` emits per-resource named exports with method/path/hasRequestBody, `generateRoutesDTS()` emits the corresponding `.d.ts`. Uses `extractRouteEntries()` from the hyperschema normalizer.
+- `src/gen/generator.ts` — Thin pipeline driver: `generateTypes(schema) = emitTypes(normalizeHyperschema(schema))`.
 - `src/gen/verify.ts` — Validates the emitted `.d.ts` content by running the TypeScript compiler in-memory and returning any diagnostics.
+
+### Output style is owned by `ts-emit.ts`
+
+When changing how emitted types look (quote style, indentation, JSDoc form, member ordering), edit `src/gen/ts-emit.ts`. Both pipelines pick up the change automatically. Don't add ad-hoc string concatenation in normalizers — produce the right `TypeRef`/`ObjectShape` shape and let the emitter handle it.
 
 ### Generated output
 
