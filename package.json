@@ -27,9 +27,9 @@
     "3.sdk/"
   ],
   "scripts": {
-    "build": "rm -rf build && tsc",
-    "generate": "node build/cli.js",
-    "generate:data": "node build/gen-data-types.js",
+    "typecheck": "tsc --noEmit",
+    "generate": "tsx src/cli.ts",
+    "generate:data": "tsx src/gen-data-types.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@vitest/coverage-v8": "^4.1.4",
+    "tsx": "^4.22.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.4"
   }

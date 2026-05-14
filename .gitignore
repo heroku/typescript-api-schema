@@ -3,7 +3,6 @@
 .claude/
 .worktrees/
 
-build/
 coverage/
 docs/complexity-manager/
 node_modules/
