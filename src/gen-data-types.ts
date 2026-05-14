@@ -18,15 +18,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-interface RouteDef { method: string; path: string; hasRequestBody?: true }
-interface JsonSchema { type?: string | string[]; properties?: Record<string, JsonSchema>; required?: string[]; items?: JsonSchema; anyOf?: JsonSchema[] }
-interface RouteSchema { request: JsonSchema | null; responses: Record<string, JsonSchema>; request_example_count: number; response_example_count: number }
-
-const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(HERE, "../dist");
-const ROUTES_PATH = resolve(ROOT, "data/routes.js");
-const OUT_PATH = resolve(ROOT, "data/types.d.ts");
-const SCHEMA_PATH = process.env.SHOGUN_SCHEMA_PATH ?? resolve('.', "../shogun/tmp/api_schemas.json");
+export interface RouteDef { method: string; path: string; hasRequestBody?: true }
+export interface JsonSchema { type?: string | string[]; properties?: Record<string, JsonSchema>; required?: string[]; items?: JsonSchema; anyOf?: JsonSchema[] }
+export interface RouteSchema { request: JsonSchema | null; responses: Record<string, JsonSchema>; request_example_count: number; response_example_count: number }
 
 const PARAM_RE = /\{(\w+)\}/g;
 const normalizeRoute = (key: string): string => key.replace(PARAM_RE, ":$1");
@@ -36,7 +30,7 @@ const toPascal = (s: string): string =>
 
 // Pick the principal response shape: prefer 200, then 201/202, else the first
 // non-empty schema. We render only one Result type per method to match 3.sdk.
-function pickPrincipalResponse(responses: Record<string, JsonSchema>): JsonSchema | null {
+export function pickPrincipalResponse(responses: Record<string, JsonSchema>): JsonSchema | null {
   for (const status of ["200", "201", "202"]) if (responses[status]) return responses[status];
   for (const v of Object.values(responses)) if (v) return v;
   return null;
@@ -45,7 +39,7 @@ function pickPrincipalResponse(responses: Record<string, JsonSchema>): JsonSchem
 // Renders a JSON Schema fragment as TypeScript. Indentation matches 3.sdk's
 // hand-written output style. Unknown/unsupported shapes degrade to `unknown`
 // rather than throwing — codegen should never block on schema oddities.
-function renderType(schema: JsonSchema | null | undefined, indent = "  "): string {
+export function renderType(schema: JsonSchema | null | undefined, indent = "  "): string {
   if (!schema) return "unknown";
   if (schema.anyOf) return schema.anyOf.map((s) => renderType(s, indent)).join(" | ");
 
@@ -71,7 +65,7 @@ function renderType(schema: JsonSchema | null | undefined, indent = "  "): strin
   return nullable ? `${core} | null` : core;
 }
 
-function renderObject(schema: JsonSchema, indent: string): string {
+export function renderObject(schema: JsonSchema, indent: string): string {
   const props = schema.properties ?? {};
   const required = new Set(schema.required ?? []);
   const keys = Object.keys(props);
@@ -88,7 +82,7 @@ function renderObject(schema: JsonSchema, indent: string): string {
 
 // Top-level interface body — same as renderObject but without enclosing braces
 // and at the document indent (zero). Used for `export interface XOpts { ... }`.
-function renderInterfaceBody(schema: JsonSchema): string {
+export function renderInterfaceBody(schema: JsonSchema): string {
   const props = schema.properties ?? {};
   const required = new Set(schema.required ?? []);
   const keys = Object.keys(props);
@@ -104,13 +98,13 @@ function renderInterfaceBody(schema: JsonSchema): string {
 
 // Path params come from `{name}` segments. Order matters for the generated
 // signature; Sinatra preserves left-to-right declaration order.
-function extractPathParams(path: string): string[] {
+export function extractPathParams(path: string): string[] {
   const out: string[] = [];
   for (const m of path.matchAll(/\{(\w+)\}/g)) out.push(m[1]);
   return out;
 }
 
-interface MethodPlan {
+export interface MethodPlan {
   resource: string;
   method: string;
   route: RouteDef;
@@ -119,15 +113,14 @@ interface MethodPlan {
   resultName: string;
 }
 
-function plan(routesByResource: Record<string, Record<string, RouteDef>>, schemas: Record<string, RouteSchema>): MethodPlan[] {
+export function plan(routesByResource: Record<string, Record<string, RouteDef>>, schemas: Record<string, RouteSchema>): MethodPlan[] {
   const out: MethodPlan[] = [];
-  const norm = (k: string) => k.replace(PARAM_RE, ":$1");
   const indexed: Record<string, RouteSchema> = {};
-  for (const [k, v] of Object.entries(schemas)) indexed[norm(k)] = v;
+  for (const [k, v] of Object.entries(schemas)) indexed[normalizeRoute(k)] = v;
 
   for (const [resource, methods] of Object.entries(routesByResource)) {
     for (const [method, route] of Object.entries(methods)) {
-      const key = norm(`${route.method} ${route.path}`);
+      const key = normalizeRoute(`${route.method} ${route.path}`);
       const sch = indexed[key] ?? null;
       const stem = `${toPascal(resource)}${toPascal(method)}`;
       out.push({
@@ -143,7 +136,7 @@ function plan(routesByResource: Record<string, Record<string, RouteDef>>, schema
   return out;
 }
 
-function render(plans: MethodPlan[]): string {
+export function render(plans: MethodPlan[]): string {
   const interfaces: string[] = [];
   const optsEmitted = new Set<string>();
   const resultEmitted = new Set<string>();
@@ -189,8 +182,8 @@ function render(plans: MethodPlan[]): string {
 }
 
 // Stats so you can see at a glance which methods came back unknown.
-interface Stats { total: number; withSchema: number; withOpts: number; withResult: number }
-function summarize(plans: MethodPlan[]): Stats {
+export interface Stats { total: number; withSchema: number; withOpts: number; withResult: number }
+export function summarize(plans: MethodPlan[]): Stats {
   let withSchema = 0, withOpts = 0, withResult = 0;
   for (const p of plans) {
     if (p.schema) withSchema += 1;
@@ -200,19 +193,51 @@ function summarize(plans: MethodPlan[]): Stats {
   return { total: plans.length, withSchema, withOpts, withResult };
 }
 
-const routesModule = await import(ROUTES_PATH);
-const routesByResource: Record<string, Record<string, RouteDef>> = {};
-for (const [k, v] of Object.entries(routesModule)) if (k !== "default") routesByResource[k] = v as Record<string, RouteDef>;
+export interface MainDeps {
+  routesPath: string
+  schemaPath: string
+  outPath: string
+  readFile: (path: string) => string
+  writeFile: (path: string, content: string) => void
+  importRoutes: (path: string) => Promise<Record<string, unknown>>
+  log: (message: string) => void
+}
 
-const schemas: Record<string, RouteSchema> = JSON.parse(readFileSync(SCHEMA_PATH, "utf8"));
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(HERE, "../dist");
 
-const plans = plan(routesByResource, schemas);
-const output = render(plans);
-writeFileSync(OUT_PATH, output);
+const defaultDeps: MainDeps = {
+  routesPath: resolve(ROOT, "data/routes.js"),
+  schemaPath: process.env.SHOGUN_SCHEMA_PATH ?? resolve('.', "../shogun/tmp/api_schemas.json"),
+  outPath: resolve(ROOT, "data/types.d.ts"),
+  readFile: (p) => readFileSync(p, "utf8"),
+  writeFile: writeFileSync,
+  importRoutes: (p) => import(p),
+  log: (m) => console.log(m),
+};
 
-const s = summarize(plans);
-console.log(`Wrote ${OUT_PATH}`);
-console.log(`  Methods total:        ${s.total}`);
-console.log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
-console.log(`  With request schema:  ${s.withOpts}`);
-console.log(`  With response schema: ${s.withResult}`);
+export async function main(deps: Partial<MainDeps> = {}) {
+  const { routesPath, schemaPath, outPath, readFile, writeFile, importRoutes, log } = { ...defaultDeps, ...deps };
+
+  const routesModule = await importRoutes(routesPath);
+  const routesByResource: Record<string, Record<string, RouteDef>> = {};
+  for (const [k, v] of Object.entries(routesModule)) {
+    if (k !== "default") routesByResource[k] = v as Record<string, RouteDef>;
+  }
+
+  const schemas: Record<string, RouteSchema> = JSON.parse(readFile(schemaPath));
+  const plans = plan(routesByResource, schemas);
+  const output = render(plans);
+  writeFile(outPath, output);
+
+  const s = summarize(plans);
+  log(`Wrote ${outPath}`);
+  log(`  Methods total:        ${s.total}`);
+  log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
+  log(`  With request schema:  ${s.withOpts}`);
+  log(`  With response schema: ${s.withResult}`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main()
+}
