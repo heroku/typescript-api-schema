@@ -115,7 +115,7 @@ describe('generateTypes', () => {
     }
     const result = generateTypes(schemaWithLinks)
     expect(result).toContain('export interface HerokuClient')
-    expect(result).toContain('list(): Promise<App[]>')
+    expect(result).toContain('list(): Promise<Array<App>>')
   })
 
   it('generates valid types for property-less resources with links', () => {

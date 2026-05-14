@@ -1,31 +1,39 @@
-import { describe, it, expect, afterEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateTypes } from '../src/gen/generator.js'
+import { generateDataTypes, type RouteDef, type RouteSchema } from '../src/gen-data-types.js'
 import type { HerokuSchema } from '../src/gen/schema-types.js'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const FIXTURES = resolve(HERE, '__fixtures__')
 const GOLDENS = resolve(HERE, '__golden__')
 
-const schema = JSON.parse(
+const herokuSchema = JSON.parse(
   readFileSync(resolve(FIXTURES, 'heroku-schema-3.sdk.json'), 'utf8'),
 ) as HerokuSchema
-const golden = readFileSync(resolve(GOLDENS, '3.sdk-types.d.ts'), 'utf8')
+const sdkGolden = readFileSync(resolve(GOLDENS, '3.sdk-types.d.ts'), 'utf8')
+
+const dataGolden = readFileSync(resolve(GOLDENS, 'data-types.d.ts'), 'utf8')
+const shogunSchemas = JSON.parse(
+  readFileSync(resolve(FIXTURES, 'shogun-schemas.json'), 'utf8'),
+) as Record<string, RouteSchema>
+
+// Routes fixture is JSON (not .js) so iteration order is deterministic
+// across runtimes — vitest and Node treat dynamic ESM imports' key order
+// differently, which would otherwise cause the golden to diverge between
+// production (Node) and the test (vitest).
+const dataRoutes = JSON.parse(
+  readFileSync(resolve(FIXTURES, 'data-routes.json'), 'utf8'),
+) as Record<string, Record<string, RouteDef>>
 
 describe('golden output regression', () => {
-  afterEach(() => {
-    delete process.env.HEROKU_TYPES_USE_MODEL
+  it('3.sdk types match the golden byte-for-byte', () => {
+    expect(generateTypes(herokuSchema)).toBe(sdkGolden)
   })
 
-  it('legacy renderer produces the golden', () => {
-    delete process.env.HEROKU_TYPES_USE_MODEL
-    expect(generateTypes(schema)).toBe(golden)
-  })
-
-  it('model-based path produces the golden when HEROKU_TYPES_USE_MODEL=1', () => {
-    process.env.HEROKU_TYPES_USE_MODEL = '1'
-    expect(generateTypes(schema)).toBe(golden)
+  it('data types match the golden byte-for-byte', () => {
+    expect(generateDataTypes(dataRoutes, shogunSchemas)).toBe(dataGolden)
   })
 })

@@ -60,6 +60,9 @@ function emitResourceShape(resource: ResourceModel): string {
 
 function emitAuxType(aux: AuxType): string {
   const doc = renderJSDoc(aux.description, '')
+  if (aux.kind === 'alias') {
+    return `${doc}export type ${aux.name} = ${renderType(aux.type, 0)}`
+  }
   const body = renderProperties(aux.shape, 1)
   return `${doc}export interface ${aux.name} {\n${body}\n}`
 }
@@ -107,9 +110,7 @@ function renderType(ref: TypeRef, indent: number): string {
     case 'reference':
       return ref.name
     case 'array':
-      if (!ref.items) return 'unknown[]'
-      if (ref.style === 'brackets') return `${renderType(ref.items, indent)}[]`
-      return `Array<${renderType(ref.items, indent)}>`
+      return ref.items ? `Array<${renderType(ref.items, indent)}>` : 'unknown[]'
     case 'record':
       return `Record<string, ${renderType(ref.valueType, indent)}>`
     case 'union':

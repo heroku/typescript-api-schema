@@ -10,6 +10,7 @@ import type {
   SchemaNode,
   SchemaLink,
   HttpMethod,
+  RouteDefinition,
 } from './schema-types.js'
 import { toPascalCase, toCamelCase, disambiguateLinkTitles } from './utils.js'
 import type {
@@ -119,6 +120,7 @@ class HyperschemaNormalizer {
     for (const { link, titleKey } of this.resolveLinks(definition)) {
       if (hasCustomProperties(link.schema)) {
         auxTypes.push({
+          kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts',
           description: link.description,
           shape: this.buildObjectShape(
@@ -131,6 +133,7 @@ class HyperschemaNormalizer {
       const { resolved, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
       if (!crossResourceRef && hasDistinctResultSchema(resolved, definition)) {
         auxTypes.push({
+          kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result',
           description: link.description,
           shape: this.buildObjectShape(resolved!.properties!, resolved!.required ?? []),
@@ -389,7 +392,6 @@ class HyperschemaNormalizer {
         return {
           kind: 'array',
           items: { kind: 'reference', name: toPascalCase(resourceName) },
-          style: 'brackets',
         }
       }
       return { kind: 'reference', name: toPascalCase(resourceName) }
@@ -415,13 +417,48 @@ class HyperschemaNormalizer {
     }
     return { kind: 'reference', name: toPascalCase(resourceName) }
   }
+
+  routeEntries(definition: ResourceDefinition): Array<{ titleKey: string } & RouteDefinition> {
+    const entries: Array<{ titleKey: string } & RouteDefinition> = []
+    const supported: ReadonlySet<string> = new Set(HTTP_METHODS)
+
+    for (const { link, titleKey } of this.resolveLinks(definition)) {
+      if (!link.href || !link.method) continue
+      const method = link.method.toUpperCase()
+      if (!supported.has(method as HttpMethod)) continue
+
+      const params = this.parseHRefParams(link.href)
+      let paramIdx = 0
+      const path = link.href.replace(HREF_PARAM, (match) => {
+        const inner = match.slice(1, -1)
+        if (!inner.startsWith('(') || !inner.endsWith(')')) return match
+        return `{${params[paramIdx++].name}}`
+      })
+
+      const entry: { titleKey: string } & RouteDefinition = {
+        titleKey,
+        method: method as HttpMethod,
+        path,
+      }
+      if (hasCustomProperties(link.schema)) entry.hasRequestBody = true
+      entries.push(entry)
+    }
+    return entries
+  }
 }
 
 export function normalizeHyperschema(schema: HerokuSchema): TypesModel {
   return new HyperschemaNormalizer(schema).normalize()
 }
 
-// HTTP_METHODS re-exported here to keep the HRefParam-aware parsing logic
-// colocated. Used by route-generator integration in PR-2.
-export { HTTP_METHODS }
-export type { HttpMethod }
+export function extractRouteEntries(
+  schema: HerokuSchema,
+): Array<{ resource: string; entries: Array<{ titleKey: string } & RouteDefinition> }> {
+  const normalizer = new HyperschemaNormalizer(schema)
+  const out: Array<{ resource: string; entries: Array<{ titleKey: string } & RouteDefinition> }> = []
+  for (const [name, definition] of Object.entries(schema.definitions)) {
+    const entries = normalizer.routeEntries(definition)
+    if (entries.length > 0) out.push({ resource: name, entries })
+  }
+  return out
+}
