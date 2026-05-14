@@ -252,3 +252,33 @@ function buildMethod(
     : { kind: 'primitive', primitive: 'unknown' }
   return { name: p.method, params, returnType }
 }
+
+export interface CoverageStats {
+  total: number
+  withSchema: number
+  withOpts: number
+  withResult: number
+}
+
+// Walks routes/schemas without going through the model, used by main() for
+// reporting which methods have request/response schemas.
+export function summarizeCoverage(
+  routesByResource: Record<string, Record<string, RouteDef>>,
+  schemas: Record<string, RouteSchema>,
+): CoverageStats {
+  const indexed: Record<string, RouteSchema> = {}
+  for (const [k, v] of Object.entries(schemas)) indexed[normalizeRoute(k)] = v
+  let total = 0, withSchema = 0, withOpts = 0, withResult = 0
+  for (const methods of Object.values(routesByResource)) {
+    for (const route of Object.values(methods)) {
+      total += 1
+      const sch = indexed[normalizeRoute(`${route.method} ${route.path}`)] ?? null
+      if (sch) {
+        withSchema += 1
+        if (sch.request) withOpts += 1
+        if (pickPrincipalResponse(sch.responses)) withResult += 1
+      }
+    }
+  }
+  return { total, withSchema, withOpts, withResult }
+}

@@ -1,21 +1,10 @@
-import { TypeRenderer } from './render.js'
+import { extractRouteEntries } from './normalize-hyperschema.js'
 import { HTTP_METHODS, type HerokuSchema, type RouteDefinition } from './schema-types.js'
 import { toCamelCase } from './utils.js'
 
 interface ResourceRoutes {
   resource: string
   entries: Array<{ titleKey: string } & RouteDefinition>
-}
-
-function collectRoutes(schema: HerokuSchema): ResourceRoutes[] {
-  const renderer = new TypeRenderer(schema)
-  const out: ResourceRoutes[] = []
-  for (const [name, definition] of Object.entries(schema.definitions)) {
-    const entries = renderer.renderRouteEntries(name, definition)
-    if (entries.length === 0) continue
-    out.push({ resource: name, entries })
-  }
-  return out
 }
 
 function formatResourceJS({ resource, entries }: ResourceRoutes): string {
@@ -43,11 +32,11 @@ export function generateSharedTypesDTS(): string {
 }
 
 export function generateRoutesJS(schema: HerokuSchema): string {
-  return collectRoutes(schema).map(formatResourceJS).join('\n\n') + '\n'
+  return extractRouteEntries(schema).map(formatResourceJS).join('\n\n') + '\n'
 }
 
 export function generateRoutesDTS(schema: HerokuSchema): string {
   const header = `import type { RouteDefinition } from '../types'`
-  const decls = collectRoutes(schema).map(formatResourceDTS)
+  const decls = extractRouteEntries(schema).map(formatResourceDTS)
   return [header, ...decls].join('\n\n') + '\n'
 }
