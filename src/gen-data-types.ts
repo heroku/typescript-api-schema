@@ -49,12 +49,13 @@ export interface MainDeps {
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(HERE, "../dist");
+const SRC = HERE;
+const DIST = resolve(HERE, "../dist");
 
 const defaultDeps: MainDeps = {
-  routesPath: resolve(ROOT, "data/routes.js"),
+  routesPath: resolve(SRC, "data/routes.ts"),
   schemaPath: process.env.SHOGUN_SCHEMA_PATH ?? resolve('.', "../shogun/tmp/api_schemas.json"),
-  outPath: resolve(ROOT, "data/types.d.ts"),
+  outPath: resolve(DIST, "data/types.d.ts"),
   readFile: (p) => readFileSync(p, "utf8"),
   writeFile: writeFileSync,
   importRoutes: (p) => import(p),

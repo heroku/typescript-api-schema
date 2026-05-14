@@ -189,4 +189,17 @@ describe('main', () => {
     await main(deps)
     // No assertion needed beyond "did not throw" — readFile/writeFile/importRoutes are spies.
   })
+
+  it("defaults routesPath to the typed source under src/", async () => {
+    const importRoutes = vi.fn().mockResolvedValue({})
+    await main({
+      schemaPath: '/fake/schemas.json',
+      outPath: '/fake/types.d.ts',
+      readFile: vi.fn().mockReturnValue('{}'),
+      writeFile: vi.fn(),
+      importRoutes,
+      log: vi.fn(),
+    })
+    expect(importRoutes).toHaveBeenCalledWith(expect.stringMatching(/src\/data\/routes\.ts$/))
+  })
 })
