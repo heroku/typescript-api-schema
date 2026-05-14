@@ -10,21 +10,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Run tests:** `npm test` (runs vitest)
 - **Run a single test:** `npm test -- src/path/to/file.test.ts`
-- **Type-check:** `npx tsc --noEmit`
-- **Build:** `npm run build` (outputs to `build/`)
-- **Generate types:** `npm run generate` (runs CLI → fetches schema → writes types + routes into `<variant>/`)
+- **Type-check:** `npm run typecheck` (runs `tsc --noEmit`)
+- **Generate types:** `npm run generate` (runs CLI via `tsx` → fetches schema → writes types + routes into `dist/<variant>/`)
+
+The generator is executed directly from TypeScript via `tsx`; there is no compile step for the generator's own source. Generated artifacts go to `dist/`.
 
 No lint or format scripts are configured yet.
 
 ## Architecture
 
-- **Source:** `src/` — TypeScript source files (compiled with rootDir `src/`)
-- **Output:** `build/` — compiled JS + declaration files (declaration generation enabled)
+- **Source:** `src/` — TypeScript source for the generator. Not part of the published package; executed directly with `tsx`.
+- **Output:** `dist/` — generated `.d.ts` and `.js` files emitted by the CLI; this is what consumers import.
 - **Module system:** esnext modules with bundler resolution
 - **Runtime:** Node 22 (via `.tool-versions`)
 - **Test framework:** Vitest (no custom config file — uses defaults)
 
-TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imports.
+TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imports. `tsconfig.json` sets `noEmit: true` since the generator is never compiled to JS on disk.
 
 ### Key modules
 

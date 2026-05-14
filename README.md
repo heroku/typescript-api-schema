@@ -29,21 +29,13 @@ console.log(dyno.list)  // { method: 'GET', path: '/apps/{appId}/dynos' }
 
 The package includes a CLI that fetches the live Heroku API hyperschema and generates type definitions and a route registry. Before writing files to the file system, the type output is verified against the TypeScript type checker to ensure we're only writing valid definitions.
 
-### Build the CLI
-
-```sh
-npm run build
-```
-
-This compiles the TypeScript source into `build/`.
-
 ### Run the CLI
 
 ```sh
 npm run generate
 ```
 
-This fetches the schema from `https://api.heroku.com/schema` and writes the generated files to a directory named after the variant (e.g. `3.sdk/`). It also updates `package.json` exports automatically.
+This fetches the schema from `https://api.heroku.com/schema` and writes the generated files into `dist/<variant>/` (e.g. `dist/3.sdk/`). It also updates `package.json` exports automatically. The CLI is executed directly from TypeScript via `tsx` — no separate build step is required.
 
 #### CLI Options
 

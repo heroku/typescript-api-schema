@@ -4,8 +4,7 @@
     "module": "esnext",
     "lib": ["esnext", "DOM"],
     "types": ["node"],
-    "declaration": true,
-    "outDir": "./build",
+    "noEmit": true,
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
@@ -16,5 +15,5 @@
     "allowSyntheticDefaultImports": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "build", "**/*.test.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"],
 }
