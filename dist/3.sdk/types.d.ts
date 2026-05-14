@@ -5047,12 +5047,12 @@ export interface HerokuClient {
   /** Get archive for a single month. */
   info(enterpriseAccountIdentity: string, archiveYear: number, archiveMonth: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12'): Promise<Archive>
   /** List existing archives. */
-  list(enterpriseAccountIdentity: string): Promise<Archive[]>
+  list(enterpriseAccountIdentity: string): Promise<Array<Archive>>
   }
   /** An audit trail event represents some action on the platform */
   auditTrailEvent: {
   /** List existing events. Returns all events for one day, defaulting to current day. Order, actor, action, and type, and day query params can be specified as query parameters. For example, '/enterprise-accounts/:id/events?order=desc&actor=user@example.com&action=create&type=app&day=2020-09-30' would return events in descending order and only return app created events by the user with user@example.com email address. */
-  list(enterpriseAccountIdentity: string): Promise<AuditTrailEvent[]>
+  list(enterpriseAccountIdentity: string): Promise<Array<AuditTrailEvent>>
   }
   /** A build represents the process of transforming a code tarball into build artifacts */
   build: {
