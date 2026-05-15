@@ -24,6 +24,8 @@ import {
   type RouteDef,
   type RouteSchema,
 } from "./gen/normalize-data.js";
+import { emitTypedSource as defaultEmitTypedSource, type EmitTypedSourceResult } from "./gen/emit-typed-source.js";
+import { GENERATED_CONTENT_PREAMBLE } from "./gen/generator.js";
 
 export type { RouteDef, RouteSchema } from "./gen/normalize-data.js";
 export type { JsonSchema } from "./gen/normalize-data.js";
@@ -45,6 +47,7 @@ export interface MainDeps {
   readFile: (path: string) => string
   writeFile: (path: string, content: string) => void
   importRoutes: (path: string) => Promise<Record<string, unknown>>
+  emitTypedSource: (opts: { sourcePath: string; rootDir: string; outDir: string; banner?: string }) => EmitTypedSourceResult
   log: (message: string) => void
 }
 
@@ -59,11 +62,12 @@ const defaultDeps: MainDeps = {
   readFile: (p) => readFileSync(p, "utf8"),
   writeFile: writeFileSync,
   importRoutes: (p) => import(p),
+  emitTypedSource: defaultEmitTypedSource,
   log: (m) => console.log(m),
 };
 
 export async function main(deps: Partial<MainDeps> = {}) {
-  const { routesPath, schemaPath, outPath, readFile, writeFile, importRoutes, log } = { ...defaultDeps, ...deps };
+  const { routesPath, schemaPath, outPath, readFile, writeFile, importRoutes, emitTypedSource, log } = { ...defaultDeps, ...deps };
 
   const routesModule = await importRoutes(routesPath);
   const routesByResource: Record<string, Record<string, RouteDef>> = {};
@@ -73,10 +77,24 @@ export async function main(deps: Partial<MainDeps> = {}) {
 
   const schemas: Record<string, RouteSchema> = JSON.parse(readFile(schemaPath));
   const output = generateDataTypes(routesByResource, schemas);
+
+  const emitResult = emitTypedSource({
+    sourcePath: routesPath,
+    rootDir: SRC,
+    outDir: DIST,
+    banner: GENERATED_CONTENT_PREAMBLE,
+  });
+  if (emitResult.diagnostics.length > 0) {
+    const summary = emitResult.diagnostics.map(d => typeof d.messageText === 'string' ? d.messageText : d.messageText.messageText).join('\n')
+    throw new Error(`emitTypedSource returned ${emitResult.diagnostics.length} diagnostic(s):\n${summary}`)
+  }
+
   writeFile(outPath, output);
 
   const s = summarizeCoverage(routesByResource, schemas);
   log(`Wrote ${outPath}`);
+  log(`Wrote ${emitResult.jsPath}`);
+  log(`Wrote ${emitResult.dtsPath}`);
   log(`  Methods total:        ${s.total}`);
   log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
   log(`  With request schema:  ${s.withOpts}`);

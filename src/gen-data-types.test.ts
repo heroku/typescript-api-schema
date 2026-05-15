@@ -117,12 +117,17 @@ describe('generateDataTypes', () => {
 describe('main', () => {
   function makeDeps(over: Partial<MainDeps> = {}): MainDeps {
     return {
-      routesPath: '/fake/routes.js',
+      routesPath: '/fake/routes.ts',
       schemaPath: '/fake/schemas.json',
       outPath: '/fake/types.d.ts',
       readFile: vi.fn().mockReturnValue('{}'),
       writeFile: vi.fn(),
       importRoutes: vi.fn().mockResolvedValue({}),
+      emitTypedSource: vi.fn().mockReturnValue({
+        jsPath: '/fake/dist/data/routes.js',
+        dtsPath: '/fake/dist/data/routes.d.ts',
+        diagnostics: [],
+      }),
       log: vi.fn(),
       ...over,
     }
@@ -201,5 +206,36 @@ describe('main', () => {
       log: vi.fn(),
     })
     expect(importRoutes).toHaveBeenCalledWith(expect.stringMatching(/src\/data\/routes\.ts$/))
+  })
+
+  it("emits dist/data/routes.js from the typed source", async () => {
+    const emitTypedSource = vi.fn().mockReturnValue({
+      jsPath: '/fake/dist/data/routes.js',
+      dtsPath: '/fake/dist/data/routes.d.ts',
+      diagnostics: [],
+    })
+    const log = vi.fn()
+    await main(makeDeps({ emitTypedSource, log }))
+    expect(emitTypedSource).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sourcePath: expect.stringMatching(/routes\.ts$/),
+        banner: expect.stringContaining('NOTE: the contents of this file are generated'),
+      }),
+    )
+    const messages = log.mock.calls.map(c => c[0] as string)
+    expect(messages.some(m => m.includes('routes.js'))).toBe(true)
+  })
+
+  it("aborts when emitTypedSource returns diagnostics", async () => {
+    const emitTypedSource = vi.fn().mockReturnValue({
+      jsPath: '/fake/dist/data/routes.js',
+      dtsPath: '/fake/dist/data/routes.d.ts',
+      diagnostics: [{ messageText: 'boom', category: 1, code: 1, file: undefined, start: undefined, length: undefined }],
+    })
+    const writeFile = vi.fn()
+    await expect(
+      main(makeDeps({ emitTypedSource, writeFile })),
+    ).rejects.toThrow(/diagnostic/i)
+    expect(writeFile).not.toHaveBeenCalled()
   })
 })
