@@ -22,7 +22,7 @@ function formatResourceJS({ resource, entries }: ResourceRoutes): string {
   return `export const ${toCamelCase(resource)} = ${JSON.stringify(methods, null, 2)}`
 }
 
-function formatResourceDTS({ resource }: ResourceRoutes): string {
+function formatResourceDTS(resource: string): string {
   return `export declare const ${toCamelCase(resource)}: Record<string, RouteDefinition>`
 }
 
@@ -35,8 +35,12 @@ export function generateRoutesJS(schema: HerokuSchema): string {
   return extractRouteEntries(schema).map(formatResourceJS).join('\n\n') + '\n'
 }
 
-export function generateRoutesDTS(schema: HerokuSchema): string {
+export function generateRoutesDTSForResources(resources: string[]): string {
   const header = `import type { RouteDefinition } from '../types'`
-  const decls = extractRouteEntries(schema).map(formatResourceDTS)
+  const decls = resources.map(formatResourceDTS)
   return [header, ...decls].join('\n\n') + '\n'
+}
+
+export function generateRoutesDTS(schema: HerokuSchema): string {
+  return generateRoutesDTSForResources(extractRouteEntries(schema).map(r => r.resource))
 }
