@@ -34,7 +34,8 @@ export function emitTypedSource(options: EmitTypedSourceOptions): EmitTypedSourc
 
   const program = ts.createProgram([sourcePath], compilerOptions)
 
-  const emitResult = program.emit(undefined, (fileName, data) => {
+  const sourceFile = program.getSourceFile(sourcePath)
+  const emitResult = program.emit(sourceFile, (fileName, data) => {
     mkdirSync(dirname(fileName), { recursive: true })
     writeFileSync(fileName, banner + data)
   })

@@ -87,4 +87,22 @@ describe('emitTypedSource', () => {
 
     expect(mod.sample).toEqual({ a: 'one', b: { method: 'GET', path: '/x' } })
   })
+
+  it('does not emit transitive imports — only the source file', () => {
+    const srcDir = join(workDir, 'src')
+    const outDir = join(workDir, 'out')
+    const helperPath = join(srcDir, 'helpers.ts')
+    const sourcePath = join(srcDir, 'routes.ts')
+    writeSource(helperPath, `export interface Route { method: string; path: string }\n`)
+    writeSource(
+      sourcePath,
+      `import type { Route } from './helpers.js'\nexport const r: Route = { method: 'GET', path: '/x' }\n`,
+    )
+
+    const result = emitTypedSource({ sourcePath, rootDir: srcDir, outDir })
+
+    expect(existsSync(result.jsPath)).toBe(true)
+    expect(existsSync(join(outDir, 'helpers.js'))).toBe(false)
+    expect(existsSync(join(outDir, 'helpers.d.ts'))).toBe(false)
+  })
 })
