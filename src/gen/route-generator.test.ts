@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './route-generator.js'
+import { generateRoutesJS, generateRoutesDTS, generateRoutesDTSForResources, generateSharedTypesDTS } from './route-generator.js'
 import type { HerokuSchema } from './schema-types.js'
 
 const schema: HerokuSchema = {
@@ -96,6 +96,19 @@ describe('generateRoutesDTS', () => {
   it('skips resources with no links', () => {
     const dts = generateRoutesDTS(schema)
     expect(dts).not.toContain('configVar')
+  })
+})
+
+describe('generateRoutesDTSForResources', () => {
+  it('emits one declaration per resource name, camelCased, typed as Record<string, RouteDefinition>', () => {
+    const dts = generateRoutesDTSForResources(['transfer', 'postgres-credential'])
+    expect(dts).toContain('export declare const transfer: Record<string, RouteDefinition>')
+    expect(dts).toContain('export declare const postgresCredential: Record<string, RouteDefinition>')
+  })
+
+  it('imports RouteDefinition from the shared types file', () => {
+    const dts = generateRoutesDTSForResources(['app'])
+    expect(dts).toContain(`import type { RouteDefinition } from '../types'`)
   })
 })
 

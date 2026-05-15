@@ -27,6 +27,7 @@ import {
 } from "./gen/normalize-data.js";
 import { emitTypedSource as defaultEmitTypedSource, type EmitTypedSourceResult } from "./gen/emit-typed-source.js";
 import { GENERATED_CONTENT_PREAMBLE } from "./gen/generator.js";
+import { generateRoutesDTSForResources } from "./gen/route-generator.js";
 
 export type { RouteDef, RouteSchema } from "./gen/normalize-data.js";
 export type { JsonSchema } from "./gen/normalize-data.js";
@@ -90,12 +91,14 @@ export async function main(deps: Partial<MainDeps> = {}) {
     throw new Error(`emitTypedSource returned ${emitResult.diagnostics.length} diagnostic(s):\n${summary}`)
   }
 
+  const routesDtsPath = resolve(DIST, "data/routes.d.ts");
+  writeFile(routesDtsPath, GENERATED_CONTENT_PREAMBLE + generateRoutesDTSForResources(Object.keys(routesByResource)));
   writeFile(outPath, output);
 
   const s = summarizeCoverage(routesByResource, schemas);
   log(`Wrote ${outPath}`);
   log(`Wrote ${emitResult.jsPath}`);
-  log(`Wrote ${emitResult.dtsPath}`);
+  log(`Wrote ${routesDtsPath}`);
   log(`  Methods total:        ${s.total}`);
   log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
   log(`  With request schema:  ${s.withOpts}`);

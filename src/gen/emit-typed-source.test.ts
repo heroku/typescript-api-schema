@@ -20,7 +20,7 @@ describe('emitTypedSource', () => {
     rmSync(workDir, { recursive: true, force: true })
   })
 
-  it('emits a .js file alongside a .d.ts file from a typed source', () => {
+  it('emits a .js file from a typed source and does not emit a .d.ts', () => {
     const srcDir = join(workDir, 'src')
     const outDir = join(workDir, 'out')
     const sourcePath = join(srcDir, 'data.ts')
@@ -29,7 +29,7 @@ describe('emitTypedSource', () => {
     const result = emitTypedSource({ sourcePath, rootDir: srcDir, outDir })
 
     expect(existsSync(result.jsPath)).toBe(true)
-    expect(existsSync(result.dtsPath)).toBe(true)
+    expect(existsSync(join(outDir, 'data.d.ts'))).toBe(false)
     expect(result.diagnostics).toEqual([])
   })
 
@@ -42,10 +42,9 @@ describe('emitTypedSource', () => {
     const result = emitTypedSource({ sourcePath, rootDir: srcDir, outDir })
 
     expect(result.jsPath).toBe(join(outDir, 'nested', 'routes.js'))
-    expect(result.dtsPath).toBe(join(outDir, 'nested', 'routes.d.ts'))
   })
 
-  it('passes a banner through to both emitted files when provided', () => {
+  it('prepends the banner to the emitted .js when provided', () => {
     const srcDir = join(workDir, 'src')
     const outDir = join(workDir, 'out')
     const sourcePath = join(srcDir, 'r.ts')
@@ -59,7 +58,6 @@ describe('emitTypedSource', () => {
     })
 
     expect(readFileSync(result.jsPath, 'utf8').startsWith('/* GENERATED */\n')).toBe(true)
-    expect(readFileSync(result.dtsPath, 'utf8').startsWith('/* GENERATED */\n')).toBe(true)
   })
 
   it('returns diagnostics and writes nothing when the source has type errors', () => {
@@ -72,7 +70,6 @@ describe('emitTypedSource', () => {
 
     expect(result.diagnostics.length).toBeGreaterThan(0)
     expect(existsSync(result.jsPath)).toBe(false)
-    expect(existsSync(result.dtsPath)).toBe(false)
   })
 
   it('round-trips a value-exporting source: emitted .js can be imported and matches the source', async () => {
@@ -105,6 +102,5 @@ describe('emitTypedSource', () => {
 
     expect(existsSync(result.jsPath)).toBe(true)
     expect(existsSync(join(outDir, 'helpers.js'))).toBe(false)
-    expect(existsSync(join(outDir, 'helpers.d.ts'))).toBe(false)
   })
 })

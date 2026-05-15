@@ -11,7 +11,6 @@ export interface EmitTypedSourceOptions {
 
 export interface EmitTypedSourceResult {
   jsPath: string
-  dtsPath: string
   diagnostics: ts.Diagnostic[]
 }
 
@@ -19,7 +18,7 @@ export function emitTypedSource(options: EmitTypedSourceOptions): EmitTypedSourc
   const { sourcePath, rootDir, outDir, banner = '' } = options
 
   const compilerOptions: ts.CompilerOptions = {
-    declaration: true,
+    declaration: false,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ESNext,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
@@ -48,7 +47,6 @@ export function emitTypedSource(options: EmitTypedSourceOptions): EmitTypedSourc
 
   const rel = relative(rootDir, sourcePath).replace(/\.ts$/, '')
   const jsPath = join(outDir, `${rel}.js`)
-  const dtsPath = join(outDir, `${rel}.d.ts`)
 
-  return { jsPath, dtsPath, diagnostics }
+  return { jsPath, diagnostics }
 }

@@ -125,7 +125,6 @@ describe('main', () => {
       importRoutes: vi.fn().mockResolvedValue({}),
       emitTypedSource: vi.fn().mockReturnValue({
         jsPath: '/fake/dist/data/routes.js',
-        dtsPath: '/fake/dist/data/routes.d.ts',
         diagnostics: [],
       }),
       log: vi.fn(),
@@ -151,9 +150,9 @@ describe('main', () => {
     })
     await main(deps)
 
-    expect(writeFile).toHaveBeenCalledTimes(1)
-    const [path, content] = writeFile.mock.calls[0]
-    expect(path).toBe('/fake/types.d.ts')
+    const typesCall = writeFile.mock.calls.find((c: unknown[]) => c[0] === '/fake/types.d.ts')
+    expect(typesCall).toBeDefined()
+    const content = typesCall![1] as string
     expect(content).toContain('export interface HerokuClient')
     expect(content).toContain('app: {')
   })
@@ -170,7 +169,9 @@ describe('main', () => {
     })
     await main(deps)
 
-    const [, content] = writeFile.mock.calls[0]
+    const typesCall = writeFile.mock.calls.find((c: unknown[]) => c[0] === '/fake/types.d.ts')
+    expect(typesCall).toBeDefined()
+    const content = typesCall![1] as string
     expect(content).not.toContain('ignored')
     expect(content).toContain('list')
   })
@@ -211,7 +212,6 @@ describe('main', () => {
   it("emits dist/data/routes.js from the typed source", async () => {
     const emitTypedSource = vi.fn().mockReturnValue({
       jsPath: '/fake/dist/data/routes.js',
-      dtsPath: '/fake/dist/data/routes.d.ts',
       diagnostics: [],
     })
     const log = vi.fn()
@@ -226,10 +226,26 @@ describe('main', () => {
     expect(messages.some(m => m.includes('routes.js'))).toBe(true)
   })
 
+  it("writes routes.d.ts with Record<string, RouteDefinition> declarations for each curated resource", async () => {
+    const writeFile = vi.fn()
+    await main(makeDeps({
+      importRoutes: vi.fn().mockResolvedValue({
+        transfer: { list: { method: 'GET', path: '/x' } },
+        backup: { create: { method: 'POST', path: '/y', hasRequestBody: true } },
+      }),
+      writeFile,
+    }))
+    const dtsCall = writeFile.mock.calls.find((c: unknown[]) => /routes\.d\.ts$/.test(c[0] as string))
+    expect(dtsCall).toBeDefined()
+    const content = dtsCall![1] as string
+    expect(content).toContain(`import type { RouteDefinition } from '../types'`)
+    expect(content).toContain('export declare const transfer: Record<string, RouteDefinition>')
+    expect(content).toContain('export declare const backup: Record<string, RouteDefinition>')
+  })
+
   it("aborts when emitTypedSource returns diagnostics", async () => {
     const emitTypedSource = vi.fn().mockReturnValue({
       jsPath: '/fake/dist/data/routes.js',
-      dtsPath: '/fake/dist/data/routes.d.ts',
       diagnostics: [{ messageText: 'boom', category: 1, code: 1, file: undefined, start: undefined, length: undefined }],
     })
     const writeFile = vi.fn()
