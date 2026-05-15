@@ -60,6 +60,8 @@ Generated files are written to a directory named after the variant (e.g. `3.sdk/
 
 **Invariant:** Every file under `dist/` is generated. Hand-curated inputs that drive generation live in `src/` (e.g. `src/data/routes.ts`). It is safe to `rm -rf dist/` and rerun `npm run generate && npm run generate:data` to fully restore the directory.
 
+**Known asymmetry between variants' `routes.d.ts`:** The `data` variant exposes literal types (`readonly method: 'GET'`, `readonly path: '/…'`) because it is compiled from `src/data/routes.ts` via the TS compiler. The `3.sdk` variant still exposes `Record<string, RouteDefinition>` because `src/gen/route-generator.ts` emits `.d.ts` text directly. Converging on literal types for `3.sdk` requires resolving link-title collisions that the hyperschema currently leaves unresolved (e.g. multiple `GET` links titled "List" within a resource silently merge into one entry today; literal-typed emission would surface the collision as a duplicate-property type error). Fix the disambiguation in `src/gen/utils.ts:disambiguateLinkTitles` before swapping the emitter.
+
 Package exports are organized per variant (e.g. `@heroku/types/3.sdk` for types, `@heroku/types/3.sdk/routes` for routes). The CLI auto-updates `package.json` exports and files fields after generation.
 
 Tests are colocated (e.g. `generator.test.ts` next to `generator.ts`).
