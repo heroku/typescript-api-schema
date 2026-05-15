@@ -56,7 +56,7 @@ npm run generate -- --variant 3.webhooks
 
 ## The `data` variant (Shogun)
 
-The `data` variant covers Heroku's data services control plane (Shogun). Unlike `3.sdk`, Shogun does not publish a hyperschema, so the resource grouping in `data/routes.js` and `data/types.d.ts` is curated by hand. The body of `data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from request/response payloads captured during Shogun's spec suite.
+The `data` variant covers Heroku's data services control plane (Shogun). Unlike `3.sdk`, Shogun does not publish a hyperschema, so the resource grouping in `src/data/routes.ts` is curated by hand. The body of `dist/data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from request/response payloads captured during Shogun's spec suite. The runtime route registry at `dist/data/routes.{js,d.ts}` is compiled from `src/data/routes.ts` by the same pipeline, so `dist/` remains 100% reproducible.
 
 ### Pipeline
 
@@ -71,11 +71,11 @@ The `data` variant covers Heroku's data services control plane (Shogun). Unlike 
    ```sh
    SHOGUN_SCHEMA_PATH=/path/to/shogun/tmp/api_schemas.json npm run generate:data
    ```
-   This reads `data/routes.js` for the curated resource grouping and emits `data/types.d.ts`. Methods with no schema coverage are typed as `Promise<unknown>` and annotated with a `// TODO: no spec coverage` comment.
+   This reads `src/data/routes.ts` for the curated resource grouping, emits `dist/data/types.d.ts`, and emits `dist/data/routes.{js,d.ts}` from the same source. Methods with no schema coverage are typed as `Promise<unknown>` and annotated with a `// TODO: no spec coverage` comment.
 
 ### What the generator preserves
 
-The grouping in `data/routes.js` is the source of truth. The generator never invents new resources or moves methods between resources — it only fills in `Opts`/`Result` types from the schema artifact. To add or rename a resource, edit `data/routes.js` (and optionally `data/routes.d.ts`) and re-run the generator.
+The grouping in `src/data/routes.ts` is the source of truth. The generator never invents new resources or moves methods between resources — it only fills in `Opts`/`Result` types from the schema artifact. To add or rename a resource, edit `src/data/routes.ts` and re-run the generator. **Do not edit `dist/data/routes.{js,d.ts}` directly** — those files are regenerated on every `npm run generate:data` invocation.
 
 ## Running Tests
 

@@ -32,7 +32,9 @@ TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imp
 The two generator pipelines (hyperschema → `3.sdk`, Shogun + curated routes → `data`) share a single emitter. Each pipeline normalizes its input into an intermediate `TypesModel` and feeds it to `ts-emit.ts`.
 
 - `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url` args. Orchestrates fetch → generate → verify → write. Also updates `package.json` exports/files for the variant.
-- `src/gen-data-types.ts` — Driver for the `data` variant. Loads `data/routes.js` + Shogun `api_schemas.json`, calls `generateDataTypes()`, writes `data/types.d.ts`.
+- `src/data/routes.ts` — Hand-curated source of truth for the `data` variant's resource grouping. Typed via `as const satisfies Record<string, RouteDefinition>`. Compiled by the data pipeline into `dist/data/routes.{js,d.ts}`.
+- `src/gen-data-types.ts` — Driver for the `data` variant. Imports `src/data/routes.ts`, loads Shogun `api_schemas.json`, calls `generateDataTypes()`, writes `dist/data/types.d.ts`, and uses `emitTypedSource` to emit `dist/data/routes.{js,d.ts}`.
+- `src/gen/emit-typed-source.ts` — Generic helper that compiles a single typed `.ts` source file into `.js` + `.d.ts` via the TypeScript compiler API, optionally prepending a banner. Used by the data pipeline.
 - `src/gen/schema.ts` — Fetches the hyperschema from Heroku API (default variant `3.sdk`).
 - `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, `RouteDefinition`, `HttpMethod`, etc.).
 - `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `disambiguateLinkTitles`).
@@ -55,6 +57,8 @@ Generated files are written to a directory named after the variant (e.g. `3.sdk/
 - `<variant>/types.d.ts` — TypeScript type definitions (interfaces, Opts/Result types, `HerokuClient`).
 - `<variant>/routes.js` — Runtime route registry (per-resource named exports with `{ method, path, hasRequestBody? }`).
 - `<variant>/routes.d.ts` — Type declarations for the route registry.
+
+**Invariant:** Every file under `dist/` is generated. Hand-curated inputs that drive generation live in `src/` (e.g. `src/data/routes.ts`). It is safe to `rm -rf dist/` and rerun `npm run generate && npm run generate:data` to fully restore the directory.
 
 Package exports are organized per variant (e.g. `@heroku/types/3.sdk` for types, `@heroku/types/3.sdk/routes` for routes). The CLI auto-updates `package.json` exports and files fields after generation.
 
