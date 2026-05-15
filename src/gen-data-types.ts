@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { emitTypes } from "./gen/ts-emit.js";
 import {
   normalizeData,
@@ -85,7 +86,7 @@ export async function main(deps: Partial<MainDeps> = {}) {
     banner: GENERATED_CONTENT_PREAMBLE,
   });
   if (emitResult.diagnostics.length > 0) {
-    const summary = emitResult.diagnostics.map(d => typeof d.messageText === 'string' ? d.messageText : d.messageText.messageText).join('\n')
+    const summary = emitResult.diagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n')).join('\n')
     throw new Error(`emitTypedSource returned ${emitResult.diagnostics.length} diagnostic(s):\n${summary}`)
   }
 
