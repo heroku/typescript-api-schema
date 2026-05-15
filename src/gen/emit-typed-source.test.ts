@@ -62,7 +62,7 @@ describe('emitTypedSource', () => {
     expect(readFileSync(result.dtsPath, 'utf8').startsWith('/* GENERATED */\n')).toBe(true)
   })
 
-  it('returns diagnostics when the source has type errors', () => {
+  it('returns diagnostics and writes nothing when the source has type errors', () => {
     const srcDir = join(workDir, 'src')
     const outDir = join(workDir, 'out')
     const sourcePath = join(srcDir, 'broken.ts')
@@ -71,6 +71,8 @@ describe('emitTypedSource', () => {
     const result = emitTypedSource({ sourcePath, rootDir: srcDir, outDir })
 
     expect(result.diagnostics.length).toBeGreaterThan(0)
+    expect(existsSync(result.jsPath)).toBe(false)
+    expect(existsSync(result.dtsPath)).toBe(false)
   })
 
   it('round-trips a value-exporting source: emitted .js can be imported and matches the source', async () => {

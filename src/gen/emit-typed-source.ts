@@ -30,6 +30,7 @@ export function emitTypedSource(options: EmitTypedSourceOptions): EmitTypedSourc
     rootDir,
     outDir,
     noEmit: false,
+    noEmitOnError: true,
   }
 
   const program = ts.createProgram([sourcePath], compilerOptions)

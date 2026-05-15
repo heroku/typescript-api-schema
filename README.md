@@ -56,7 +56,7 @@ npm run generate -- --variant 3.webhooks
 
 ## The `data` variant (Shogun)
 
-The `data` variant covers Heroku's data services control plane (Shogun). Unlike `3.sdk`, Shogun does not publish a hyperschema, so the resource grouping in `src/data/routes.ts` is curated by hand. The body of `dist/data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from request/response payloads captured during Shogun's spec suite. The runtime route registry at `dist/data/routes.{js,d.ts}` is compiled from `src/data/routes.ts` by the same pipeline, so `dist/` remains 100% reproducible.
+The `data` variant covers Heroku's data services control plane (Shogun). Unlike `3.sdk`, Shogun does not publish a hyperschema, so the resource grouping in `src/data/routes.ts` is curated by hand. The body of `dist/data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from request/response payloads captured during Shogun's spec suite. The runtime route registry at `dist/data/routes.{js,d.ts}` is compiled from `src/data/routes.ts` by the same pipeline. Given the Shogun spec artifact, `dist/` is fully reproducible from source.
 
 ### Pipeline
 
