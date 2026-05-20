@@ -1650,6 +1650,13 @@ export interface EnterpriseAccountUpdateOpts {
 /** Filters are special endpoints to allow for API consumers to specify a subset of resources to consume in order to reduce the number of requests that are performed.  Each filter endpoint endpoint is responsible for determining its supported request format.  The endpoints are over POST in order to handle large request bodies without hitting request uri query length limitations, but the requests themselves are idempotent and will not have side effects. */
 export type FilterApps = Record<string, unknown>
 
+/** Request an apps list filtered by app id. */
+export interface FilterAppsAppsOpts {
+  in?: {
+    id?: Array<string>
+  }
+}
+
 /** The formation of processes that should be maintained for an app. Update the formation to scale processes or change dyno sizes. Available process type names and commands are defined by the `process_types` attribute for the [slug](#slug) currently released on an app. */
 export interface Formation {
   /** app formation belongs to */
@@ -5223,7 +5230,7 @@ export interface HerokuClient {
   /** Filters are special endpoints to allow for API consumers to specify a subset of resources to consume in order to reduce the number of requests that are performed.  Each filter endpoint endpoint is responsible for determining its supported request format.  The endpoints are over POST in order to handle large request bodies without hitting request uri query length limitations, but the requests themselves are idempotent and will not have side effects. */
   filterApps: {
   /** Request an apps list filtered by app id. */
-  apps(): Promise<Array<TeamApp>>
+  apps(requestBody: FilterAppsAppsOpts): Promise<Array<TeamApp>>
   }
   /** The formation of processes that should be maintained for an app. Update the formation to scale processes or change dyno sizes. Available process type names and commands are defined by the `process_types` attribute for the [slug](#slug) currently released on an app. */
   formation: {

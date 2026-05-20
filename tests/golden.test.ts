@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateTypes } from '../src/gen/generator.js'
+import { generateRoutesJS } from '../src/gen/route-generator.js'
 import { generateDataTypes, type RouteDef, type RouteSchema } from '../src/gen-data-types.js'
 import type { HerokuSchema } from '../src/gen/schema-types.js'
 
@@ -35,5 +36,19 @@ describe('golden output regression', () => {
 
   it('data types match the golden byte-for-byte', () => {
     expect(generateDataTypes(dataRoutes, shogunSchemas)).toBe(dataGolden)
+  })
+
+  // filter-apps.Apps is the canonical case where link.schema is a $ref to a
+  // factored-out request body shape rather than inline properties. The
+  // generated artifacts must reflect that the route takes a request body.
+  it('filter-apps.Apps emits an Opts type and a hasRequestBody route entry', () => {
+    const types = generateTypes(herokuSchema)
+    expect(types).toContain('export interface FilterAppsAppsOpts')
+    expect(types).toContain('apps(requestBody: FilterAppsAppsOpts)')
+
+    const routes = generateRoutesJS(herokuSchema)
+    expect(routes).toMatch(
+      /export const filterApps = \{[^}]*"apps": \{[^}]*"hasRequestBody": true/,
+    )
   })
 })
