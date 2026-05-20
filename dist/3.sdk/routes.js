@@ -636,7 +636,8 @@ export const enterpriseAccount = {
 export const filterApps = {
   "apps": {
     "method": "POST",
-    "path": "/filters/apps"
+    "path": "/filters/apps",
+    "hasRequestBody": true
   }
 }
 

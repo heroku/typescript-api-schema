@@ -36,18 +36,6 @@ function isTopLevelResourceRef(refPath: string[]): boolean {
   return refPath.length === 2 && refPath[0] === 'definitions'
 }
 
-function hasCustomProperties(node: SchemaNode | undefined): boolean {
-  if (!node) return false
-  return !!node.properties && Object.keys(node.properties).length > 0
-}
-
-function hasDistinctResultSchema(
-  targetSchema: SchemaNode | undefined,
-  resourceDef: ResourceDefinition,
-): boolean {
-  return hasCustomProperties(targetSchema) && targetSchema !== resourceDef
-}
-
 function dedupe(refs: TypeRef[]): TypeRef[] {
   // Mirrors render.ts dedupeUnion: textual de-duplication preserving order.
   // Two TypeRefs are equivalent if they render identically.
@@ -118,25 +106,33 @@ class HyperschemaNormalizer {
   private buildAuxTypes(resourceName: string, definition: ResourceDefinition): AuxType[] {
     const auxTypes: AuxType[] = []
     for (const { link, titleKey } of this.resolveLinks(definition)) {
-      if (hasCustomProperties(link.schema)) {
+      // A $ref-shaped link.schema is inlined into a per-route Opts type, mirroring
+      // what we do for inline schemas. We don't reuse a referenced top-level
+      // resource as the Opts shape — request bodies and resource shapes diverge.
+      const resolvedSchema = this.resolveSchemaNode(link.schema)
+      if (this.hasCustomProperties(link.schema)) {
         auxTypes.push({
           kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts',
           description: link.description,
           shape: this.buildObjectShape(
-            link.schema!.properties!,
-            link.schema!.required ?? [],
+            resolvedSchema!.properties!,
+            resolvedSchema!.required ?? [],
           ),
         })
       }
 
       const { resolved, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
-      if (!crossResourceRef && hasDistinctResultSchema(resolved, definition)) {
+      const resolvedTarget = this.resolveSchemaNode(resolved)
+      if (!crossResourceRef && this.hasDistinctResultSchema(resolved, definition)) {
         auxTypes.push({
           kind: 'interface',
           name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result',
           description: link.description,
-          shape: this.buildObjectShape(resolved!.properties!, resolved!.required ?? []),
+          shape: this.buildObjectShape(
+            resolvedTarget!.properties!,
+            resolvedTarget!.required ?? [],
+          ),
         })
       }
     }
@@ -171,7 +167,7 @@ class HyperschemaNormalizer {
         }
       }
 
-      if (hasCustomProperties(link.schema)) {
+      if (this.hasCustomProperties(link.schema)) {
         params.push({
           name: 'requestBody',
           type: {
@@ -304,6 +300,31 @@ class HyperschemaNormalizer {
     }
   }
 
+  // Follows $ref chains to a terminal node. Mirrors schemaToTypeRef's natural
+  // recursion so single-step resolvers (resolveRef, resolveTargetSchema) and
+  // property-shape inspection stay consistent if the schema ever introduces
+  // chained refs in link.schema.
+  private resolveSchemaNode(
+    node: SchemaNode | undefined,
+    depth = 0,
+  ): SchemaNode | undefined {
+    if (!node?.$ref) return node
+    if (depth > 16) throw new Error(`$ref chain too deep: ${node.$ref}`)
+    return this.resolveSchemaNode(this.resolveRef(node.$ref), depth + 1)
+  }
+
+  private hasCustomProperties(node: SchemaNode | undefined): boolean {
+    const resolved = this.resolveSchemaNode(node)
+    return !!resolved?.properties && Object.keys(resolved.properties).length > 0
+  }
+
+  private hasDistinctResultSchema(
+    targetSchema: SchemaNode | undefined,
+    resourceDef: ResourceDefinition,
+  ): boolean {
+    return this.hasCustomProperties(targetSchema) && targetSchema !== resourceDef
+  }
+
   private resolveRef(ref: string): SchemaNode {
     const path = parseRefPath(ref)
     let current: unknown = this.schema
@@ -409,7 +430,7 @@ class HyperschemaNormalizer {
     if (crossResourceRef) {
       return { kind: 'reference', name: toPascalCase(crossResourceRef) }
     }
-    if (hasDistinctResultSchema(resolved, definition)) {
+    if (this.hasDistinctResultSchema(resolved, definition)) {
       return {
         kind: 'reference',
         name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Result',
@@ -440,7 +461,7 @@ class HyperschemaNormalizer {
         method: method as HttpMethod,
         path,
       }
-      if (hasCustomProperties(link.schema)) entry.hasRequestBody = true
+      if (this.hasCustomProperties(link.schema)) entry.hasRequestBody = true
       entries.push(entry)
     }
     return entries
