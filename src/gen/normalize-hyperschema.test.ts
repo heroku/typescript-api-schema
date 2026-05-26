@@ -93,3 +93,67 @@ describe('normalizeHyperschema with $ref link schemas', () => {
     expect(routes).not.toContain('hasRequestBody')
   })
 })
+
+describe('normalizeHyperschema with patternProperties link schemas', () => {
+  it('emits an alias Opts and request body for a pure patternProperties link.schema', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        'config-var': {
+          type: ['object'],
+          patternProperties: {
+            '^\\w+$': { type: ['string'] },
+          },
+          links: [
+            {
+              title: 'Update',
+              method: 'PATCH',
+              href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}/config-vars',
+              schema: {
+                type: ['object'],
+                patternProperties: {
+                  '^\\w+$': { type: ['string', 'null'] },
+                },
+              },
+            },
+          ],
+        },
+        app: {
+          definitions: {
+            identity: { type: ['string'] },
+          },
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    expect(types).toContain('export type ConfigVarUpdateOpts = Record<string, string | null>')
+    expect(types).toContain('update(appIdentity: string, requestBody: ConfigVarUpdateOpts)')
+
+    const routes = generateRoutesJS(schema)
+    expect(routes).toContain('"hasRequestBody": true')
+  })
+
+  it('uses the first pattern when multiple patternProperties are defined', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          links: [
+            {
+              title: 'Update',
+              method: 'PATCH',
+              href: '/widgets',
+              schema: {
+                type: ['object'],
+                patternProperties: {
+                  '^a.*$': { type: ['string'] },
+                  '^b.*$': { type: ['number'] },
+                },
+              },
+            },
+          ],
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    expect(types).toContain('export type WidgetUpdateOpts = Record<string, string>')
+  })
+})

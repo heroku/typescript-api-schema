@@ -120,6 +120,13 @@ class HyperschemaNormalizer {
             resolvedSchema!.required ?? [],
           ),
         })
+      } else if (this.hasPatternProperties(link.schema)) {
+        auxTypes.push({
+          kind: 'alias',
+          name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts',
+          description: link.description,
+          type: this.schemaToTypeRef(resolvedSchema!),
+        })
       }
 
       const { resolved, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
@@ -167,7 +174,7 @@ class HyperschemaNormalizer {
         }
       }
 
-      if (this.hasCustomProperties(link.schema)) {
+      if (this.hasRequestBodySchema(link.schema)) {
         params.push({
           name: 'requestBody',
           type: {
@@ -318,6 +325,15 @@ class HyperschemaNormalizer {
     return !!resolved?.properties && Object.keys(resolved.properties).length > 0
   }
 
+  private hasPatternProperties(node: SchemaNode | undefined): boolean {
+    const resolved = this.resolveSchemaNode(node)
+    return !!resolved?.patternProperties && Object.keys(resolved.patternProperties).length > 0
+  }
+
+  private hasRequestBodySchema(node: SchemaNode | undefined): boolean {
+    return this.hasCustomProperties(node) || this.hasPatternProperties(node)
+  }
+
   private hasDistinctResultSchema(
     targetSchema: SchemaNode | undefined,
     resourceDef: ResourceDefinition,
@@ -461,7 +477,7 @@ class HyperschemaNormalizer {
         method: method as HttpMethod,
         path,
       }
-      if (this.hasCustomProperties(link.schema)) entry.hasRequestBody = true
+      if (this.hasRequestBodySchema(link.schema)) entry.hasRequestBody = true
       entries.push(entry)
     }
     return entries
