@@ -484,7 +484,8 @@ export const configVar = {
   },
   "update": {
     "method": "PATCH",
-    "path": "/apps/{appIdentity}/config-vars"
+    "path": "/apps/{appIdentity}/config-vars",
+    "hasRequestBody": true
   }
 }
 
@@ -926,7 +927,8 @@ export const pipelineConfigVar = {
   },
   "update": {
     "method": "PATCH",
-    "path": "/pipelines/{pipelineId}/stage/{pipelineCouplingStage}/config-vars"
+    "path": "/pipelines/{pipelineId}/stage/{pipelineCouplingStage}/config-vars",
+    "hasRequestBody": true
   }
 }
 
