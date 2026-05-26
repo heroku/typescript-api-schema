@@ -120,6 +120,13 @@ class HyperschemaNormalizer {
             resolvedSchema!.required ?? [],
           ),
         })
+      } else if (this.hasPatternProperties(link.schema)) {
+        auxTypes.push({
+          kind: 'alias',
+          name: toPascalCase(resourceName) + toPascalCase(titleKey) + 'Opts',
+          description: link.description,
+          type: this.schemaToTypeRef(resolvedSchema!),
+        })
       }
 
       const { resolved, crossResourceRef } = this.resolveTargetSchema(link.targetSchema)
