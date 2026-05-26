@@ -318,6 +318,15 @@ class HyperschemaNormalizer {
     return !!resolved?.properties && Object.keys(resolved.properties).length > 0
   }
 
+  private hasPatternProperties(node: SchemaNode | undefined): boolean {
+    const resolved = this.resolveSchemaNode(node)
+    return !!resolved?.patternProperties && Object.keys(resolved.patternProperties).length > 0
+  }
+
+  private hasRequestBodySchema(node: SchemaNode | undefined): boolean {
+    return this.hasCustomProperties(node) || this.hasPatternProperties(node)
+  }
+
   private hasDistinctResultSchema(
     targetSchema: SchemaNode | undefined,
     resourceDef: ResourceDefinition,
