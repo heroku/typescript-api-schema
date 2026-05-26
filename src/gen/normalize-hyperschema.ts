@@ -174,7 +174,7 @@ class HyperschemaNormalizer {
         }
       }
 
-      if (this.hasCustomProperties(link.schema)) {
+      if (this.hasRequestBodySchema(link.schema)) {
         params.push({
           name: 'requestBody',
           type: {
@@ -477,7 +477,7 @@ class HyperschemaNormalizer {
         method: method as HttpMethod,
         path,
       }
-      if (this.hasCustomProperties(link.schema)) entry.hasRequestBody = true
+      if (this.hasRequestBodySchema(link.schema)) entry.hasRequestBody = true
       entries.push(entry)
     }
     return entries
