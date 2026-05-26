@@ -1256,6 +1256,9 @@ export interface CollaboratorCreateOpts {
 /** Config Vars allow you to manage the configuration information provided to an app on Heroku. */
 export type ConfigVar = Record<string, string>
 
+/** Update config-vars for app. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
+export type ConfigVarUpdateOpts = Record<string, string | null>
+
 /** A credit represents value that will be used up before further charges are assigned to an account. */
 export interface Credit {
   /** total value of credit in cents */
@@ -2504,6 +2507,9 @@ export interface PipelineConfigVar {
   /** user-defined config var name and value */
   '["NAME"]: ["value"]'?: Record<string, unknown>
 }
+
+/** Update config-vars for a pipeline stage. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
+export type PipelineConfigVarUpdateOpts = Record<string, string | null>
 
 /** Information about an app's coupling to a pipeline */
 export interface PipelineCoupling {
@@ -5095,7 +5101,7 @@ export interface HerokuClient {
   /** Get config-vars for a release. */
   infoForAppRelease(appIdentity: string, releaseIdentity: string | number): Promise<ConfigVar>
   /** Update config-vars for app. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
-  update(appIdentity: string): Promise<ConfigVar>
+  update(appIdentity: string, requestBody: ConfigVarUpdateOpts): Promise<ConfigVar>
   }
   /** A credit represents value that will be used up before further charges are assigned to an account. */
   credit: {
@@ -5394,7 +5400,7 @@ export interface HerokuClient {
   /** Get config-vars for a pipeline stage. */
   infoForApp(pipelineId: string, pipelineCouplingStage: 'test' | 'review' | 'development' | 'staging' | 'production'): Promise<PipelineConfigVar>
   /** Update config-vars for a pipeline stage. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
-  update(pipelineId: string, pipelineCouplingStage: 'test' | 'review' | 'development' | 'staging' | 'production'): Promise<PipelineConfigVar>
+  update(pipelineId: string, pipelineCouplingStage: 'test' | 'review' | 'development' | 'staging' | 'production', requestBody: PipelineConfigVarUpdateOpts): Promise<PipelineConfigVar>
   }
   /** Information about an app's coupling to a pipeline */
   pipelineCoupling: {
