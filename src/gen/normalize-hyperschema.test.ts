@@ -131,4 +131,29 @@ describe('normalizeHyperschema with patternProperties link schemas', () => {
     const routes = generateRoutesJS(schema)
     expect(routes).toContain('"hasRequestBody": true')
   })
+
+  it('uses the first pattern when multiple patternProperties are defined', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          links: [
+            {
+              title: 'Update',
+              method: 'PATCH',
+              href: '/widgets',
+              schema: {
+                type: ['object'],
+                patternProperties: {
+                  '^a.*$': { type: ['string'] },
+                  '^b.*$': { type: ['number'] },
+                },
+              },
+            },
+          ],
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    expect(types).toContain('export type WidgetUpdateOpts = Record<string, string>')
+  })
 })
