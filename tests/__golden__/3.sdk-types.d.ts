@@ -1,33 +1,33 @@
 /** A Heroku account becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent accounts if their invoices remain unpaid. */
 export interface AccountDelinquency {
   /** scheduled time of when we will suspend your account due to delinquency */
-  scheduled_suspension_time?: string | null
+  scheduled_suspension_time: string | null
   /** scheduled time of when we will delete your account due to delinquency */
-  scheduled_deletion_time?: string | null
+  scheduled_deletion_time: string | null
 }
 
 /** An account feature represents a Heroku labs capability that can be enabled or disabled for an account on Heroku. */
 export interface AccountFeature {
   /** when account feature was created */
-  created_at?: string
+  created_at: string
   /** description of account feature */
-  description?: string
+  description: string
   /** documentation URL of account feature */
-  doc_url?: string
+  doc_url: string
   /** whether or not account feature has been enabled */
-  enabled?: boolean
+  enabled: boolean
   /** unique identifier of account feature */
-  id?: string
+  id: string
   /** unique name of account feature */
-  name?: string
+  name: string
   /** state of account feature */
-  state?: string
+  state: string
   /** when account feature was updated */
-  updated_at?: string
+  updated_at: string
   /** user readable feature name */
-  display_name?: string
+  display_name: string
   /** e-mail to send feedback about the feature */
-  feedback_email?: string
+  feedback_email: string
 }
 
 /** Update an existing account feature. */
@@ -39,33 +39,33 @@ export interface AccountFeatureUpdateOpts {
 /** An account represents an individual signed up to use the Heroku platform. */
 export interface Account {
   /** whether to allow third party web activity tracking */
-  allow_tracking?: boolean
+  allow_tracking: boolean
   /** whether allowed to utilize beta Heroku features */
-  beta?: boolean
+  beta: boolean
   /** when account was created */
-  created_at?: string
+  created_at: string
   /** unique email address of account */
-  email?: string
+  email: string
   /** whether the user is federated and belongs to an Identity Provider */
-  federated?: boolean
+  federated: boolean
   /** unique identifier of an account */
-  id?: string
+  id: string
   /** Identity Provider details for federated users. */
-  identity_provider?: {
+  identity_provider: {
     /** unique identifier of this identity provider */
-    id?: string
+    id: string
     /** user-friendly unique identifier for this identity provider */
-    name?: string
-    team?: {
+    name: string
+    team: {
       /** unique name of team */
       name?: string
     }
-    organization?: {
+    organization: {
       /** unique name of team */
       name?: string
     }
     /** entity that owns this identity provider */
-    owner?: {
+    owner: {
       /** unique identifier of the owner */
       id: string
       /** name of the owner */
@@ -75,58 +75,58 @@ export interface Account {
     }
   } | null
   /** when account last authorized with Heroku */
-  last_login?: string | null
+  last_login: string | null
   /** full name of the account owner */
-  name?: string | null
+  name: string | null
   /** SMS number of account */
-  sms_number?: string | null
+  sms_number: string | null
   /** when account was suspended */
-  suspended_at?: string | null
+  suspended_at: string | null
   /** when account became delinquent */
-  delinquent_at?: string | null
+  delinquent_at: string | null
   /** whether two-factor auth is enabled on the account */
-  two_factor_authentication?: boolean
+  two_factor_authentication: boolean
   /** when account was updated */
-  updated_at?: string
+  updated_at: string
   /** whether account has been verified with billing information */
-  verified?: boolean
+  verified: boolean
   /** country where account owner resides */
-  country_of_residence?: string | null
+  country_of_residence: string | null
   /** whether the user has enabled Eco dynos */
-  eco_dynos_enabled?: boolean
+  eco_dynos_enabled: boolean
   /** When the user's Eco dynos will be shutdown after disablement */
-  eco_dynos_shutdown_at?: string | null
+  eco_dynos_shutdown_at: string | null
   /** when pipeline cost consent was made */
-  pipeline_cost_consent_at?: string | null
+  pipeline_cost_consent_at: string | null
   /** whether account has acknowledged the MSA terms of service */
-  acknowledged_msa?: boolean
+  acknowledged_msa: boolean
   /** when account has acknowledged the MSA terms of service */
-  acknowledged_msa_at?: string | null
+  acknowledged_msa_at: string | null
   /** whether account has acknowledged the Italian customer terms of service */
-  italian_customer_terms?: string | null
+  italian_customer_terms: string | null
   /** whether account has acknowledged the Italian provider terms of service */
-  italian_partner_terms?: string | null
+  italian_partner_terms: string | null
   /** whether account has legacy 2FA or VaaS MFA enabled */
-  mfa_enabled?: boolean
+  mfa_enabled: boolean
   /** whether the user is exempt from MFA requirements */
-  mfa_exemption?: boolean
+  mfa_exemption: boolean
   /** the reason why a user may be exempt from MFA requirements */
-  mfa_exemption_reason?: string | null
+  mfa_exemption_reason: string | null
   /** which type of mfa the user should see */
-  mfa_experience?: 'vaas' | 'legacy'
+  mfa_experience: 'vaas' | 'legacy'
   /** team selected by default */
-  default_organization?: {
+  default_organization: {
     /** unique identifier of team */
-    id?: string
+    id: string
     /** unique name of team */
-    name?: string
+    name: string
   } | null
   /** team selected by default */
-  default_team?: {
+  default_team: {
     /** unique identifier of team */
-    id?: string
+    id: string
     /** unique name of team */
-    name?: string
+    name: string
   } | null
 }
 
@@ -172,7 +172,7 @@ export interface AddOnActionPeerOpts {
 /** An add-on attachment represents a connection between an app and an add-on that it has been given access to. */
 export interface AddOnAttachment {
   /** identity of add-on */
-  addon?: {
+  addon: {
     /** unique identifier of add-on */
     id: string
     /** globally unique name of the add-on */
@@ -180,32 +180,32 @@ export interface AddOnAttachment {
     /** billing application associated with this add-on */
     app: {
       /** unique identifier of app */
-      id?: string
+      id: string
       /** unique name of app */
-      name?: string
+      name: string
     }
   }
   /** application that is attached to add-on */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when add-on attachment was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this add-on attachment */
-  id?: string
+  id: string
   /** unique name for this add-on attachment to this app */
-  name?: string
+  name: string
   /** attachment namespace */
-  namespace?: string | null
+  namespace: string | null
   /** when add-on attachment was updated */
-  updated_at?: string
+  updated_at: string
   /** URL for logging into web interface of add-on in attached app context */
-  web_url?: string | null
+  web_url: string | null
   /** URL for add-on partners to write to an add-on's logs */
-  log_input_url?: string | null
+  log_input_url: string | null
 }
 
 /** Create a new add-on attachment. */
@@ -235,9 +235,9 @@ export interface AddOnAttachmentResolutionOpts {
 /** Configuration of an Add-on */
 export interface AddOnConfig {
   /** unique name of the config */
-  name?: string
+  name: string
   /** value of the config */
-  value?: string | null
+  value: string | null
 }
 
 /** Update an add-on's config. Can only be accessed by the add-on partner providing this add-on. */
@@ -248,51 +248,51 @@ export interface AddOnConfigUpdateOpts {
 /** Add-on Plan Actions are Provider functionality for specific add-on installations */
 export interface AddOnPlanAction {
   /** a unique identifier */
-  id?: string
+  id: string
   /** the display text shown in Dashboard */
-  label?: string
+  label: string
   /** identifier of the action to take that is sent via SSO */
-  action?: string
+  action: string
   /** absolute URL to use instead of an action */
-  url?: string
+  url: string
   /** if the action requires the user to own the app */
-  requires_owner?: boolean
+  requires_owner: boolean
 }
 
 /** Add-on region capabilities represent the relationship between an Add-on Service and a specific Region. Only Beta and GA add-ons are returned by these endpoints. */
 export interface AddOnRegionCapability {
   /** unique identifier of this add-on-region-capability */
-  id?: string
+  id: string
   /** whether the add-on can be installed to a Space */
-  supports_private_networking?: boolean
+  supports_private_networking: boolean
   /** Add-on services represent add-ons that may be provisioned for apps. Endpoints under add-on services can be accessed without authentication. */
-  addon_service?: AddOnService
+  addon_service: AddOnService
   /** A region represents a geographic location in which your application may run. */
-  region?: Region
+  region: Region
 }
 
 /** Add-on services represent add-ons that may be provisioned for apps. Endpoints under add-on services can be accessed without authentication. */
 export interface AddOnService {
   /** npm package name of the add-on service's Heroku CLI plugin */
-  cli_plugin_name?: string | null
+  cli_plugin_name: string | null
   /** when add-on-service was created */
-  created_at?: string
+  created_at: string
   /** human-readable name of the add-on service provider */
-  human_name?: string
+  human_name: string
   /** unique identifier of this add-on-service */
-  id?: string
+  id: string
   /** unique name of this add-on-service */
-  name?: string
+  name: string
   /** release status for add-on service */
-  state?: 'alpha' | 'beta' | 'ga' | 'shutdown'
+  state: 'alpha' | 'beta' | 'ga' | 'shutdown'
   /** whether or not apps can have access to more than one instance of this add-on at the same time */
-  supports_multiple_installations?: boolean
+  supports_multiple_installations: boolean
   /** whether or not apps can have access to add-ons billed to a different app */
-  supports_sharing?: boolean
+  supports_sharing: boolean
   /** when add-on-service was updated */
-  updated_at?: string
+  updated_at: string
   /** generations supported by this add-on */
-  supported_generations?: Array<{
+  supported_generations: Array<{
     /** unique name of generation */
     name?: string
     /** unique identifier of generation */
@@ -341,9 +341,9 @@ export interface AddOnWebhookCreateResult {
   /** identity of add-on. Only used for add-on partner webhooks. */
   addon?: {
     /** unique identifier of add-on */
-    id?: string
+    id: string
     /** globally unique name of the add-on */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -364,9 +364,9 @@ export interface AddOnWebhookDeleteResult {
   /** identity of add-on. Only used for add-on partner webhooks. */
   addon?: {
     /** unique identifier of add-on */
-    id?: string
+    id: string
     /** globally unique name of the add-on */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -387,9 +387,9 @@ export interface AddOnWebhookInfoResult {
   /** identity of add-on. Only used for add-on partner webhooks. */
   addon?: {
     /** unique identifier of add-on */
-    id?: string
+    id: string
     /** globally unique name of the add-on */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -424,9 +424,9 @@ export interface AddOnWebhookUpdateResult {
   /** identity of add-on. Only used for add-on partner webhooks. */
   addon?: {
     /** unique identifier of add-on */
-    id?: string
+    id: string
     /** globally unique name of the add-on */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -449,36 +449,36 @@ export interface AddOn {
   /** identity of add-on service */
   addon_service: {
     /** unique identifier of this add-on-service */
-    id?: string
+    id: string
     /** unique name of this add-on-service */
-    name?: string
+    name: string
   } | AddOnService
   /** billing entity associated with this add-on */
   billing_entity: {
     /** unique identifier of the billing entity */
-    id?: string
+    id: string
     /** name of the billing entity */
-    name?: string
+    name: string
     /** type of Object of the billing entity; new types allowed at any time. */
-    type?: 'app' | 'team'
+    type: 'app' | 'team'
   }
   /** billing application associated with this add-on */
   app: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** billed price */
   billed_price: {
     /** price in cents per unit of plan */
-    cents?: number
+    cents: number
     /** price is negotiated in a contract outside of monthly add-on billing */
-    contract?: boolean
+    contract: boolean
     /** whether this plan is billed per use */
-    metered?: boolean
+    metered: boolean
     /** unit of price for plan */
-    unit?: string
+    unit: string
   } | null
   /** config vars exposed to the owning app by this add-on */
   config_vars: Array<string>
@@ -497,13 +497,13 @@ export interface AddOn {
     /** metered pricing information for this add-on */
     meters?: Array<{
       /** unique identifier of this plan meter */
-      id?: string
+      id: string
       /** name of this meter */
-      name?: string
+      name: string
       /** price in cents per billing unit (may be a rate like "0.015/1000") */
-      price_cents?: string
+      price_cents: string
       /** human-readable description of how usage is billed */
-      billing_description?: string
+      billing_description: string
     }>
   }
   /** id of this add-on with its provider */
@@ -554,16 +554,16 @@ export interface AddOnResolutionOpts {
 /** Entities that have been allowed to be used by a Team */
 export interface AllowedAddOnService {
   /** when the add-on service was allowed */
-  added_at?: string
+  added_at: string
   /** the user which allowed the add-on service */
-  added_by?: {
+  added_by: {
     /** unique email address of account */
     email?: string
     /** unique identifier of an account */
     id?: string
   }
   /** the add-on service allowed for use */
-  addon_service?: {
+  addon_service: {
     /** unique identifier of this add-on-service */
     id?: string
     /** unique name of this add-on-service */
@@ -572,7 +572,7 @@ export interface AllowedAddOnService {
     human_name?: string
   }
   /** unique identifier for this allowed add-on service record */
-  id?: string
+  id: string
 }
 
 /** Allow an Add-on Service */
@@ -584,25 +584,25 @@ export interface AllowedAddOnServiceCreateByTeamOpts {
 /** An app feature represents a Heroku labs capability that can be enabled or disabled for an app on Heroku. */
 export interface AppFeature {
   /** when app feature was created */
-  created_at?: string
+  created_at: string
   /** description of app feature */
-  description?: string
+  description: string
   /** documentation URL of app feature */
-  doc_url?: string
+  doc_url: string
   /** whether or not app feature has been enabled */
-  enabled?: boolean
+  enabled: boolean
   /** unique identifier of app feature */
-  id?: string
+  id: string
   /** unique name of app feature */
-  name?: string
+  name: string
   /** state of app feature */
-  state?: string
+  state: string
   /** when app feature was updated */
-  updated_at?: string
+  updated_at: string
   /** user readable feature name */
-  display_name?: string
+  display_name: string
   /** e-mail to send feedback about the feature */
-  feedback_email?: string
+  feedback_email: string
 }
 
 /** Update an existing app feature. */
@@ -614,42 +614,42 @@ export interface AppFeatureUpdateOpts {
 /** An app setup represents an app on Heroku that is setup using an environment, addons, and scripts described in an app.json manifest file. */
 export interface AppSetup {
   /** unique identifier of app setup */
-  id?: string
+  id: string
   /** when app setup was created */
-  created_at?: string
+  created_at: string
   /** when app setup was updated */
-  updated_at?: string
+  updated_at: string
   /** the overall status of app setup */
-  status?: 'failed' | 'pending' | 'succeeded'
+  status: 'failed' | 'pending' | 'succeeded'
   /** reason that app setup has failed */
-  failure_message?: string | null
+  failure_message: string | null
   /** identity of app */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** identity and status of build */
-  build?: {
+  build: {
     /** unique identifier of build */
-    id?: string
+    id: string
     /** status of build */
-    status?: 'failed' | 'pending' | 'succeeded'
+    status: 'failed' | 'pending' | 'succeeded'
     /** Build process output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`). */
-    output_stream_url?: string
+    output_stream_url: string
   } | null
   /** errors associated with invalid app.json manifest file */
-  manifest_errors?: Array<string>
+  manifest_errors: Array<string>
   /** result of postdeploy script */
-  postdeploy?: {
+  postdeploy: {
     /** output of the postdeploy script */
     output?: string
     /** The exit code of the postdeploy script */
     exit_code?: number
   } | null
   /** fully qualified success url */
-  resolved_success_url?: string | null
+  resolved_success_url: string | null
 }
 
 /** Create a new app setup from a gzipped tar archive containing an app.json manifest file. */
@@ -695,34 +695,34 @@ export interface AppSetupCreateOpts {
 /** An app transfer represents a two party interaction for transferring ownership of an app. */
 export interface AppTransfer {
   /** app involved in the transfer */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** when app transfer was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of app transfer */
-  id?: string
+  id: string
   /** identity of the owner of the transfer */
-  owner?: {
+  owner: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** identity of the recipient of the transfer */
-  recipient?: {
+  recipient: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** the current state of an app transfer */
-  state?: 'pending' | 'accepted' | 'declined'
+  state: 'pending' | 'accepted' | 'declined'
   /** when app transfer was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a new app transfer. */
@@ -742,78 +742,78 @@ export interface AppTransferUpdateOpts {
 /** Represents the delivery of a webhook notification, including its current status. */
 export interface AppWebhookDelivery {
   /** when the delivery was created */
-  created_at?: string
+  created_at: string
   /** identity of event */
-  event?: {
+  event: {
     /** the event's unique identifier */
-    id?: string
+    id: string
     /** the type of entity that the event is related to */
-    include?: string
+    include: string
   }
   /** the delivery's unique identifier */
-  id?: string
+  id: string
   /** number of times a delivery has been attempted */
-  num_attempts?: number
+  num_attempts: number
   /** when delivery will be attempted again */
-  next_attempt_at?: string | null
+  next_attempt_at: string | null
   /** last attempt of a delivery */
-  last_attempt?: {
+  last_attempt: {
     /** unique identifier of attempt */
-    id?: string
+    id: string
     /** http response code received during attempt */
-    code?: number | null
+    code: number | null
     /** error class encountered during attempt */
-    error_class?: string | null
+    error_class: string | null
     /** status of an attempt */
-    status?: 'scheduled' | 'succeeded' | 'failed'
+    status: 'scheduled' | 'succeeded' | 'failed'
     /** when attempt was created */
-    created_at?: string
+    created_at: string
     /** when attempt was updated */
-    updated_at?: string
+    updated_at: string
   } | null
   /** the delivery's status */
-  status?: 'pending' | 'scheduled' | 'retrying' | 'failed' | 'succeeded'
+  status: 'pending' | 'scheduled' | 'retrying' | 'failed' | 'succeeded'
   /** when the delivery was last updated */
-  updated_at?: string
+  updated_at: string
   /** identity of webhook */
-  webhook?: {
+  webhook: {
     /** the webhook's unique identifier */
-    id?: string
+    id: string
     /** if `notify`, Heroku makes a single, fire-and-forget delivery attempt. If `sync`, Heroku attempts multiple deliveries until the request is successful or a limit is reached */
-    level?: 'notify' | 'sync'
+    level: 'notify' | 'sync'
   }
 }
 
 /** Represents a webhook event that occurred. */
 export interface AppWebhookEvent {
   /** when event was created */
-  created_at?: string
+  created_at: string
   /** the event's unique identifier */
-  id?: string
+  id: string
   /** the type of entity that the event is related to */
-  include?: string
+  include: string
   /** payload of event */
-  payload?: {
+  payload: {
     /** the type of event that occurred */
-    action?: string
+    action: string
     /** user that caused event */
-    actor?: {
+    actor: {
       /** unique email address of account */
-      email?: string
+      email: string
       /** unique identifier of an account */
-      id?: string
+      id: string
     }
     /** the current details of the event */
-    data?: Record<string, unknown>
+    data: Record<string, unknown>
     /** previous details of the event (if any) */
-    previous_data?: Record<string, unknown>
+    previous_data: Record<string, unknown>
     /** the type of resource associated with the event */
-    resource?: string
+    resource: string
     /** the version of the details provided for the event */
-    version?: string
+    version: string
   }
   /** when the event was last updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Represents the details of a webhook subscription */
@@ -838,9 +838,9 @@ export interface AppWebhookCreateResult {
   /** identity of app. Only used for customer webhooks. */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -861,9 +861,9 @@ export interface AppWebhookDeleteResult {
   /** identity of app. Only used for customer webhooks. */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -884,9 +884,9 @@ export interface AppWebhookInfoResult {
   /** identity of app. Only used for customer webhooks. */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -921,9 +921,9 @@ export interface AppWebhookUpdateResult {
   /** identity of app. Only used for customer webhooks. */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -942,22 +942,22 @@ export interface AppWebhookUpdateResult {
 /** An app represents the program that you would like to deploy and run on Heroku. */
 export interface App {
   /** ACM status of this app */
-  acm?: boolean
+  acm: boolean
   /** when app was archived */
-  archived_at?: string | null
+  archived_at: string | null
   /** name of the image used for the base layers of the OCI image */
-  base_image_name?: string | null
+  base_image_name: string | null
   /** identity of the stack that will be used for new builds */
-  build_stack?: {
+  build_stack: {
     /** unique identifier of stack */
     id?: string
     /** unique name of stack */
     name?: string
   }
   /** description from buildpack of app */
-  buildpack_provided_description?: string | null
+  buildpack_provided_description: string | null
   /** buildpacks of the OCI image */
-  buildpacks?: Array<{
+  buildpacks: Array<{
     /** identifier of the buildpack */
     id?: string
     /** version of the buildpack */
@@ -966,57 +966,57 @@ export interface App {
     homepage?: string
   }> | null
   /** when app was created */
-  created_at?: string
+  created_at: string
   /** current build architecture for the app */
-  current_build_architecture?: unknown[]
+  current_build_architecture: unknown[]
   /** the generation of the app */
-  generation?: string
+  generation: string
   /** git repo URL of app */
-  git_url?: string
+  git_url: string
   /** unique identifier of app */
-  id?: string
+  id: string
   /** describes whether a Private Spaces app is externally routable or not */
-  internal_routing?: boolean | null
+  internal_routing: boolean | null
   /** maintenance status of app */
-  maintenance?: boolean
+  maintenance: boolean
   /** unique name of app */
-  name?: string
+  name: string
   /** identity of app owner */
-  owner?: {
+  owner: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** identity of team */
-  organization?: {
+  organization: {
     /** unique identifier of team */
     id?: string
     /** unique name of team */
     name?: string
   } | null
   /** identity of team */
-  team?: {
+  team: {
     /** unique identifier of team */
     id?: string
     /** unique name of team */
     name?: string
   } | null
   /** identity of app region */
-  region?: {
+  region: {
     /** unique identifier of region */
-    id?: string
+    id: string
     /** unique name of region */
-    name?: string
+    name: string
   }
   /** when app was released */
-  released_at?: string | null
+  released_at: string | null
   /** git repo size in bytes of app */
-  repo_size?: number | null
+  repo_size: number | null
   /** slug size in bytes of app */
-  slug_size?: number | null
+  slug_size: number | null
   /** identity of space */
-  space?: {
+  space: {
     /** unique identifier of space */
     id?: string
     /** unique name of space */
@@ -1025,16 +1025,16 @@ export interface App {
     shield?: boolean
   } | null
   /** identity of app stack */
-  stack?: {
+  stack: {
     /** unique identifier of stack */
-    id?: string
+    id: string
     /** unique name of stack */
-    name?: string
+    name: string
   }
   /** when app was updated */
-  updated_at?: string
+  updated_at: string
   /** web URL of app */
-  web_url?: string | null
+  web_url: string | null
 }
 
 /** Create a new app. */
@@ -1059,60 +1059,60 @@ export interface AppUpdateOpts {
 /** An audit trail archive represents a monthly json zipped file containing events */
 export interface Archive {
   /** when archive was created */
-  created_at?: string
+  created_at: string
   /** month of the archive */
-  month?: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12'
+  month: '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12'
   /** year of the archive */
-  year?: number
+  year: number
   /** url where to download the archive */
-  url?: string
+  url: string
   /** checksum for the archive */
-  checksum?: string
+  checksum: string
   /** size of the archive in bytes */
-  size?: number
+  size: number
 }
 
 /** An audit trail event represents some action on the platform */
 export interface AuditTrailEvent {
   /** when event was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of event */
-  id?: string
+  id: string
   /** type of event */
-  type?: string
+  type: string
   /** action for the event */
-  action?: string
+  action: string
   /** user who caused event */
-  actor?: {
+  actor: {
     id?: string
     email?: string
   }
   /** app upon which event took place */
-  app?: {
+  app: {
     id?: string
     name?: string
   }
   /** owner of the app targeted by the event */
-  owner?: {
+  owner: {
     id?: string
     email?: string
   }
   /** enterprise account on which the event happened */
-  enterprise_account?: {
+  enterprise_account: {
     id?: string
     name?: string
   }
   /** team on which the event happened */
-  team?: {
+  team: {
     id?: string
     name?: string
   }
   /** information about where the action was triggered */
-  request?: {
+  request: {
     ip_address?: string
   }
   /** data specific to the event */
-  data?: Record<string, unknown>
+  data: Record<string, unknown>
 }
 
 /** A build represents the process of transforming a code tarball into build artifacts */
@@ -1120,7 +1120,7 @@ export interface Build {
   /** app that the build belongs to */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** buildpacks executed for this build, in order (only applicable to Cedar-generation apps) */
   buildpacks?: Array<{
@@ -1140,23 +1140,23 @@ export interface Build {
   /** location of gzipped tarball of source code used to create build */
   source_blob: {
     /** an optional checksum of the gzipped tarball for verifying its integrity */
-    checksum?: string | null
+    checksum: string | null
     /** URL where gzipped tar archive of source code for build was downloaded. */
-    url?: string
+    url: string
     /** Version of the gzipped tarball. */
-    version?: string | null
+    version: string | null
     /** Version description of the gzipped tarball. */
-    version_description?: string | null
+    version_description: string | null
   }
   /** release resulting from the build */
   release?: {
     /** unique identifier of release */
-    id?: string
+    id: string
   } | null
   /** slug created by this build (only applicable for Cedar-generation apps) */
   slug?: {
     /** unique identifier of slug */
-    id?: string
+    id: string
   } | null
   /** stack of build */
   stack?: string
@@ -1167,9 +1167,9 @@ export interface Build {
   /** user that started the build */
   user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
   }
 }
 
@@ -1185,22 +1185,22 @@ export interface BuildCreateOpts {
   /** location of gzipped tarball of source code used to create build */
   source_blob: {
     /** an optional checksum of the gzipped tarball for verifying its integrity */
-    checksum?: string | null
+    checksum: string | null
     /** URL where gzipped tar archive of source code for build was downloaded. */
-    url?: string
+    url: string
     /** Version of the gzipped tarball. */
-    version?: string | null
+    version: string | null
     /** Version description of the gzipped tarball. */
-    version_description?: string | null
+    version_description: string | null
   }
 }
 
 /** A buildpack installation represents a buildpack that will be run against an app. */
 export interface BuildpackInstallation {
   /** determines the order in which the buildpacks will execute */
-  ordinal?: number
+  ordinal: number
   /** buildpack */
-  buildpack?: {
+  buildpack: {
     /** location of the buildpack for the app. Either a url (unofficial buildpacks) or an internal urn (heroku official buildpacks). */
     url?: string
     /** either the Buildpack Registry name or a URL of the buildpack for the app */
@@ -1222,9 +1222,9 @@ export interface Collaborator {
   /** app collaborator belongs to */
   app: {
     /** unique name of app */
-    name?: string
+    name: string
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** when collaborator was created */
   created_at: string
@@ -1238,11 +1238,11 @@ export interface Collaborator {
   /** identity of collaborated account */
   user: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** whether the user is federated and belongs to an Identity Provider */
-    federated?: boolean
+    federated: boolean
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
 }
 
@@ -1262,19 +1262,19 @@ export type ConfigVarUpdateOpts = Record<string, string | null>
 /** A credit represents value that will be used up before further charges are assigned to an account. */
 export interface Credit {
   /** total value of credit in cents */
-  amount?: number
+  amount: number
   /** remaining value of credit in cents */
-  balance?: number
+  balance: number
   /** when credit was created */
-  created_at?: string
+  created_at: string
   /** when credit will expire */
-  expires_at?: string
+  expires_at: string
   /** unique identifier of credit */
-  id?: string
+  id: string
   /** a name for credit */
-  title?: string
+  title: string
   /** when credit was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a new credit. */
@@ -1288,32 +1288,32 @@ export interface CreditCreateOpts {
 /** Domains define what web routes should be routed to an app on Heroku. */
 export interface Domain {
   /** status of this record's ACM */
-  acm_status?: string | null
+  acm_status: string | null
   /** reason for the status of this record's ACM */
-  acm_status_reason?: string | null
+  acm_status_reason: string | null
   /** app that owns the domain */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** canonical name record, the address to point a domain at */
-  cname?: string | null
+  cname: string | null
   /** when domain was created */
-  created_at?: string
+  created_at: string
   /** full hostname */
-  hostname?: string
+  hostname: string
   /** unique identifier of this domain */
-  id?: string
+  id: string
   /** type of domain name */
-  kind?: 'heroku' | 'custom'
+  kind: 'heroku' | 'custom'
   /** when domain was updated */
-  updated_at?: string
+  updated_at: string
   /** status of this record's cname */
-  status?: string
+  status: string
   /** sni endpoint the domain is associated with */
-  sni_endpoint?: {
+  sni_endpoint: {
     /** unique name for SNI endpoint */
     name?: string
     /** unique identifier of this SNI endpoint */
@@ -1338,72 +1338,72 @@ export interface DomainUpdateOpts {
 /** Dyno sizes are the values and details of sizes that can be assigned to dynos. This information can also be found at : [https://devcenter.heroku.com/articles/dyno-types](https://devcenter.heroku.com/articles/dyno-types). */
 export interface DynoSize {
   /** CPU architecture of this dyno */
-  architecture?: string
+  architecture: string
   /** minimum vCPUs, non-dedicated may get more depending on load */
-  compute?: number
+  compute: number
   /** whether this dyno size's product tier can use auto-scaling */
-  can_autoscale?: boolean
+  can_autoscale: boolean
   /** price information for this dyno size */
-  cost?: Record<string, unknown> | null
+  cost: Record<string, unknown> | null
   /** whether this dyno will be dedicated to one user */
-  dedicated?: boolean
+  dedicated: boolean
   /** unit of consumption for Heroku Enterprise customers to 2 decimal places */
-  precise_dyno_units?: number
+  precise_dyno_units: number
   /** unique identifier of the dyno size */
-  id?: string
+  id: string
   /** amount of RAM in GB */
-  memory?: number
+  memory: number
   /** name of the dyno size */
-  name?: string
+  name: string
   /** whether this dyno can only be provisioned in a private space */
-  private_space_only?: boolean
+  private_space_only: boolean
   /** Generation of the Heroku platform for this dyno size */
-  generation?: {
+  generation: {
     /** unique identifier of the generation of the Heroku platform for this dyno size */
     id?: string
     /** unique name of the generation of the Heroku platform for this dyno size */
     name?: string
   }
   /** infrastructure tier for this dyno */
-  infrastructure_tier?: string
+  infrastructure_tier: string
   /** product tier for this dyno */
-  product_dyno_tier?: string
+  product_dyno_tier: string
 }
 
 /** Dynos encapsulate running processes of an app on Heroku. Detailed information about dyno sizes can be found at: [https://devcenter.heroku.com/articles/dyno-types](https://devcenter.heroku.com/articles/dyno-types). */
 export interface Dyno {
   /** a URL to stream output from for attached processes or null for non-attached processes */
-  attach_url?: string | null
+  attach_url: string | null
   /** command used to start this process */
-  command?: string
+  command: string
   /** when dyno was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this dyno */
-  id?: string
+  id: string
   /** the name of this process on this dyno */
-  name?: string
+  name: string
   /** app release of the dyno */
-  release?: {
+  release: {
     /** unique identifier of release */
-    id?: string
+    id: string
     /** unique version assigned to the release */
-    version?: number
+    version: number
   }
   /** app formation belongs to */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** dyno size */
-  size?: string
+  size: string
   /** current status of process (either: crashed, down, idle, starting, or up) */
-  state?: string
+  state: string
   /** type of process */
-  type?: string
+  type: string
   /** when process last changed state */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a new dyno. */
@@ -1427,9 +1427,9 @@ export interface DynoCreateOpts {
 /** Usage for an enterprise account at a daily resolution. */
 export interface EnterpriseAccountDailyUsage {
   /** total add-on credits used */
-  addons?: number
+  addons: number
   /** usage by team */
-  teams?: Array<{
+  teams: Array<{
     /** total add-on credits used */
     addons?: number
     /** app usage in the team */
@@ -1459,19 +1459,19 @@ export interface EnterpriseAccountDailyUsage {
     space?: number
   }>
   /** total add-on credits used for first party add-ons */
-  data?: number
+  data: number
   /** date of the usage */
-  date?: string
+  date: string
   /** dynos used */
-  dynos?: number
+  dynos: number
   /** enterprise account identifier */
-  id?: string
+  id: string
   /** name of the enterprise account */
-  name?: string
+  name: string
   /** total add-on credits used for third party add-ons */
-  partner?: number
+  partner: number
   /** space credits used */
-  space?: number
+  space: number
 }
 
 /**
@@ -1487,31 +1487,31 @@ export interface EnterpriseAccountDailyUsageInfoOpts {
 
 /** Enterprise account members are users with access to an enterprise account. */
 export interface EnterpriseAccountMember {
-  enterprise_account?: {
+  enterprise_account: {
     /** unique identifier of the enterprise account */
     id?: string
     /** unique name of the enterprise account */
     name?: string
   }
   /** unique identifier of the member */
-  id?: string
+  id: string
   /** enterprise account permissions */
-  permissions?: Array<{
+  permissions: Array<{
     description?: string
     /** permission in the enterprise account */
     name?: 'view' | 'create' | 'manage' | 'billing'
   }>
   /** user information for the membership */
-  user?: {
+  user: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** whether the Enterprise Account member has two factor authentication enabled */
-  two_factor_authentication?: boolean
+  two_factor_authentication: boolean
   /** Identity Provider information the member is federated with */
-  identity_provider?: {
+  identity_provider: {
     /** unique identifier of this identity provider */
     id?: string
     /** name of the identity provider */
@@ -1548,9 +1548,9 @@ export interface EnterpriseAccountMemberUpdateOpts {
 /** Usage for an enterprise account at a monthly resolution. */
 export interface EnterpriseAccountMonthlyUsage {
   /** total add-on credits used */
-  addons?: number
+  addons: number
   /** usage by team */
-  teams?: Array<{
+  teams: Array<{
     /** total add-on credits used */
     addons?: number
     /** app usage in the team */
@@ -1582,21 +1582,21 @@ export interface EnterpriseAccountMonthlyUsage {
     space?: number
   }>
   /** max connect rows synced */
-  connect?: number
+  connect: number
   /** total add-on credits used for first party add-ons */
-  data?: number
+  data: number
   /** dynos used */
-  dynos?: number
+  dynos: number
   /** enterprise account identifier */
-  id?: string
+  id: string
   /** year and month of the usage */
-  month?: string
+  month: string
   /** name of the enterprise account */
-  name?: string
+  name: string
   /** total add-on credits used for third party add-ons */
-  partner?: number
+  partner: number
   /** space credits used */
-  space?: number
+  space: number
 }
 
 /**
@@ -1613,27 +1613,27 @@ export interface EnterpriseAccountMonthlyUsageInfoOpts {
 /** Enterprise accounts allow companies to manage their development teams and billing. */
 export interface EnterpriseAccount {
   /** unique identifier of the enterprise account */
-  id?: string
+  id: string
   /** when the enterprise account was created */
-  created_at?: string
+  created_at: string
   /** unique name of the enterprise account */
-  name?: string
+  name: string
   /** when the enterprise account was updated */
-  updated_at?: string
+  updated_at: string
   /** the current user's permissions for this enterprise account */
-  permissions?: Array<string>
+  permissions: Array<string>
   /** whether the enterprise account is a trial or not */
-  trial?: boolean
+  trial: boolean
   /** whether the enterprise account is part of the Salesforce Partner Program */
-  partner_benefits?: boolean
+  partner_benefits: boolean
   /** Identity Provider associated with the Enterprise Account */
-  identity_provider?: {
+  identity_provider: {
     /** unique identifier of this identity provider */
-    id?: string
+    id: string
     /** user-friendly unique identifier for this identity provider */
-    name?: string
+    name: string
     /** entity that owns this identity provider */
-    owner?: {
+    owner: {
       /** unique identifier of the owner */
       id: string
       /** name of the owner */
@@ -1663,33 +1663,33 @@ export interface FilterAppsAppsOpts {
 /** The formation of processes that should be maintained for an app. Update the formation to scale processes or change dyno sizes. Available process type names and commands are defined by the `process_types` attribute for the [slug](#slug) currently released on an app. */
 export interface Formation {
   /** app formation belongs to */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** command to use to launch this process */
-  command?: string
+  command: string
   /** when process type was created */
-  created_at?: string
+  created_at: string
   /** dyno size */
-  dyno_size?: {
+  dyno_size: {
     /** unique identifier of the dyno size */
     id?: string
     /** name of the dyno size */
     name?: string
   }
   /** unique identifier of this process type */
-  id?: string
+  id: string
   /** number of processes to maintain */
-  quantity?: number
+  quantity: number
   /** deprecated, refer to 'dyno_size' instead */
-  size?: string
+  size: string
   /** type of process to maintain */
-  type?: string
+  type: string
   /** when dyno type was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Batch update process types */
@@ -1726,17 +1726,17 @@ export interface FormationUpdateOpts {
 /** A generation represents a version of the Heroku platform that includes the app execution environment, routing, telemetry, and build systems. */
 export interface Generation {
   /** when generation was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of generation */
-  id?: string
+  id: string
   /** unique name of generation */
-  name?: string
+  name: string
   /** when generation was updated */
-  updated_at?: string
+  updated_at: string
   /** features unsupported by this generation */
-  unsupported_features?: Array<string>
+  unsupported_features: Array<string>
   /** features unsupported by this generation along with their metadata */
-  expanded_supported_features?: Array<{
+  expanded_supported_features: Array<{
     /** name of unsupported feature */
     name?: string
     /** type of unsupported feature */
@@ -1749,9 +1749,9 @@ export interface Generation {
 /** Identity Providers represent the SSO configuration of an Enterprise Account or Team. */
 export interface IdentityProvider {
   /** raw contents of the public certificate (eg: .crt or .pem file) */
-  certificate?: string | null
+  certificate: string | null
   /** Array of sso certificates belonging to this identity provider */
-  certificates?: Array<{
+  certificates: Array<{
     /** when provider record was created */
     created_at?: string
     /** unique identifier of this identity provider */
@@ -1764,15 +1764,15 @@ export interface IdentityProvider {
     name?: string | null
   }>
   /** when provider record was created */
-  created_at?: string
+  created_at: string
   /** URL identifier provided by the identity provider */
-  entity_id?: string
+  entity_id: string
   /** unique identifier of this identity provider */
-  id?: string
+  id: string
   /** user-friendly unique identifier for this identity provider */
-  name?: string
+  name: string
   /** entity that owns this identity provider */
-  owner?: {
+  owner: {
     /** unique identifier of the owner */
     id: string
     /** name of the owner */
@@ -1781,19 +1781,19 @@ export interface IdentityProvider {
     type: 'team' | 'enterprise-account'
   }
   /** single log out URL for this identity provider */
-  slo_target_url?: string
+  slo_target_url: string
   /** single sign on URL for this identity provider */
-  sso_target_url?: string
+  sso_target_url: string
   /** when the identity provider record was updated */
-  updated_at?: string
+  updated_at: string
   /** when the identity provider is allowed to be used */
-  enabled?: boolean
+  enabled: boolean
   /** heroku start url */
-  heroku_start_url?: string
+  heroku_start_url: string
   /** heroku entity id */
-  heroku_entity_id?: string
+  heroku_entity_id: string
   /** heroku acs url */
-  heroku_acs_url?: string
+  heroku_acs_url: string
 }
 
 /** Create an Identity Provider */
@@ -1859,24 +1859,24 @@ export interface IdentityProviderUpdateOpts {
 /** An inbound-ruleset is a collection of rules that specify what hosts can or cannot connect to an application. */
 export interface InboundRuleset {
   /** unique identifier of an inbound-ruleset */
-  id?: string
+  id: string
   /** identity of space */
-  space?: {
+  space: {
     /** unique identifier of space */
     id?: string
     /** unique name of space */
     name?: string
   }
   /** when inbound-ruleset was created */
-  created_at?: string
-  rules?: Array<{
+  created_at: string
+  rules: Array<{
     /** states whether the connection is allowed or denied */
     action: 'allow' | 'deny'
     /** is the request’s source in CIDR notation */
     source: string
   }>
   /** unique email address of account */
-  created_by?: string
+  created_by: string
 }
 
 /** Create a new inbound ruleset */
@@ -1933,49 +1933,49 @@ export interface InvoiceAddressUpdateOpts {
 /** An invoice is an itemized bill of goods for an account which includes pricing and charges. */
 export interface Invoice {
   /** total charges on this invoice */
-  charges_total?: number
+  charges_total: number
   /** when invoice was created */
-  created_at?: string
+  created_at: string
   /** total credits on this invoice */
-  credits_total?: number
+  credits_total: number
   /** unique identifier of this invoice */
-  id?: string
+  id: string
   /** human readable invoice number */
-  number?: number
+  number: number
   /** the ending date that the invoice covers */
-  period_end?: string
+  period_end: string
   /** the starting date that this invoice covers */
-  period_start?: string
+  period_start: string
   /** payment status for this invoice (pending, successful, failed) */
-  state?: number
+  state: number
   /** combined total of charges and credits on this invoice */
-  total?: number
+  total: number
   /** when invoice was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Keys represent public SSH keys associated with an account and are used to authorize accounts as they are performing git operations. */
 export interface Key {
   /** comment on the key */
-  comment?: string
+  comment: string
   /** when key was created */
-  created_at?: string
+  created_at: string
   /** deprecated. Please refer to 'comment' instead */
-  email?: string
+  email: string
   /** a unique identifying string based on contents */
-  fingerprint?: string
+  fingerprint: string
   /** unique identifier of this key */
-  id?: string
+  id: string
   /** full public_key as uploaded */
-  public_key?: string
+  public_key: string
   /** when key was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** [Log drains](https://devcenter.heroku.com/articles/log-drains) provide a way to forward your Heroku logs to an external syslog server for long-term archiving. This external service must be configured to receive syslog packets from Heroku, whereupon its URL can be added to an app using this API. Some add-ons will add a log drain when they are provisioned to an app. These drains can only be removed by removing the add-on. */
 export interface LogDrain {
   /** add-on that created the drain */
-  addon?: {
+  addon: {
     /** unique identifier of add-on */
     id?: string
     /** globally unique name of the add-on */
@@ -1983,28 +1983,28 @@ export interface LogDrain {
     /** billing application associated with this add-on */
     app?: {
       /** unique identifier of app */
-      id?: string
+      id: string
       /** unique name of app */
-      name?: string
+      name: string
     }
   } | null
   /** application that is attached to this drain */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   } | null
   /** when log drain was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this log drain */
-  id?: string
+  id: string
   /** token associated with the log drain */
-  token?: string
+  token: string
   /** when log drain was updated */
-  updated_at?: string
+  updated_at: string
   /** url associated with the log drain */
-  url?: string
+  url: string
 }
 
 /** Create a new log drain. */
@@ -2022,13 +2022,13 @@ export interface LogDrainUpdateOpts {
 /** A log session is a reference to the http based log stream for an app. */
 export interface LogSession {
   /** when log connection was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this log session */
-  id?: string
+  id: string
   /** URL for log streaming session */
-  logplex_url?: string
+  logplex_url: string
   /** when log session was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a new log session. */
@@ -2048,7 +2048,7 @@ export interface LogSessionCreateOpts {
 /** OAuth authorizations represent clients that a Heroku user has authorized to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
 export interface OauthAuthorization {
   /** access token for this authorization */
-  access_token?: {
+  access_token: {
     /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
     expires_in?: number | null
     /** unique identifier of OAuth token */
@@ -2059,7 +2059,7 @@ export interface OauthAuthorization {
     version?: number
   } | null
   /** identifier of the client that obtained this authorization, if any */
-  client?: {
+  client: {
     /** unique identifier of this OAuth client */
     id?: string
     /** OAuth client name */
@@ -2068,46 +2068,46 @@ export interface OauthAuthorization {
     redirect_uri?: string
   } | null
   /** when OAuth authorization was created */
-  created_at?: string
+  created_at: string
   /** human-friendly description of this OAuth authorization */
-  description?: string
+  description: string
   /** this authorization's grant */
-  grant?: {
+  grant: {
     /** grant code received from OAuth web application authorization */
-    code?: string
+    code: string
     /** seconds until OAuth grant expires */
-    expires_in?: number
+    expires_in: number
     /** unique identifier of OAuth grant */
-    id?: string
+    id: string
   } | null
   /** unique identifier of OAuth authorization */
-  id?: string
+  id: string
   /** refresh token for this authorization */
-  refresh_token?: {
+  refresh_token: {
     /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
-    expires_in?: number | null
+    expires_in: number | null
     /** unique identifier of OAuth token */
-    id?: string
+    id: string
     /** contents of the token to be used for authorization */
-    token?: string
+    token: string
   } | null
   /** The scope of access OAuth authorization allows */
-  scope?: Array<string>
+  scope: Array<string>
   /** this authorization's session */
-  session?: {
+  session: {
     /** unique identifier of OAuth token */
-    id?: string
+    id: string
   } | null
   /** when OAuth authorization was updated */
-  updated_at?: string
+  updated_at: string
   /** authenticated user associated with this authorization */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
     /** full name of the account owner */
-    full_name?: string | null
+    full_name: string | null
   }
 }
 
@@ -2148,19 +2148,19 @@ export interface OauthAuthorizationTeamCreateOpts {
 /** OAuth clients are applications that Heroku users can authorize to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth). */
 export interface OauthClient {
   /** when OAuth client was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this OAuth client */
-  id?: string
+  id: string
   /** whether the client is still operable given a delinquent account */
-  ignores_delinquent?: boolean | null
+  ignores_delinquent: boolean | null
   /** OAuth client name */
-  name?: string
+  name: string
   /** endpoint for redirection after authorization with OAuth client */
-  redirect_uri?: string
+  redirect_uri: string
   /** secret used to obtain OAuth authorizations under this client */
-  secret?: string
+  secret: string
   /** when OAuth client was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a new OAuth client. */
@@ -2187,57 +2187,57 @@ export interface OauthGrant {
 /** OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
 export interface OauthToken {
   /** current access token */
-  access_token?: {
+  access_token: {
     /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
-    expires_in?: number | null
+    expires_in: number | null
     /** unique identifier of OAuth token */
-    id?: string
+    id: string
     /** contents of the token to be used for authorization */
-    token?: string
+    token: string
   }
   /** authorization for this set of tokens */
-  authorization?: {
+  authorization: {
     /** unique identifier of OAuth authorization */
-    id?: string
+    id: string
   }
   /** OAuth client secret used to obtain token */
-  client?: {
+  client: {
     /** secret used to obtain OAuth authorizations under this client */
-    secret?: string
+    secret: string
   } | null
   /** when OAuth token was created */
-  created_at?: string
+  created_at: string
   /** grant used on the underlying authorization */
-  grant?: {
+  grant: {
     /** grant code received from OAuth web application authorization */
-    code?: string
+    code: string
     /** type of grant requested, one of `authorization_code` or `refresh_token` */
-    type?: string
+    type: string
   }
   /** unique identifier of OAuth token */
-  id?: string
+  id: string
   /** refresh token for this authorization */
-  refresh_token?: {
+  refresh_token: {
     /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
-    expires_in?: number | null
+    expires_in: number | null
     /** unique identifier of OAuth token */
-    id?: string
+    id: string
     /** contents of the token to be used for authorization */
-    token?: string
+    token: string
     /** the version of the token */
-    version?: number
+    version: number
   }
   /** OAuth session using this token */
-  session?: {
+  session: {
     /** unique identifier of OAuth token */
-    id?: string
+    id: string
   }
   /** when OAuth token was updated */
-  updated_at?: string
+  updated_at: string
   /** Reference to the user associated with this token */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
 }
 
@@ -2262,28 +2262,28 @@ export interface OauthTokenCreateOpts {
 /** An OCI (Open Container Initiative) image is a standardized format for packaging and distributing containerized applications, ready to run on the platform. */
 export interface OciImage {
   /** unique identifier of the OCI image */
-  id?: string
+  id: string
   /** name of the image used for the base layers of the OCI image */
-  base_image_name?: string
+  base_image_name: string
   /** the digest of the top most layer of the base image. */
-  base_top_layer?: string
+  base_top_layer: string
   /** identification of the code in your version control system (eg: SHA of the git HEAD) */
-  commit?: string
+  commit: string
   /** an optional description of the provided commit */
-  commit_description?: string
+  commit_description: string
   /** name of the image registry repository used for storage */
-  image_repo?: string
+  image_repo: string
   /** unique identifier representing the content of the OCI image */
-  digest?: string
+  digest: string
   /** stack associated to the OCI image */
-  stack?: {
+  stack: {
     /** unique identifier of stack */
     id?: string
     /** unique name of stack */
     name?: string
   }
   /** process types of the OCI image */
-  process_types?: Record<string, {
+  process_types: Record<string, {
     /** name of the process type */
     name?: string
     /** the detailed command used for display purposes */
@@ -2296,7 +2296,7 @@ export interface OciImage {
     default?: boolean | null
   }>
   /** buildpacks of the OCI image */
-  buildpacks?: Array<{
+  buildpacks: Array<{
     /** identifier of the buildpack */
     id?: string
     /** version of the buildpack */
@@ -2305,11 +2305,11 @@ export interface OciImage {
     homepage?: string
   }>
   /** when the OCI image was created */
-  created_at?: string
+  created_at: string
   /** when the OCI image was updated */
-  updated_at?: string
+  updated_at: string
   /** build architecture for OCI image */
-  architecture?: string | null
+  architecture: string | null
 }
 
 /** Create an new OCI image of an app */
@@ -2356,12 +2356,12 @@ export interface OciImageCreateOpts {
 /** A password reset represents a in-process password reset attempt. */
 export interface PasswordReset {
   /** when password reset was created */
-  created_at?: string
-  user?: {
+  created_at: string
+  user: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
 }
 
@@ -2382,41 +2382,41 @@ export interface PasswordResetCompleteResetPasswordOpts {
 /** [Peering Info](https://devcenter.heroku.com/articles/private-space-vpc-peering?preview=1) gives you the information necessary to peer an AWS VPC to a Private Space. */
 export interface PeeringInfo {
   /** The AWS account ID of your Private Space. */
-  aws_account_id?: string
+  aws_account_id: string
   /** The AWS region where your Private Space resides */
-  aws_region?: 'ap-south-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'eu-central-1' | 'ap-northeast-2' | 'ap-northeast-1' | 'us-east-1' | 'sa-east-1' | 'us-west-1' | 'us-west-2'
+  aws_region: 'ap-south-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'eu-central-1' | 'ap-northeast-2' | 'ap-northeast-1' | 'us-east-1' | 'sa-east-1' | 'us-west-1' | 'us-west-2'
   /** The AWS VPC ID of the peer. */
-  vpc_id?: string
+  vpc_id: string
   /** An IP address and the number of significant bits that make up the routing or networking portion. */
-  vpc_cidr?: string
+  vpc_cidr: string
   /** The CIDR ranges that should be routed to the Private Space VPC. */
-  dyno_cidr_blocks?: Array<string>
+  dyno_cidr_blocks: Array<string>
   /** The CIDR ranges that you must not conflict with. */
-  unavailable_cidr_blocks?: Array<string>
+  unavailable_cidr_blocks: Array<string>
   /** The CIDR ranges that should be routed to the Private Space VPC. */
-  space_cidr_blocks?: Array<string>
+  space_cidr_blocks: Array<string>
 }
 
 /** [Peering](https://devcenter.heroku.com/articles/private-space-vpc-peering?preview=1) provides a way to peer your Private Space VPC to another AWS VPC. */
 export interface Peering {
   /** The type of peering connection. */
-  type?: 'heroku-managed' | 'customer-managed' | 'unknown' | 'slowdb' | 'heroku-postgresql' | 'heroku-redis' | 'heroku-kafka' | 'heroku-cassandra'
+  type: 'heroku-managed' | 'customer-managed' | 'unknown' | 'slowdb' | 'heroku-postgresql' | 'heroku-redis' | 'heroku-kafka' | 'heroku-cassandra'
   /** The AWS VPC Peering Connection ID of the peering. */
-  pcx_id?: string
+  pcx_id: string
   /** An IP address and the number of significant bits that make up the routing or networking portion. */
-  cidr_block?: string
+  cidr_block: string
   /** The CIDR blocks of the peer. */
-  cidr_blocks?: Array<string>
+  cidr_blocks: Array<string>
   /** The status of the peering connection. */
-  status?: 'initiating-request' | 'pending-acceptance' | 'provisioning' | 'active' | 'failed' | 'expired' | 'rejected' | 'deleted'
+  status: 'initiating-request' | 'pending-acceptance' | 'provisioning' | 'active' | 'failed' | 'expired' | 'rejected' | 'deleted'
   /** The AWS VPC ID of the peer. */
-  aws_vpc_id?: string
+  aws_vpc_id: string
   /** The AWS region of the peer connection. */
-  aws_region?: string
+  aws_region: string
   /** The AWS account ID of your Private Space. */
-  aws_account_id?: string
+  aws_account_id: string
   /** When a peering connection will expire. */
-  expires?: string
+  expires: string
 }
 
 /** Accept a pending peering connection with a private space. */
@@ -2428,15 +2428,15 @@ export interface PeeringAcceptOpts {
 /** An owned entity including users' permissions. */
 export interface PermissionEntity {
   /** ID of the entity. */
-  id?: string
+  id: string
   /** Name of the entity. */
-  name?: string
+  name: string
   /** unique identifier of team */
-  team_id?: string
+  team_id: string
   /** The type of object the entity is referring to. */
-  type?: 'app' | 'space'
+  type: 'app' | 'space'
   /** Users that have access to the entity. */
-  users?: Array<{
+  users: Array<{
     /** unique email address of account */
     email?: string
     /** unique identifier of an account */
@@ -2449,63 +2449,63 @@ export interface PermissionEntity {
 /** Information about the latest builds of apps in a pipeline. A build represents the process of transforming code into build artifacts. */
 export interface PipelineBuild {
   /** app that the build belongs to */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** buildpacks executed for this build, in order (only applicable to Cedar-generation apps) */
-  buildpacks?: Array<{
+  buildpacks: Array<{
     /** the URL of the buildpack for the app */
     url?: string
     /** Buildpack Registry name of the buildpack for the app */
     name?: string
   }> | null
   /** when build was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of build */
-  id?: string
+  id: string
   /** Build process output will be available from this URL as a stream. The stream is available as either `text/plain` or `text/event-stream`. Clients should be prepared to handle disconnects and can resume the stream by sending a `Range` header (for `text/plain`) or a `Last-Event-Id` header (for `text/event-stream`). */
-  output_stream_url?: string
+  output_stream_url: string
   /** location of gzipped tarball of source code used to create build */
-  source_blob?: {
+  source_blob: {
     /** an optional checksum of the gzipped tarball for verifying its integrity */
-    checksum?: string | null
+    checksum: string | null
     /** URL where gzipped tar archive of source code for build was downloaded. */
-    url?: string
+    url: string
     /** version of the gzipped tarball */
-    version?: string | null
+    version: string | null
     /** version description of the gzipped tarball */
-    version_description?: string | null
+    version_description: string | null
   }
   /** release resulting from the build */
-  release?: {
+  release: {
     /** unique identifier of release */
-    id?: string
+    id: string
   } | null
   /** slug created by this build */
-  slug?: {
+  slug: {
     /** unique identifier of slug */
-    id?: string
+    id: string
   } | null
   /** stack of build */
-  stack?: string
+  stack: string
   /** status of build */
-  status?: 'failed' | 'pending' | 'succeeded'
+  status: 'failed' | 'pending' | 'succeeded'
   /** when build was updated */
-  updated_at?: string
+  updated_at: string
   /** user that started the build */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
   }
 }
 
 /** Pipeline config vars in Heroku CI and review apps used to manage the configuration information for a pipeline. */
 export interface PipelineConfigVar {
   /** user-defined config var name and value */
-  '["NAME"]: ["value"]'?: Record<string, unknown>
+  '["NAME"]: ["value"]': Record<string, unknown>
 }
 
 /** Update config-vars for a pipeline stage. You can update existing config-vars by setting them again, and remove by setting it to `null`. */
@@ -2551,105 +2551,105 @@ export interface PipelineCouplingUpdateOpts {
 /** Information about the latest deployment of each app in a pipeline. A deployment is the process of moving the build artifacts to a target environment. */
 export interface PipelineDeployment {
   /** add-on plans installed on the app for this deployment */
-  addon_plan_names?: Array<string>
+  addon_plan_names: Array<string>
   /** a build artifact for the release */
-  artifacts?: {
+  artifacts: {
     /** type of artifact */
     type?: string
     id?: string
   }
   /** app involved in the deployment */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** when release was created */
-  created_at?: string
+  created_at: string
   /** description of changes in this release */
-  description?: string
+  description: string
   /** unique identifier of release */
-  id?: string
+  id: string
   /** when release was updated */
-  updated_at?: string
+  updated_at: string
   /** slug running in this deployment */
-  slug?: {
+  slug: {
     /** unique identifier of slug */
-    id?: string
+    id: string
   } | null
   /** current status of the release */
-  status?: 'expired' | 'failed' | 'pending' | 'succeeded'
+  status: 'expired' | 'failed' | 'pending' | 'succeeded'
   /** user that created the deployment */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
   }
   /** unique version assigned to the release */
-  version?: number
+  version: number
   /** indicates if this release is the current one for the app */
-  current?: boolean
+  current: boolean
   /** URL that the release command output streams to. The stream is available as either `text/plain` or `text/event-stream`. Prepare clients to handle disconnects and to resume the stream by sending a `Range` header for `text/plain` or a `Last-Event-Id` header for `text/event-stream`. */
-  output_stream_url?: string | null
+  output_stream_url: string | null
   /** indicates if this release is eligible for rollback */
-  eligible_for_rollback?: boolean
+  eligible_for_rollback: boolean
 }
 
 /** Promotion targets represent an individual app being promoted to */
 export interface PipelinePromotionTarget {
   /** the app which was promoted to */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** an error message for why the promotion failed */
-  error_message?: string | null
+  error_message: string | null
   /** unique identifier of promotion target */
-  id?: string
+  id: string
   /** the promotion which the target belongs to */
-  pipeline_promotion?: {
+  pipeline_promotion: {
     /** unique identifier of promotion */
-    id?: string
+    id: string
   }
   /** the release which was created on the target app */
-  release?: {
+  release: {
     /** unique identifier of release */
     id?: string
   } | null
   /** status of promotion */
-  status?: 'pending' | 'succeeded' | 'failed'
+  status: 'pending' | 'succeeded' | 'failed'
 }
 
 /** Promotions allow you to move code from an app in a pipeline to all targets */
 export interface PipelinePromotion {
   /** when promotion was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of promotion */
-  id?: string
+  id: string
   /** the pipeline which the promotion belongs to */
-  pipeline?: {
+  pipeline: {
     /** unique identifier of pipeline */
-    id?: string
+    id: string
   }
   /** the app being promoted from */
-  source?: {
+  source: {
     /** the app which was promoted from */
-    app?: {
+    app: {
       /** unique identifier of app */
-      id?: string
+      id: string
     }
     /** the release used to promoted from */
-    release?: {
+    release: {
       /** unique identifier of release */
       id?: string
     }
   }
   /** status of promotion */
-  status?: 'pending' | 'completed'
+  status: 'pending' | 'completed'
   /** when promotion was updated */
-  updated_at?: string | null
+  updated_at: string | null
 }
 
 /** Create a new promotion. */
@@ -2664,19 +2664,19 @@ export interface PipelinePromotionCreateOpts {
     /** the app which was promoted from */
     app?: {
       /** unique identifier of app */
-      id?: string
+      id: string
     }
     /** the specific release to promote from (optional, defaults to current release) */
     release?: {
       /** unique identifier of release */
-      id?: string
+      id: string
     }
   }
   targets: Array<{
     /** the app is being promoted to */
     app?: {
       /** unique identifier of app */
-      id?: string
+      id: string
     }
   }>
 }
@@ -2684,50 +2684,50 @@ export interface PipelinePromotionCreateOpts {
 /** Information about the latest release of each app in a pipeline. A release makes a deployment available to end-users. */
 export interface PipelineRelease {
   /** add-on plans installed on the app for this release */
-  addon_plan_names?: Array<string>
+  addon_plan_names: Array<string>
   /** a build artifact for the release */
-  artifacts?: {
+  artifacts: {
     /** type of artifact */
     type?: string
     id?: string
   }
   /** app involved in the release */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** when release was created */
-  created_at?: string
+  created_at: string
   /** description of changes in this release */
-  description?: string
+  description: string
   /** unique identifier of release */
-  id?: string
+  id: string
   /** when release was updated */
-  updated_at?: string
+  updated_at: string
   /** slug running in the release */
-  slug?: {
+  slug: {
     /** unique identifier of slug */
-    id?: string
+    id: string
   } | null
   /** current status of the release */
-  status?: 'expired' | 'failed' | 'pending' | 'succeeded'
+  status: 'expired' | 'failed' | 'pending' | 'succeeded'
   /** user that created the release */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
   }
   /** unique version assigned to the release */
-  version?: number
+  version: number
   /** indicates if this release is the current one for the app */
-  current?: boolean
+  current: boolean
   /** URL that the release command output streams to. The stream is available as either `text/plain` or `text/event-stream`. Prepare clients to handle disconnects and to resume the stream by sending a `Range` header for `text/plain` or a `Last-Event-Id` header for `text/event-stream`. */
-  output_stream_url?: string | null
+  output_stream_url: string | null
   /** indicates if this release is eligible for rollback */
-  eligible_for_rollback?: boolean
+  eligible_for_rollback: boolean
 }
 
 /** A pipeline's stack is determined by the apps in the pipeline. This is used during creation of CI and Review Apps that have no stack defined in app.json */
@@ -2735,9 +2735,9 @@ export interface PipelineStack {
   /** identity of the stack that will be used for new builds without a stack defined in CI and Review Apps */
   stack?: {
     /** unique identifier of stack */
-    id?: string
+    id: string
     /** unique name of stack */
-    name?: string
+    name: string
   } | null
 }
 
@@ -2828,136 +2828,136 @@ export interface PipelineUpdateOpts {
 /** Plans represent different configurations of add-ons that may be added to apps. Endpoints under add-on services can be accessed without authentication. */
 export interface Plan {
   /** identity of add-on service */
-  addon_service?: {
+  addon_service: {
     /** unique identifier of this add-on-service */
-    id?: string
+    id: string
     /** unique name of this add-on-service */
-    name?: string
+    name: string
   }
   /** when plan was created */
-  created_at?: string
+  created_at: string
   /** the compliance regimes applied to an add-on plan */
-  compliance?: Array<'HIPAA' | 'PCI'> | null
+  compliance: Array<'HIPAA' | 'PCI'> | null
   /** whether this plan is the default for its add-on service */
-  default?: boolean
+  default: boolean
   /** description of plan */
-  description?: string
+  description: string
   /** human readable name of the add-on plan */
-  human_name?: string
+  human_name: string
   /** unique identifier of this plan */
-  id?: string
+  id: string
   /** whether this plan is installable to a Private Spaces app */
-  installable_inside_private_network?: boolean
+  installable_inside_private_network: boolean
   /** whether this plan is installable to a Common Runtime app */
-  installable_outside_private_network?: boolean
+  installable_outside_private_network: boolean
   /** unique name of this plan */
-  name?: string
+  name: string
   /** price */
-  price?: {
+  price: {
     /** price in cents per unit of plan */
-    cents?: number
+    cents: number
     /** price is negotiated in a contract outside of monthly add-on billing */
-    contract?: boolean
+    contract: boolean
     /** whether this plan is billed per use */
-    metered?: boolean
+    metered: boolean
     /** unit of price for plan */
-    unit?: string
+    unit: string
   }
   /** whether this plan is the default for apps in Private Spaces */
-  space_default?: boolean
+  space_default: boolean
   /** release status for plan */
-  state?: string
+  state: string
   /** when plan was updated */
-  updated_at?: string
+  updated_at: string
   /** whether this plan is publicly visible */
-  visible?: boolean
+  visible: boolean
 }
 
 /** Rate Limit represents the number of request tokens each account holds. Requests to this endpoint do not count towards the rate limit. */
 export interface RateLimit {
   /** allowed requests remaining in current interval */
-  remaining?: number
+  remaining: number
 }
 
 /** A region represents a geographic location in which your application may run. */
 export interface Region {
   /** country where the region exists */
-  country?: string
+  country: string
   /** when region was created */
-  created_at?: string
+  created_at: string
   /** description of region */
-  description?: string
+  description: string
   /** unique identifier of region */
-  id?: string
+  id: string
   /** area in the country where the region exists */
-  locale?: string
+  locale: string
   /** unique name of region */
-  name?: string
+  name: string
   /** whether or not region is available for creating a Private Space */
-  private_capable?: boolean
+  private_capable: boolean
   /** provider of underlying substrate */
-  provider?: {
+  provider: {
     /** name of provider */
     name?: string
     /** region name used by provider */
     region?: 'ap-south-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-southeast-2' | 'eu-central-1' | 'eu-west-2' | 'ap-northeast-2' | 'ap-northeast-1' | 'us-east-1' | 'sa-east-1' | 'us-west-1' | 'us-west-2' | 'ca-central-1'
   }
   /** when region was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** A release represents a combination of code, config vars and add-ons for an app on Heroku. */
 export interface Release {
   /** add-on plans installed on the app for this release */
-  addon_plan_names?: Array<string>
+  addon_plan_names: Array<string>
   /** build artifacts for the release */
-  artifacts?: Array<{
+  artifacts: Array<{
     /** type of artifact */
     type?: string
     id?: string
   }>
   /** app involved in the release */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** when release was created */
-  created_at?: string
+  created_at: string
   /** description of changes in this release */
-  description?: string
+  description: string
   /** unique identifier of release */
-  id?: string
+  id: string
   /** when release was updated */
-  updated_at?: string
+  updated_at: string
   /** OCI image running in this release */
-  oci_image?: {
+  oci_image: {
     /** unique identifier of the OCI image */
-    id?: string
+    id: string
   } | null
   /** slug running in this release. Not applicable to apps using Cloud Native Buildpacks. */
-  slug?: {
+  slug: {
     /** unique identifier of slug */
-    id?: string
+    id: string
   } | null
   /** current status of the release */
-  status?: 'expired' | 'failed' | 'pending' | 'succeeded'
+  status: 'expired' | 'failed' | 'pending' | 'succeeded'
   /** user that created the release */
-  user?: {
+  user: {
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** unique email address of account */
-    email?: string
+    email: string
   }
   /** unique version assigned to the release */
-  version?: number
+  version: number
   /** indicates if this release is the current one for the app */
-  current?: boolean
+  current: boolean
   /** URL that the release command output streams to. The stream is available as either `text/plain` or `text/event-stream`. Prepare clients to handle disconnects and to resume the stream by sending a `Range` header for `text/plain` or a `Last-Event-Id` header for `text/event-stream`. */
-  output_stream_url?: string | null
+  output_stream_url: string | null
   /** indicates if this release is eligible for rollback */
-  eligible_for_rollback?: boolean
+  eligible_for_rollback: boolean
 }
 
 /** Create new release. */
@@ -2977,44 +2977,44 @@ export interface ReleaseRollbackOpts {
 /** An ephemeral app to review a set of changes */
 export interface ReviewApp {
   /** the Heroku app associated to this review app */
-  app?: {
+  app: {
     /** unique identifier of app */
     id?: string
   } | null
   /** the app setup for this review app */
-  app_setup?: {
+  app_setup: {
     /** unique identifier of app setup */
     id?: string
   } | null
   /** the branch of the repository which the review app is based on */
-  branch?: string
+  branch: string
   /** when test run was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of the review app */
-  id?: string
+  id: string
   /** the pipeline which this review app belongs to */
-  pipeline?: {
+  pipeline: {
     /** unique identifier of pipeline */
     id?: string
   }
   /** current state of the review app */
-  status?: 'pending' | 'creating' | 'created' | 'deleting' | 'deleted' | 'errored'
+  status: 'pending' | 'creating' | 'created' | 'deleting' | 'deleted' | 'errored'
   /** when review app was updated */
-  updated_at?: string
+  updated_at: string
   /** The user who created the review app */
-  creator?: Record<string, unknown>
+  creator: Record<string, unknown>
   /** wait for ci before building the app */
-  wait_for_ci?: boolean
+  wait_for_ci: boolean
   /** error message from creating the review app if any */
-  error_status?: string | null
+  error_status: string | null
   /** message from creating the review app if any */
-  message?: string | null
-  fork_repo?: {
+  message: string | null
+  fork_repo: {
     /** repository id of the fork the branch resides in */
-    id?: number | null
+    id: number | null
   } | null
   /** pull request number the review app is built for */
-  pr_number?: number | null
+  pr_number: number | null
 }
 
 /** Create a new review app */
@@ -3028,9 +3028,9 @@ export interface ReviewAppCreateOpts {
   /** The download location for the review app's source code */
   source_blob: {
     /** URL where gzipped tar archive of source code for build was downloaded. */
-    url?: string
+    url: string
     /** The version number (or SHA) of the code to build. */
-    version?: string | null
+    version: string | null
   }
   /** hash of config vars */
   environment?: Record<string, string | null> | null
@@ -3042,7 +3042,7 @@ export interface ReviewAppCreateOpts {
 export interface ReviewAppConfig {
   repo?: {
     /** repository id */
-    id?: number
+    id: number
   }
   /** enable automatic review apps for pull requests */
   automatic_review_apps?: boolean
@@ -3112,39 +3112,39 @@ export interface ReviewAppConfigUpdateOpts {
 /** A slug is a snapshot of your application code that is ready to run on the platform. */
 export interface Slug {
   /** pointer to the url where clients can fetch or store the actual release binary */
-  blob?: {
+  blob: {
     /** method to be used to interact with the slug blob */
-    method?: string
+    method: string
     /** URL to interact with the slug blob */
-    url?: string
+    url: string
   }
   /** description from buildpack of slug */
-  buildpack_provided_description?: string | null
+  buildpack_provided_description: string | null
   /** an optional checksum of the slug for verifying its integrity */
-  checksum?: string | null
+  checksum: string | null
   /** identification of the code with your version control system (eg: SHA of the git HEAD) */
-  commit?: string | null
+  commit: string | null
   /** an optional description of the provided commit */
-  commit_description?: string | null
+  commit_description: string | null
   /** when slug was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of slug */
-  id?: string
+  id: string
   /** hash mapping process type names to their respective command */
-  process_types?: Record<string, string>
+  process_types: Record<string, string>
   /** size of slug, in bytes */
-  size?: number | null
+  size: number | null
   /** identity of slug stack */
-  stack?: {
+  stack: {
     /** unique identifier of stack */
-    id?: string
+    id: string
     /** unique name of stack */
-    name?: string
+    name: string
   }
   /** when slug was updated */
-  updated_at?: string
+  updated_at: string
   /** when slug was deleted */
-  deleted_at?: string | null
+  deleted_at: string | null
 }
 
 /** Create a new slug. For more information please refer to [Deploying Slugs using the Platform API](https://devcenter.heroku.com/articles/platform-api-deploying-slugs). */
@@ -3165,34 +3165,34 @@ export interface SlugCreateOpts {
 /** SMS numbers are used for recovery on accounts with two-factor authentication enabled. */
 export interface SmsNumber {
   /** SMS number of account */
-  sms_number?: string | null
+  sms_number: string | null
 }
 
 /** SNI Endpoint is a public address serving a custom SSL cert for HTTPS traffic, using the SNI TLS extension, to a Heroku app. */
 export interface SniEndpoint {
   /** raw contents of the public certificate chain (eg: .crt or .pem file) */
-  certificate_chain?: string
+  certificate_chain: string
   /** when endpoint was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this SNI endpoint */
-  id?: string
+  id: string
   /** unique name for SNI endpoint */
-  name?: string
+  name: string
   /** when SNI endpoint was updated */
-  updated_at?: string
+  updated_at: string
   /** unique name for SSL certificate */
-  display_name?: string | null
+  display_name: string | null
   /** domains associated with this SSL certificate */
-  domains?: Array<string>
+  domains: Array<string>
   /** application that this SSL certificate is on */
-  app?: {
+  app: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** certificate provided by this endpoint */
-  ssl_cert?: {
+  ssl_cert: {
     'ca_signed?'?: boolean
     cert_domains?: unknown[]
     expires_at?: string
@@ -3224,11 +3224,11 @@ export interface SniEndpointUpdateOpts {
 /** A source is a location for uploading and downloading an application's source code. */
 export interface Source {
   /** pointer to the URL where clients can fetch or store the source */
-  source_blob?: {
+  source_blob: {
     /** URL to download the source */
-    get_url?: string
+    get_url: string
     /** URL to upload the source */
-    put_url?: string
+    put_url: string
   }
 }
 
@@ -3237,9 +3237,9 @@ export interface SpaceAppAccess {
   /** space user belongs to */
   space?: {
     /** unique name of app */
-    name?: string
+    name: string
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** when space was created */
   created_at?: string
@@ -3255,9 +3255,9 @@ export interface SpaceAppAccess {
   /** identity of user account */
   user?: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
 }
 
@@ -3271,21 +3271,21 @@ export interface SpaceAppAccessUpdateOpts {
 /** Network address translation (NAT) for stable outbound IP addresses from a space */
 export interface SpaceNat {
   /** when network address translation for a space was created */
-  created_at?: string
+  created_at: string
   /** potential IPs from which outbound network traffic will originate */
-  sources?: Array<string>
+  sources: Array<string>
   /** availability of network address translation for a space */
-  state?: 'disabled' | 'updating' | 'enabled'
+  state: 'disabled' | 'updating' | 'enabled'
   /** when network address translation for a space was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Space Topology provides you with a mechanism for viewing all the running dynos, formations and applications for a space. This is the same data thats used to power our DNS Service Discovery. */
 export interface SpaceTopology {
   /** version of the space topology payload */
-  version?: number
+  version: number
   /** The apps within this space */
-  apps?: Array<{
+  apps: Array<{
     /** unique identifier of app */
     id?: string
     domains?: unknown[]
@@ -3322,42 +3322,42 @@ export interface SpaceTransferTransferOpts {
 /** A space is an isolated, highly available, secure app execution environment. */
 export interface Space {
   /** when space was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of space */
-  id?: string
+  id: string
   /** unique name of space */
-  name?: string
+  name: string
   /** organization that owns this space */
-  organization?: {
+  organization: {
     /** unique name of team */
     name?: string
   }
   /** team that owns this space */
-  team?: {
+  team: {
     /** unique identifier of team */
     id?: string
     /** unique name of team */
     name?: string
   }
   /** identity of space region */
-  region?: {
+  region: {
     /** unique identifier of region */
-    id?: string
+    id: string
     /** unique name of region */
-    name?: string
+    name: string
   }
   /** true if this space has shield enabled */
-  shield?: boolean
+  shield: boolean
   /** availability of this space */
-  state?: 'allocating' | 'allocated' | 'deleting'
+  state: 'allocating' | 'allocated' | 'deleting'
   /** when space was updated */
-  updated_at?: string
+  updated_at: string
   /** The RFC-1918 CIDR the Private Space will use. It must be a /16 in 10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16 */
-  cidr?: string
+  cidr: string
   /** The RFC-1918 CIDR that the Private Space will use for the Heroku-managed peering connection that's automatically created when using Heroku Data add-ons. It must be between a /16 and a /20 */
-  data_cidr?: string
+  data_cidr: string
   /** generation for space */
-  generation?: string
+  generation: string
 }
 
 /** Update an existing space. */
@@ -3396,17 +3396,17 @@ export interface SpaceCreateOpts {
 /** Stacks are the different application execution environments available in the Heroku platform. */
 export interface Stack {
   /** indicates this stack is the default for new apps */
-  default?: boolean
+  default: boolean
   /** when stack was introduced */
-  created_at?: string
+  created_at: string
   /** unique identifier of stack */
-  id?: string
+  id: string
   /** unique name of stack */
-  name?: string
+  name: string
   /** availability of this stack: beta, deprecated or public */
-  state?: string
+  state: string
   /** when stack was last modified */
-  updated_at?: string
+  updated_at: string
 }
 
 export type TeamAddOn = Record<string, unknown>
@@ -3416,9 +3416,9 @@ export interface TeamAppCollaborator {
   /** app collaborator belongs to */
   app?: {
     /** unique name of app */
-    name?: string
+    name: string
     /** unique identifier of app */
-    id?: string
+    id: string
   }
   /** when collaborator was created */
   created_at?: string
@@ -3433,11 +3433,11 @@ export interface TeamAppCollaborator {
   /** identity of collaborated account */
   user?: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** whether the user is federated and belongs to an Identity Provider */
-    federated?: boolean
+    federated: boolean
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
 }
 
@@ -3593,9 +3593,9 @@ export interface TeamAppTransferToTeamOpts {
 /** Usage for an enterprise team at a daily resolution. */
 export interface TeamDailyUsage {
   /** total add-on credits used */
-  addons?: number
+  addons: number
   /** app usage in the team */
-  apps?: Array<{
+  apps: Array<{
     /** total add-on credits used */
     addons?: number
     /** unique name of app */
@@ -3608,19 +3608,19 @@ export interface TeamDailyUsage {
     partner?: number
   }>
   /** total add-on credits used for first party add-ons */
-  data?: number
+  data: number
   /** date of the usage */
-  date?: string
+  date: string
   /** dynos used */
-  dynos?: number
+  dynos: number
   /** team identifier */
-  id?: string
+  id: string
   /** name of the team */
-  name?: string
+  name: string
   /** total add-on credits used for third party add-ons */
-  partner?: number
+  partner: number
   /** space credits used */
-  space?: number
+  space: number
 }
 
 /**
@@ -3637,66 +3637,66 @@ export interface TeamDailyUsageInfoOpts {
 /** A Heroku team becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent teams if their invoices remain unpaid. */
 export interface TeamDelinquency {
   /** scheduled time of when we will suspend your team due to delinquency */
-  scheduled_suspension_time?: string | null
+  scheduled_suspension_time: string | null
   /** scheduled time of when we will delete your team due to delinquency */
-  scheduled_deletion_time?: string | null
+  scheduled_deletion_time: string | null
 }
 
 /** A team feature represents a feature enabled on a team account. */
 export interface TeamFeature {
   /** when team feature was created */
-  created_at?: string
+  created_at: string
   /** description of team feature */
-  description?: string
+  description: string
   /** documentation URL of team feature */
-  doc_url?: string
+  doc_url: string
   /** whether or not team feature has been enabled */
-  enabled?: boolean
+  enabled: boolean
   /** unique identifier of team feature */
-  id?: string
+  id: string
   /** unique name of team feature */
-  name?: string
+  name: string
   /** state of team feature */
-  state?: string
+  state: string
   /** when team feature was updated */
-  updated_at?: string
+  updated_at: string
   /** user readable feature name */
-  display_name?: string
+  display_name: string
   /** e-mail to send feedback about the feature */
-  feedback_email?: string
+  feedback_email: string
 }
 
 /** A team invitation represents an invite to a team. */
 export interface TeamInvitation {
   /** when invitation was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of an invitation */
-  id?: string
-  invited_by?: {
+  id: string
+  invited_by: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** full name of the account owner */
-    name?: string | null
+    name: string | null
   }
-  team?: {
+  team: {
     /** unique identifier of team */
-    id?: string
+    id: string
     /** unique name of team */
-    name?: string
+    name: string
   }
   /** role in the team */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
+  role: 'admin' | 'collaborator' | 'member' | 'owner' | null
   /** when invitation was updated */
-  updated_at?: string
-  user?: {
+  updated_at: string
+  user: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** full name of the account owner */
-    name?: string | null
+    name: string | null
   }
 }
 
@@ -3711,37 +3711,37 @@ export interface TeamInvitationCreateOpts {
 /** A Team Invoice is an itemized bill of goods for a team which includes pricing and charges. */
 export interface TeamInvoice {
   /** total add-ons charges in on this invoice */
-  addons_total?: number
+  addons_total: number
   /** total database charges on this invoice */
-  database_total?: number
+  database_total: number
   /** total charges on this invoice */
-  charges_total?: number
+  charges_total: number
   /** when invoice was created */
-  created_at?: string
+  created_at: string
   /** total credits on this invoice */
-  credits_total?: number
+  credits_total: number
   /** total amount of dyno units consumed across dyno types. */
-  dyno_units?: number
+  dyno_units: number
   /** unique identifier of this invoice */
-  id?: string
+  id: string
   /** human readable invoice number */
-  number?: number
+  number: number
   /** status of the invoice payment */
-  payment_status?: string
+  payment_status: string
   /** the ending date that the invoice covers */
-  period_end?: string
+  period_end: string
   /** the starting date that this invoice covers */
-  period_start?: string
+  period_start: string
   /** total platform charges on this invoice */
-  platform_total?: number
+  platform_total: number
   /** payment status for this invoice (pending, successful, failed) */
-  state?: number
+  state: number
   /** combined total of charges and credits on this invoice */
-  total?: number
+  total: number
   /** when invoice was updated */
-  updated_at?: string
+  updated_at: string
   /** The total amount of hours consumed across dyno types. */
-  weighted_dyno_hours?: number
+  weighted_dyno_hours: number
 }
 
 /** A team member is an individual with access to a team. */
@@ -3781,11 +3781,11 @@ export interface TeamMember {
   /** user information for the membership */
   user?: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
     /** full name of the account owner */
-    name?: string | null
+    name: string | null
   }
 }
 
@@ -3822,9 +3822,9 @@ export interface TeamMemberUpdateOpts {
 /** Usage for an enterprise team at a monthly resolution. */
 export interface TeamMonthlyUsage {
   /** total add-on credits used */
-  addons?: number
+  addons: number
   /** app usage in the team */
-  apps?: Array<{
+  apps: Array<{
     /** total add-on credits used */
     addons?: number
     /** unique name of app */
@@ -3837,21 +3837,21 @@ export interface TeamMonthlyUsage {
     partner?: number
   }>
   /** max connect rows synced */
-  connect?: number
+  connect: number
   /** total add-on credits used for first party add-ons */
-  data?: number
+  data: number
   /** dynos used */
-  dynos?: number
+  dynos: number
   /** team identifier */
-  id?: string
+  id: string
   /** year and month of the usage */
-  month?: string
+  month: string
   /** name of the team */
-  name?: string
+  name: string
   /** total add-on credits used for third party add-ons */
-  partner?: number
+  partner: number
   /** space credits used */
-  space?: number
+  space: number
 }
 
 /**
@@ -3868,9 +3868,9 @@ export interface TeamMonthlyUsageInfoOpts {
 /** Tracks a Team's Preferences */
 export interface TeamPreferences {
   /** The default permission used when adding new members to the team */
-  'default-permission'?: 'admin' | 'member' | 'viewer' | null
+  'default-permission': 'admin' | 'member' | 'viewer' | null
   /** Whether add-on service rules should be applied to add-on installations */
-  'addons-controls'?: boolean | null
+  'addons-controls': boolean | null
 }
 
 /** Update Team Preferences */
@@ -3885,27 +3885,27 @@ export type TeamSpace = Record<string, unknown>
 /** Teams allow you to manage access to a shared group of applications and other resources. */
 export interface Team {
   /** unique identifier of team */
-  id?: string
+  id: string
   /** when the team was created */
-  created_at?: string
+  created_at: string
   /** whether charges incurred by the team are paid by credit card. */
-  credit_card_collections?: boolean
+  credit_card_collections: boolean
   /** whether to use this team when none is specified */
-  default?: boolean
-  enterprise_account?: {
+  default: boolean
+  enterprise_account: {
     /** unique identifier of the enterprise account */
     id?: string
     /** unique name of the enterprise account */
     name?: string
   } | null
   /** Identity Provider associated with the Team */
-  identity_provider?: {
+  identity_provider: {
     /** unique identifier of this identity provider */
-    id?: string
+    id: string
     /** user-friendly unique identifier for this identity provider */
-    name?: string
+    name: string
     /** entity that owns this identity provider */
-    owner?: {
+    owner: {
       /** unique identifier of the owner */
       id: string
       /** name of the owner */
@@ -3915,21 +3915,21 @@ export interface Team {
     }
   } | null
   /** upper limit of members allowed in a team. */
-  membership_limit?: number | null
+  membership_limit: number | null
   /** Time when team was consented into new pipeline costs */
-  pipeline_cost_consent_at?: string | null
+  pipeline_cost_consent_at: string | null
   /** Email of team user that consented to new pipeline costs */
-  pipeline_cost_consent_user_email?: string | null
+  pipeline_cost_consent_user_email: string | null
   /** unique name of team */
-  name?: string
+  name: string
   /** whether the team is provisioned licenses by salesforce. */
-  provisioned_licenses?: boolean
+  provisioned_licenses: boolean
   /** role in the team */
-  role?: 'admin' | 'collaborator' | 'member' | 'owner' | null
+  role: 'admin' | 'collaborator' | 'member' | 'owner' | null
   /** type of team. */
-  type?: 'enterprise' | 'team'
+  type: 'enterprise' | 'team'
   /** when the team was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Update team properties. */
@@ -3985,20 +3985,20 @@ export interface TeamCreateInEnterpriseAccountOpts {
 /** A telemetry drain forwards OpenTelemetry traces, metrics, and logs to your own consumer. For Fir-generation apps only. */
 export interface TelemetryDrain {
   /** when the telemetry drain was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of telemetry drain */
-  id?: string
+  id: string
   /** entity that owns this telemetry drain */
-  owner?: {
+  owner: {
     /** unique identifier of owner */
     id: string
     /** type of owner */
     type: 'app' | 'space'
   }
   /** OpenTelemetry signals to send to telemetry drain */
-  signals?: Array<'traces' | 'metrics' | 'logs'>
+  signals: Array<'traces' | 'metrics' | 'logs'>
   /** OpenTelemetry exporter configuration */
-  exporter?: {
+  exporter: {
     /** the transport type to be used for your OpenTelemetry consumer */
     type: 'otlphttp' | 'otlp'
     /** URI of your OpenTelemetry consumer */
@@ -4007,7 +4007,7 @@ export interface TelemetryDrain {
     headers?: Record<string, string>
   }
   /** when telemetry drain was last updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Create a telemetry drain. */
@@ -4050,27 +4050,27 @@ export interface TelemetryDrainUpdateOpts {
 /** A single test case belonging to a test run */
 export interface TestCase {
   /** unique identifier of a test case */
-  id?: string
+  id: string
   /** when test case was created */
-  created_at?: string
+  created_at: string
   /** when test case was updated */
-  updated_at?: string
+  updated_at: string
   /** description of the test case */
-  description?: string
+  description: string
   /** meta information about the test case */
-  diagnostic?: string
+  diagnostic: string
   /** special note about the test case e.g. skipped, todo */
-  directive?: string
+  directive: string
   /** whether the test case was successful */
-  passed?: boolean
+  passed: boolean
   /** the test number */
-  number?: number
+  number: number
   /** the test node which executed this test case */
-  test_node?: {
+  test_node: {
     id?: string
   }
   /** the test run which owns this test case */
-  test_run?: {
+  test_run: {
     id?: string
   }
 }
@@ -4078,36 +4078,36 @@ export interface TestCase {
 /** A single test node belonging to a test run */
 export interface TestNode {
   /** when test node was created */
-  created_at?: string
+  created_at: string
   /** the dyno which belongs to this test node */
-  dyno?: {
+  dyno: {
     id?: string
     /** a URL to stream output from for debug runs or null for non-debug runs */
     attach_url?: string | null
   } | null
   /** the status of the test run when the error occured */
-  error_status?: string | null
+  error_status: string | null
   /** the exit code of the test script */
-  exit_code?: number | null
-  id?: string
+  exit_code: number | null
+  id: string
   /** The index of the test node */
-  index?: number
+  index: number
   /** human friendly message indicating reason for an error */
-  message?: string | null
+  message: string | null
   /** the streaming output for the test node */
-  output_stream_url?: string
+  output_stream_url: string
   /** the pipeline which owns this test node */
-  pipeline?: {
+  pipeline: {
     id?: string
   }
   /** the streaming test setup output for the test node */
-  setup_stream_url?: string
+  setup_stream_url: string
   /** current state of the test run */
-  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored' | 'debugging'
+  status: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored' | 'debugging'
   /** when test node was updated */
-  updated_at?: string
+  updated_at: string
   /** the test run which owns this test node */
-  test_run?: {
+  test_run: {
     id?: string
   }
 }
@@ -4115,51 +4115,51 @@ export interface TestNode {
 /** An execution or trial of one or more tests */
 export interface TestRun {
   /** the email of the actor triggering the test run */
-  actor_email?: string
+  actor_email: string
   /** whether the test was run with an empty cache */
-  clear_cache?: boolean | null
+  clear_cache: boolean | null
   /** the branch of the repository that the test run concerns */
-  commit_branch?: string
+  commit_branch: string
   /** the message for the commit under test */
-  commit_message?: string
+  commit_message: string
   /** the SHA hash of the commit under test */
-  commit_sha?: string
+  commit_sha: string
   /** whether the test run was started for interactive debugging */
-  debug?: boolean
+  debug: boolean
   /** the app setup for the test run */
-  app_setup?: Record<string, unknown> | null
+  app_setup: Record<string, unknown> | null
   /** when test run was created */
-  created_at?: string
+  created_at: string
   /** the type of dynos used for this test-run */
-  dyno?: {
+  dyno: {
     /** dyno size */
     size?: string
   } | null
   /** unique identifier of a test run */
-  id?: string
+  id: string
   /** human friendly message indicating reason for an error */
-  message?: string | null
+  message: string | null
   /** the auto incrementing test run number */
-  number?: number
+  number: number
   /** the team that owns this test-run */
-  organization?: {
+  organization: {
     /** unique name of team */
     name?: string
   } | null
   /** the pipeline which owns this test-run */
-  pipeline?: {
+  pipeline: {
     id?: string
   }
   /** current state of the test run */
-  status?: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored' | 'debugging'
+  status: 'pending' | 'cancelled' | 'creating' | 'building' | 'running' | 'succeeded' | 'failed' | 'errored' | 'debugging'
   /** The download location for the source code to be tested */
-  source_blob_url?: string
+  source_blob_url: string
   /** when test-run was updated */
-  updated_at?: string
+  updated_at: string
   /** An account represents an individual signed up to use the Heroku platform. */
-  user?: Account
+  user: Account
   /** human friently warning emitted during the test run */
-  warning_message?: string | null
+  warning_message: string | null
 }
 
 /** Create a new test-run. */
@@ -4189,25 +4189,25 @@ export interface TestRunUpdateOpts {
 /** Tracks a user's preferences and message dismissals */
 export interface UserPreferences {
   /** User's default timezone */
-  timezone?: string | null
+  timezone: string | null
   /** User's default team */
-  'default-organization'?: string | null
+  'default-organization': string | null
   /** Whether the user has dismissed the GitHub link banner */
-  'dismissed-github-banner'?: boolean | null
+  'dismissed-github-banner': boolean | null
   /** Whether the user has dismissed the getting started banner */
-  'dismissed-getting-started'?: boolean | null
+  'dismissed-getting-started': boolean | null
   /** Whether the user has dismissed the Organization Access Controls banner */
-  'dismissed-org-access-controls'?: boolean | null
+  'dismissed-org-access-controls': boolean | null
   /** Whether the user has dismissed the Organization Wizard */
-  'dismissed-org-wizard-notification'?: boolean | null
+  'dismissed-org-wizard-notification': boolean | null
   /** Whether the user has dismissed the Pipelines banner */
-  'dismissed-pipelines-banner'?: boolean | null
+  'dismissed-pipelines-banner': boolean | null
   /** Whether the user has dismissed the GitHub banner on a pipeline overview */
-  'dismissed-pipelines-github-banner'?: boolean | null
+  'dismissed-pipelines-github-banner': boolean | null
   /** Which pipeline uuids the user has dismissed the GitHub banner for */
-  'dismissed-pipelines-github-banners'?: Array<string> | null
+  'dismissed-pipelines-github-banners': Array<string> | null
   /** Whether the user has dismissed the 2FA SMS banner */
-  'dismissed-sms-banner'?: boolean | null
+  'dismissed-sms-banner': boolean | null
 }
 
 /** Update User Preferences */
@@ -4237,16 +4237,16 @@ export interface UserPreferencesUpdateOpts {
 /** [VPN](https://devcenter.heroku.com/articles/private-space-vpn-connection) provides a way to connect your Private Spaces to your network via VPN. */
 export interface VpnConnection {
   /** VPN ID */
-  id?: string
+  id: string
   /** VPN Name */
-  name?: string
+  name: string
   /** Public IP of VPN customer gateway */
-  public_ip?: string
+  public_ip: string
   /** Routable CIDRs of VPN */
-  routable_cidrs?: Array<string>
+  routable_cidrs: Array<string>
   /** CIDR Block of the Private Space */
-  space_cidr_block?: string
-  tunnels?: Array<{
+  space_cidr_block: string
+  tunnels: Array<{
     /** Timestamp of last status changed */
     last_status_change?: string
     /** Public IP address for the tunnel */
@@ -4261,11 +4261,11 @@ export interface VpnConnection {
     status_message?: string
   }>
   /** IKE Version */
-  ike_version?: number
+  ike_version: number
   /** Status of the VPN */
-  status?: 'pending' | 'provisioning' | 'active' | 'deprovisioning' | 'failed'
+  status: 'pending' | 'provisioning' | 'active' | 'deprovisioning' | 'failed'
   /** Details of the status */
-  status_message?: string
+  status_message: string
 }
 
 /** Create a new VPN connection in a private space. */
@@ -4287,11 +4287,11 @@ export interface VpnConnectionUpdateOpts {
 /** Add-on Single Sign-on generates URL that allows a customer to log in to an Add-on Service's web dashboard. */
 export interface AddOnSso {
   /** whether this SSO request is a GET or a POST */
-  method?: 'get' | 'post'
+  method: 'get' | 'post'
   /** URL to follow to initiate single sign-on */
-  action?: string
+  action: string
   /** params for this request */
-  params?: {
+  params: {
     /** unique email address of current user */
     email?: string
     /** unique identifier of current user */
@@ -4318,24 +4318,24 @@ export interface AddOnSso {
 /** Build metadata contains the reference data for building the associated App. */
 export interface BuildMetadata {
   /** App associated with this metadata */
-  app?: {
+  app: {
     /** unique name of app */
     name?: string
     /** unique identifier of app */
     id?: string
   }
   /** URL for deleting the build cache. */
-  cache_delete_url?: string
+  cache_delete_url: string
   /** URL for retrieving the latest build cache. */
-  cache_get_url?: string
+  cache_get_url: string
   /** URL for updating the latest build cache. */
-  cache_put_url?: string
+  cache_put_url: string
   /** URL for deleting this app's repo. */
-  repo_delete_url?: string
+  repo_delete_url: string
   /** URL for retrieving this app's repo. */
-  repo_get_url?: string
+  repo_get_url: string
   /** URL for updating the app's repo. */
-  repo_put_url?: string
+  repo_put_url: string
 }
 
 /** A capability represents a requested capability on a resource along with whether the requesting user has that capability */
@@ -4365,11 +4365,11 @@ export interface CapabilityCapabilitiesOpts {
   /** The list of capabilities that you want to check */
   capabilities: Array<{
     /** name of the capability */
-    capability?: string
+    capability: string
     /** id or name of the resource */
-    resource_id?: string | null
+    resource_id: string | null
     /** type of the resource */
-    resource_type?: string
+    resource_type: string
   }>
 }
 
@@ -4388,20 +4388,20 @@ export interface CapabilityCapabilitiesResult {
 /** The Config Vars Settings endpoints enable you to view and manage the configuration provided to an app on Heroku. These endpoints are similar to /config-vars but also allow you to check which config vars you can mask, and which are currently masked. */
 export interface ConfigVarsSettings {
   /** attachment that created this config var, if any */
-  attachment?: {
+  attachment: {
     /** unique identifier of this add-on attachment */
     id?: string
   } | null
   /** name of the config var */
-  key?: string
+  key: string
   /** value of the config var */
-  value?: string | null
+  value: string | null
   /** indicates if the value is masked */
-  masked?: boolean
+  masked: boolean
   /** indicates if you can mask the value */
-  masking_supported?: boolean
+  masking_supported: boolean
   /** indicates when the value was updated */
-  value_updated_at?: string
+  value_updated_at: string
 }
 
 /** Update a config var. You can update an existing config var's value by setting it again, and you can remove it by setting it to `null`. You can't unmask a masked config var. */
@@ -4413,7 +4413,7 @@ export interface ConfigVarsSettingsUpdateOpts {
 /** Run processes inside existing dynos. */
 export interface DynoProcesses {
   /** a URL to stream output from for attached processes or null for non-attached processes */
-  attach_url?: string | null
+  attach_url: string | null
 }
 
 /** Create a new process in an existing dyno. */
@@ -4427,39 +4427,39 @@ export interface DynoProcessesCreateOpts {
 /** Contains a set of information useful for identifying a user and the type of access this user is allowed to have. */
 export interface GatewayToken {
   /** Token issuer */
-  iss?: string
+  iss: string
   /** Integer representation of the timestamp the token was issued at */
-  iat?: number
+  iat: number
   /** Integer representation of the timestamp the token should expire at */
-  exp?: number
+  exp: number
   /** Unique identifier of the subject */
-  sub?: string
+  sub: string
   /** Unique identifier of the user */
-  user_id?: string
+  user_id: string
   /** Email address of the user */
-  user_email?: string
+  user_email: string
   /** Unique identifier of the OAuth authirization used in the token */
-  authorization_id?: string | null
+  authorization_id: string | null
   /** Indicates that a rate limit should be enforced */
-  rate_limit_enabled?: boolean
+  rate_limit_enabled: boolean
   /** Rate limit multiplier that should be used */
-  rate_limit_multiplier?: number
+  rate_limit_multiplier: number
   /** Describes if the token contains second factor claim */
-  second_factor?: boolean
+  second_factor: boolean
   /** Describes if the token contains sudo claim */
-  sudo?: boolean
+  sudo: boolean
   /** Unique identifier of the sudoer if sudo was used */
-  sudo_user_id?: string | null
+  sudo_user_id: string | null
   /** Reason for using sudo if present */
-  sudo_reason?: string | null
+  sudo_reason: string | null
   /** Describes if the token contains sudo force claim */
-  sudo_force?: boolean
+  sudo_force: boolean
 }
 
 /** Actions taken on Identity Providers, the SSO configuration representation. */
 export interface IdentityProviderActions {
   /** Array of sso certificates belonging to this identity provider */
-  certificates?: Array<{
+  certificates: Array<{
     /** when provider record was created */
     created_at?: string
     /** unique identifier of this identity provider */
@@ -4472,17 +4472,17 @@ export interface IdentityProviderActions {
     name?: string | null
   }>
   /** raw contents of the public certificate (eg: .crt or .pem file) */
-  certificate?: string | null
+  certificate: string | null
   /** when provider record was created */
-  created_at?: string
+  created_at: string
   /** URL identifier provided by the identity provider */
-  entity_id?: string
+  entity_id: string
   /** unique identifier of this identity provider */
-  id?: string
+  id: string
   /** user-friendly unique identifier for this identity provider */
-  name?: string
+  name: string
   /** entity that owns this identity provider */
-  owner?: {
+  owner: {
     /** unique identifier of the owner */
     id: string
     /** name of the owner */
@@ -4491,27 +4491,27 @@ export interface IdentityProviderActions {
     type: 'team' | 'enterprise-account'
   }
   /** single log out URL for this identity provider */
-  slo_target_url?: string
+  slo_target_url: string
   /** single sign on URL for this identity provider */
-  sso_target_url?: string
+  sso_target_url: string
   /** when the identity provider record was updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** Certificates represent an sso cert attached to an Identity Provider */
 export interface IdentityProviderCertificate {
   /** label for certificate */
-  name?: string | null
+  name: string | null
   /** raw contents of the public certificate (eg: .crt or .pem file) */
-  body?: string
+  body: string
   /** when provider record was created */
-  created_at?: string
+  created_at: string
   /** unique identifier of this identity provider */
-  id?: string
+  id: string
   /** time which the certificate expires */
-  expires_at?: string
+  expires_at: string
   /** unique identifier of the identity provider the cert belongs to */
-  identity_provider_id?: string
+  identity_provider_id: string
 }
 
 /** Create a Certificate */
@@ -4612,9 +4612,9 @@ export interface Payment {
   /** identity of user issuing payment */
   user?: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** state of the payment */
   state?: 'failure' | 'pending' | 'success'
@@ -4641,47 +4641,47 @@ export interface PaymentCreatePostOpts {
 /** Plan meters describe how a metered add-on plan bills for usage. */
 export interface PlanMeter {
   /** unique identifier of this plan meter */
-  id?: string
+  id: string
   /** name of this meter */
-  name?: string
+  name: string
   /** price in cents per billing unit (may be a rate like "0.015/1000") */
-  price_cents?: string
+  price_cents: string
   /** human-readable product name */
-  product_description?: string
+  product_description: string
   /** human-readable description of how usage is billed */
-  billing_description?: string
+  billing_description: string
   /** rate unit for discrete-rate meters (e.g. "token"); null for time-based meters */
-  rate_period?: string | null
+  rate_period: string | null
   /** billing period for time-based meters (e.g. "month"); null for rate-based meters */
-  billing_period?: string | null
+  billing_period: string | null
   /** billing unit for time-based meters (e.g. "compute"); null when not applicable */
-  billing_unit?: string | null
+  billing_unit: string | null
   /** how usage is aggregated */
-  aggregation?: string
+  aggregation: string
   /** number of units included at no charge per billing period */
-  included_units?: number
+  included_units: number
   /** when this meter becomes effective */
-  start_time?: string
+  start_time: string
   /** when this meter is no longer effective, or null if open-ended */
-  end_time?: string | null
+  end_time: string | null
   /** when this meter was created */
-  created_at?: string
+  created_at: string
   /** when this meter was last updated */
-  updated_at?: string
+  updated_at: string
 }
 
 /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
 export interface SpaceHost {
   /** unique identifier of this host */
-  host_id?: string
+  host_id: string
   /** availability of this space */
-  state?: 'available' | 'under-assessment' | 'permanent-failure' | 'released' | 'released-permanent-failure'
+  state: 'available' | 'under-assessment' | 'permanent-failure' | 'released' | 'released-permanent-failure'
   /** approximate available capacity on this host expresses a percentage */
-  available_capacity_percentage?: number
+  available_capacity_percentage: number
   /** when the host was allocated */
-  allocated_at?: string
+  allocated_at: string
   /** when the host was released */
-  released_at?: string
+  released_at: string
 }
 
 /** Single log drain for all apps in a Private Space */
@@ -4695,49 +4695,49 @@ export interface SpaceLogDrainUpdateOpts {
 /** A team license is credits provided and consumed by the team. */
 export interface TeamLicense {
   /** when license started */
-  start_date?: string
+  start_date: string
   /** when license ended */
-  end_date?: string
+  end_date: string
   /** quantity of the license */
-  qty?: number
+  qty: number
   /** consumed quantity */
-  consumed?: number
+  consumed: number
   /** code of this license change */
-  code?: string
+  code: string
   /** name of this license */
-  name?: string
+  name: string
 }
 
 /** A team license collection is credits provided and consumed by the team per period. */
 export interface TeamLicenseCollection {
   /** year and month the licenses were in effect */
-  period?: string
+  period: string
   /** Licenses for this period. */
-  licenses?: Array<TeamLicense>
+  licenses: Array<TeamLicense>
 }
 
 /** Telemetry Ingress Info allows add-on partners to view authorization information required to write to Fir app logs. */
 export interface TelemetryIngressInfo {
   /** JWT token to be used for authorization */
-  id_token?: string
+  id_token: string
   /** the authorization type */
-  token_type?: string
+  token_type: string
   /** URLs for add-on partners to write to an add-ons logs */
-  transports?: unknown
+  transports: unknown
   /** when the token will expire */
-  expires_at?: string
+  expires_at: string
 }
 
 /** Usage history for resources. */
 export interface UsageHistory {
   /** unique identifier of the resource */
-  resource_id?: string
+  resource_id: string
   /** time resolution of the data buckets (ISO 8601 duration format) */
-  bucket_resolution?: 'PT1H' | 'PT2H' | 'PT4H' | 'PT6H' | 'P1D'
+  bucket_resolution: 'PT1H' | 'PT2H' | 'PT4H' | 'PT6H' | 'P1D'
   /** an array of timestamps corresponding to usage data points */
-  usage_timestamps?: Array<string>
+  usage_timestamps: Array<string>
   /** usage associated with the resource */
-  usage?: Array<{
+  usage: Array<{
     /** key identifier for the meter */
     meter_key?: string
     /** an array of usage data points corresponding to timestamps in usage_timestamps */
@@ -4759,7 +4759,7 @@ export interface UsageHistoryInfoOpts {
 /** Usage for apps. */
 export interface Usage {
   /** add-on usage in the app */
-  addons?: Array<{
+  addons: Array<{
     /** unique identifier of add-on */
     id?: string
     /** the meters associated with the add-on */
@@ -4902,9 +4902,9 @@ export interface HerokuClient {
   /** identity of add-on. Only used for add-on partner webhooks. */
   addon?: {
     /** unique identifier of add-on */
-    id?: string
+    id: string
     /** globally unique name of the add-on */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -5010,9 +5010,9 @@ export interface HerokuClient {
   /** identity of app. Only used for customer webhooks. */
   app?: {
     /** unique identifier of app */
-    id?: string
+    id: string
     /** unique name of app */
-    name?: string
+    name: string
   }
   /** when the webhook was created */
   created_at?: string
@@ -5165,31 +5165,31 @@ export interface HerokuClient {
   enterpriseAccountMember: {
   /** List members in an enterprise account. */
   list(enterpriseAccountIdentity: string): Promise<Array<{
-  enterprise_account?: {
+  enterprise_account: {
     /** unique identifier of the enterprise account */
     id?: string
     /** unique name of the enterprise account */
     name?: string
   }
   /** unique identifier of the member */
-  id?: string
+  id: string
   /** enterprise account permissions */
-  permissions?: Array<{
+  permissions: Array<{
     description?: string
     /** permission in the enterprise account */
     name?: 'view' | 'create' | 'manage' | 'billing'
   }>
   /** user information for the membership */
-  user?: {
+  user: {
     /** unique email address of account */
-    email?: string
+    email: string
     /** unique identifier of an account */
-    id?: string
+    id: string
   }
   /** whether the Enterprise Account member has two factor authentication enabled */
-  two_factor_authentication?: boolean
+  two_factor_authentication: boolean
   /** Identity Provider information the member is federated with */
-  identity_provider?: {
+  identity_provider: {
     /** unique identifier of this identity provider */
     id?: string
     /** name of the identity provider */
@@ -5207,7 +5207,7 @@ export interface HerokuClient {
     }
   } | null
   /** when account last authorized with Heroku */
-  last_login?: string | null
+  last_login: string | null
 }>>
   /** Create a member in an enterprise account. */
   create(enterpriseAccountIdentity: string, requestBody: EnterpriseAccountMemberCreateOpts): Promise<EnterpriseAccountMember>
