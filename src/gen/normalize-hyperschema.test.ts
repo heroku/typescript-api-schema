@@ -132,6 +132,91 @@ describe('normalizeHyperschema with patternProperties link schemas', () => {
     expect(routes).toContain('"hasRequestBody": true')
   })
 
+})
+
+describe('normalizeHyperschema strictProperties handling', () => {
+  it('marks every property required on a strictProperties resource with no required[]', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          type: ['object'],
+          strictProperties: true,
+          properties: {
+            id: { type: ['string'] },
+            name: { type: ['string'] },
+          },
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    expect(types).toMatch(/interface Widget\s*{[^}]*\bid:\s*string/)
+    expect(types).toMatch(/interface Widget\s*{[^}]*\bname:\s*string/)
+    expect(types).not.toMatch(/interface Widget\s*{[^}]*\bid\?:/)
+    expect(types).not.toMatch(/interface Widget\s*{[^}]*\bname\?:/)
+  })
+
+  it('unions strictProperties with an explicit required[] array', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          type: ['object'],
+          strictProperties: true,
+          required: ['extra'],
+          properties: {
+            id: { type: ['string'] },
+            name: { type: ['string'] },
+          },
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    // Both declared properties are required (strict), and there's no
+    // crash / regression from the explicit required[] also being present.
+    expect(types).toMatch(/interface Widget\s*{[^}]*\bid:\s*string/)
+    expect(types).toMatch(/interface Widget\s*{[^}]*\bname:\s*string/)
+  })
+
+  it('keeps properties optional when strictProperties is absent', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          type: ['object'],
+          properties: {
+            id: { type: ['string'] },
+          },
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    expect(types).toMatch(/interface Widget\s*{[^}]*\bid\?:\s*string/)
+  })
+
+  it('propagates strictProperties into nested object properties', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        widget: {
+          type: ['object'],
+          strictProperties: true,
+          properties: {
+            owner: {
+              type: ['object'],
+              strictProperties: true,
+              properties: {
+                email: { type: ['string'] },
+              },
+            },
+          },
+        },
+      },
+    }
+    const types = generateTypes(schema)
+    // The nested object's `email` property must come out non-optional.
+    expect(types).toMatch(/owner:\s*{[^}]*\bemail:\s*string/)
+    expect(types).not.toMatch(/owner:\s*{[^}]*\bemail\?:/)
+  })
+})
+
+describe('normalizeHyperschema with multiple patternProperties', () => {
   it('uses the first pattern when multiple patternProperties are defined', () => {
     const schema: HerokuSchema = {
       definitions: {

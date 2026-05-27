@@ -88,7 +88,7 @@ class HyperschemaNormalizer {
     if (definition.properties) {
       return {
         kind: 'interface',
-        shape: this.buildObjectShape(definition.properties, definition.required ?? []),
+        shape: this.buildObjectShape(definition.properties, this.effectiveRequired(definition)),
       }
     }
 
@@ -117,7 +117,7 @@ class HyperschemaNormalizer {
           description: link.description,
           shape: this.buildObjectShape(
             resolvedSchema!.properties!,
-            resolvedSchema!.required ?? [],
+            this.effectiveRequired(resolvedSchema!),
           ),
         })
       } else if (this.hasPatternProperties(link.schema)) {
@@ -138,7 +138,7 @@ class HyperschemaNormalizer {
           description: link.description,
           shape: this.buildObjectShape(
             resolvedTarget!.properties!,
-            resolvedTarget!.required ?? [],
+            this.effectiveRequired(resolvedTarget!),
           ),
         })
       }
@@ -204,6 +204,18 @@ class HyperschemaNormalizer {
       resolved.push({ link, titleKey })
     }
     return resolved
+  }
+
+  // Heroku's interagent hyper-schema dialect uses `strictProperties: true` to
+  // mean "every key in `properties` is required" (equivalent to listing them
+  // all in `required`). Resources with this flag rarely declare an explicit
+  // `required` array, so without this expansion the emitter would mark every
+  // field optional even though the API contract guarantees presence.
+  // Reference: brandur/json_schema validator.rb#validate_strict_properties.
+  private effectiveRequired(node: SchemaNode | ResourceDefinition): string[] {
+    const explicit = node.required ?? []
+    if (!node.strictProperties || !node.properties) return explicit
+    return [...new Set([...Object.keys(node.properties), ...explicit])]
   }
 
   private buildObjectShape(
@@ -286,7 +298,7 @@ class HyperschemaNormalizer {
         if (node.properties) {
           return {
             kind: 'object',
-            shape: this.buildObjectShape(node.properties, node.required ?? []),
+            shape: this.buildObjectShape(node.properties, this.effectiveRequired(node)),
           }
         }
         if (node.patternProperties) {
