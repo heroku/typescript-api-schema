@@ -1,30 +1,51 @@
 {
   "name": "@heroku-cli/schema",
-  "version": "2.0.1",
+  "version": "3.0.0",
+  "description": "Generates TypeScript types and a runtime route registry from the Heroku API hyperschema",
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
-  "devDependencies": {
-    "eslint": "^9",
-    "eslint-config-oclif": "^6.0.144",
-    "http-call": "^5.3.0",
-    "json-schema-to-typescript": "^15.0.4",
-    "jsonwebtoken": "^9.0.3",
-    "typescript": "^4.9.5"
-  },
-  "engines": {
-    "node": ">=20"
+  "homepage": "https://github.com/heroku/typescript-api-schema",
+  "repository": "heroku/typescript-api-schema",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./3.sdk": {
+      "types": "./dist/3.sdk/types.d.ts"
+    },
+    "./3.sdk/routes": {
+      "types": "./dist/3.sdk/routes.d.ts",
+      "default": "./dist/3.sdk/routes.js"
+    },
+    "./data": {
+      "types": "./dist/data/types.d.ts"
+    },
+    "./data/routes": {
+      "types": "./dist/data/routes.d.ts",
+      "default": "./dist/data/routes.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts"
+    }
   },
   "files": [
-    "/lib"
+    "dist/"
   ],
-  "homepage": "https://github.com/heroku/typescript-api-schema",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "repository": "heroku/typescript-api-schema",
-  "types": "lib/index.d.ts",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "updateTypes": "./scripts/update_platform_api_types"
+    "typecheck": "tsc --noEmit",
+    "generate": "tsx src/cli.ts",
+    "generate:data": "tsx src/gen-data-types.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "tsx": "^4.22.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }

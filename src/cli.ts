@@ -1,0 +1,179 @@
+#!/usr/bin/env node
+
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { join, resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { fetchSchema, DEFAULT_SCHEMA_VARIANT } from './gen/schema.js'
+import { generateTypes, GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
+import { generateRoutesJS, generateRoutesDTS, generateSharedTypesDTS } from './gen/route-generator.js'
+import { verifyTypes, type VerifyError, type VerifyFile } from './gen/verify.js'
+import type { HerokuSchema } from './gen/schema-types.js'
+
+interface CliOptions {
+  variant?: string
+  baseUrl?: string
+  help: boolean
+}
+
+export interface MainDeps {
+  argv: string[]
+  fetchSchema: (baseUrl?: string, variant?: string) => Promise<unknown>
+  generateTypes: (schema: HerokuSchema) => string
+  generateRoutes: (schema: HerokuSchema) => { js: string; dts: string }
+  generateSharedTypes: () => string
+  verifyTypes: (input: string | VerifyFile[]) => VerifyError[]
+  mkdir: (path: string) => void
+  readFile: (path: string) => string
+  writeFile: (path: string, content: string) => void
+  log: (message: string) => void
+  exit: (code: number) => void
+}
+
+const defaultDeps: MainDeps = {
+  argv: process.argv,
+  fetchSchema,
+  generateTypes,
+  generateRoutes: (schema: HerokuSchema) => ({
+    js: generateRoutesJS(schema),
+    dts: generateRoutesDTS(schema),
+  }),
+  generateSharedTypes: generateSharedTypesDTS,
+  verifyTypes,
+  mkdir: (path: string) => mkdirSync(path, { recursive: true }),
+  readFile: (path: string) => readFileSync(path, 'utf-8'),
+  writeFile: writeFileSync,
+  log: (message: string) => console.error(message),
+  exit: (code: number) => process.exit(code),
+}
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const DIST = resolve(HERE, '../dist')
+
+const USAGE = `Usage: heroku-types [options]
+
+Options:
+  --variant <variant>   Schema variant (default: 3.sdk)
+  --base-url <url>      Schema endpoint (default: https://api.heroku.com/schema)
+  --help                Show this help message`
+
+function parseArgs(argv: string[]): CliOptions {
+  let variant = DEFAULT_SCHEMA_VARIANT
+  let baseUrl
+  let help = false
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]
+    switch (arg) {
+      case '--variant':
+        if (i + 1 >= argv.length) throw new Error('--variant requires a value')
+        variant = argv[++i]
+        break
+      case '--base-url':
+        if (i + 1 >= argv.length) throw new Error('--base-url requires a value')
+        baseUrl = argv[++i]
+        break
+      case '--help':
+        help = true
+        break
+      default:
+        throw new Error(`Unknown option: ${arg}`)
+    }
+  }
+
+  return {
+    variant,
+    baseUrl,
+    help,
+  }
+}
+
+export function formatVerifyErrors(errors: VerifyError[]): string {
+  const header = `Verification failed with ${errors.length} error(s):\n`
+  const details = errors.map(e => {
+    const location = e.line != null ? `  Line ${e.line}, Column ${e.column}: ` : '  '
+    return `${location}${e.message}`
+  }).join('\n')
+  return header + details
+}
+
+export function updatePackageExports(
+  packageJson: Record<string, unknown>,
+  variant: string,
+): Record<string, unknown> {
+  const exports = (packageJson.exports ?? {}) as Record<string, unknown>
+  const files = (packageJson.files ?? []) as string[]
+
+  exports['./types'] = { types: './dist/types.d.ts' }
+  exports[`./${variant}`] = { types: `./dist/${variant}/types.d.ts` }
+  exports[`./${variant}/routes`] = { types: `./dist/${variant}/routes.d.ts`, default: `./dist/${variant}/routes.js` }
+
+  if (!files.includes('dist/')) {
+    files.push('dist/')
+  }
+
+  return { ...packageJson, exports, files }
+}
+
+export async function main(deps: Partial<MainDeps> = {}) {
+  const { argv, fetchSchema, generateTypes, generateRoutes, generateSharedTypes, verifyTypes, mkdir, readFile, writeFile, log, exit } = { ...defaultDeps, ...deps }
+
+  try {
+    const options = parseArgs(argv.slice(2))
+
+    if (options.help) {
+      log(USAGE)
+      exit(0)
+      return
+    }
+
+    const schema = await fetchSchema(options.baseUrl, options.variant) as HerokuSchema
+    const types = generateTypes(schema)
+    const routes = generateRoutes(schema)
+    const sharedTypes = generateSharedTypes()
+
+    const errors = [
+      ...verifyTypes(types),
+      ...verifyTypes([
+        { name: 'types.d.ts', content: sharedTypes },
+        { name: `${options.variant}/routes.d.ts`, content: routes.dts },
+      ]),
+    ]
+    if (errors.length > 0) {
+      log(formatVerifyErrors(errors))
+      exit(1)
+      return
+    }
+
+    mkdir(DIST)
+    const sharedTypesOutput = join(DIST, 'types.d.ts')
+    writeFile(sharedTypesOutput, GENERATED_CONTENT_PREAMBLE + sharedTypes)
+    log(`Wrote ${sharedTypesOutput}`)
+
+    const outputDir = join(DIST, options.variant!)
+    mkdir(outputDir)
+
+    const typesOutput = join(outputDir, 'types.d.ts')
+    writeFile(typesOutput, GENERATED_CONTENT_PREAMBLE + types)
+    log(`Wrote ${typesOutput}`)
+
+    const routesJsOutput = join(outputDir, 'routes.js')
+    writeFile(routesJsOutput, GENERATED_CONTENT_PREAMBLE + routes.js)
+    log(`Wrote ${routesJsOutput}`)
+
+    const routesDtsOutput = join(outputDir, 'routes.d.ts')
+    writeFile(routesDtsOutput, GENERATED_CONTENT_PREAMBLE + routes.dts)
+    log(`Wrote ${routesDtsOutput}`)
+
+    const packageJson = JSON.parse(readFile('package.json'))
+    const updated = updatePackageExports(packageJson, options.variant!)
+    writeFile('package.json', JSON.stringify(updated, null, 2) + '\n')
+    log('Updated package.json exports')
+  } catch (error) {
+    log(error instanceof Error ? error.message : String(error))
+    exit(1)
+  }
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main()
+}
