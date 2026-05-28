@@ -3,6 +3,8 @@
 .claude/
 .worktrees/
 
+docs/superpowers/
+
 *-debug.log
 *-error.log
 /.nyc_output
