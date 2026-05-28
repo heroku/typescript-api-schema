@@ -1,7 +1,13 @@
+.DS_Store
+
+.claude/
+.worktrees/
+
+docs/superpowers/
+
 *-debug.log
 *-error.log
 /.nyc_output
-/dist
-/package-lock.json
 /tmp
-node_modules
+coverage/
+node_modules/
