@@ -4,8 +4,8 @@
 ### ⚠ BREAKING CHANGES
 
 * Replaces the entire build, source, and distribution layout with the implementation imported from `heroku/heroku-types`. There is no backwards-compatible migration path.
-* Removes `lib/index.d.ts` (single-file type bundle). Types now live under per-variant subpaths: import from `@heroku-cli/schema/3.sdk` and `@heroku-cli/schema/data` instead of `@heroku-cli/schema`.
-* Adds a runtime route registry at `@heroku-cli/schema/3.sdk/routes` and `@heroku-cli/schema/data/routes`.
+* Removes `lib/index.d.ts` (single-file type bundle). Types now live under per-variant subpaths: import from `@heroku/types/3.sdk` and `@heroku/types/data` instead of `@heroku/types`.
+* Adds a runtime route registry at `@heroku/types/3.sdk/routes` and `@heroku/types/data/routes`.
 * Package is now ESM-only (`"type": "module"`).
 * Drops Node 18 support; minimum is now Node 22.
 * Removes the `updateTypes` script (`./scripts/update_platform_api_types`). Use `npm run generate` instead.
@@ -13,7 +13,7 @@
 
 ### Features
 
-* Adopt the `@heroku/types` source pipeline as `@heroku-cli/schema` 3.0.0.
+* Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
 ## [1.0.23](https://github.com/heroku/typescript-api-schema/compare/v1.0.22...v1.0.23) (2018-11-02)
 

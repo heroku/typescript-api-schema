@@ -1,4 +1,4 @@
-# @heroku-cli/schema
+# @heroku/types
 
 This package provides TypeScript types and a runtime route registry, generated from the Heroku API Hyperschema. Generated files are organized by API variant. For example, the `3.sdk` variant outputs to `dist/3.sdk/types.d.ts` and `dist/3.sdk/routes.js`.
 
@@ -7,19 +7,19 @@ This package provides TypeScript types and a runtime route registry, generated f
 ## Installation
 
 ```sh
-npm install @heroku-cli/schema
+npm install @heroku/types
 ```
 
 Types are available under the variant subpath:
 
 ```ts
-import type { Account, Addon } from '@heroku-cli/schema/3.sdk'
+import type { Account, Addon } from '@heroku/types/3.sdk'
 ```
 
 A runtime route registry is also available, providing method, path, and request-body metadata for each API endpoint:
 
 ```ts
-import { app, dyno } from '@heroku-cli/schema/3.sdk/routes'
+import { app, dyno } from '@heroku/types/3.sdk/routes'
 
 console.log(app.create) // { method: 'POST', path: '/apps', hasRequestBody: true }
 console.log(dyno.list)  // { method: 'GET', path: '/apps/{appId}/dynos' }
