@@ -15,6 +15,28 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [3.0.0](https://github.com/heroku/typescript-api-schema/compare/types-v2.0.1...types-v3.0.0) (2026-05-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace implementation with heroku-types (3.0.0) ([#77](https://github.com/heroku/typescript-api-schema/issues/77))
+
+### Features
+
+* replace implementation with heroku-types (3.0.0) ([#77](https://github.com/heroku/typescript-api-schema/issues/77)) ([93fa3d4](https://github.com/heroku/typescript-api-schema/commit/93fa3d416e69ffe40b6ea1adbfcd0c469cbf7e93))
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#71](https://github.com/heroku/typescript-api-schema/issues/71)) ([bae0c15](https://github.com/heroku/typescript-api-schema/commit/bae0c1555e0f9c650ceb8996c52c4395d4bac6a8))
+* **deps:** bump flatted from 3.3.4 to 3.4.2 ([#74](https://github.com/heroku/typescript-api-schema/issues/74)) ([caba198](https://github.com/heroku/typescript-api-schema/commit/caba1986abf3b6524c12b38f1e0d89db73620b9b))
+* **deps:** bump lodash from 4.17.21 to 4.17.23 ([#66](https://github.com/heroku/typescript-api-schema/issues/66)) ([994317f](https://github.com/heroku/typescript-api-schema/commit/994317f11ecf194de97259954b3950d5ac2d1361))
+* **deps:** bump lodash from 4.17.23 to 4.18.1 ([#76](https://github.com/heroku/typescript-api-schema/issues/76)) ([262dfd0](https://github.com/heroku/typescript-api-schema/commit/262dfd0cf23a3c8f7eb40ea2cbc7b3d0f42c65fa))
+* **deps:** bump picomatch from 4.0.3 to 4.0.4 ([#75](https://github.com/heroku/typescript-api-schema/issues/75)) ([a84b856](https://github.com/heroku/typescript-api-schema/commit/a84b856f85cdccf892c5e80d5fac168a2a9989f4))
+* update dependencies to fix high vulnerabilities ([9c17409](https://github.com/heroku/typescript-api-schema/commit/9c1740974792606d7768c64964bbe15d57d0e2db))
+* update package version to resolve glob vuln ([#56](https://github.com/heroku/typescript-api-schema/issues/56)) ([df9cf99](https://github.com/heroku/typescript-api-schema/commit/df9cf99ad2fab0657a5426bb1a6392b0397b5f67))
+
 ## [1.0.23](https://github.com/heroku/typescript-api-schema/compare/v1.0.22...v1.0.23) (2018-11-02)
 
 
