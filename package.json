@@ -1,6 +1,6 @@
 {
   "name": "@heroku/types",
-  "version": "3.0.0",
+  "version": "3.0.0-beta.1",
   "description": "Generates TypeScript types and a runtime route registry from the Heroku API hyperschema",
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
