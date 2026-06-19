@@ -5,7 +5,10 @@
   "author": "Heroku",
   "bugs": "https://github.com/heroku/typescript-api-schema/issues",
   "homepage": "https://github.com/heroku/typescript-api-schema",
-  "repository": "heroku/typescript-api-schema",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/typescript-api-schema"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
