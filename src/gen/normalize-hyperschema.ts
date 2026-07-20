@@ -13,6 +13,7 @@ import type {
   RouteDefinition,
 } from './schema-types.js'
 import { toPascalCase, toCamelCase, disambiguateLinkTitles } from './utils.js'
+import { patchHyperschema } from './patch-hyperschema.js'
 import type {
   AuxType,
   ClientResourceModel,
@@ -51,7 +52,14 @@ function dedupe(refs: TypeRef[]): TypeRef[] {
 }
 
 class HyperschemaNormalizer {
-  constructor(private schema: HerokuSchema) {}
+  constructor(private schema: HerokuSchema) {
+    // Apply targeted upstream-hyperschema patches (e.g. the missing Refresh ACM
+    // request body) at the single choke point every entry point traverses:
+    // both normalizeHyperschema() and extractRouteEntries() construct a
+    // HyperschemaNormalizer, so patching here keeps production output and test
+    // expectations in lockstep. Self-heals to a no-op if upstream is fixed.
+    patchHyperschema(schema)
+  }
 
   normalize(): TypesModel {
     const resources: ResourceModel[] = []
