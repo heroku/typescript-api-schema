@@ -7,10 +7,8 @@
 // nor a `hasRequestBody: true` flag on the route. But the API actually requires
 // `{ acm_refresh: true }`, so the SDK dispatcher silently drops the body.
 //
-// Eric (Heroku architect) authorized making @heroku/types reflect the reality
-// of what the web service accepts, even ahead of an upstream hyperschema fix:
-//   "i'd try to make changes to the sdk/heroku types to reflect what the
-//    reality is in web services, even if it's 'wrong'."
+// We patch @heroku/types to reflect what the web service actually accepts,
+// rather than blocking on an upstream hyperschema fix.
 //
 // We inject the missing schema here. The guard only fires when the link exists
 // and has NO schema, so this SELF-HEALS to a no-op if upstream ever adds the
