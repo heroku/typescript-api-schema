@@ -395,7 +395,8 @@ export const app = {
   },
   "refreshACM": {
     "method": "PATCH",
-    "path": "/apps/{appIdentity}/acm"
+    "path": "/apps/{appIdentity}/acm",
+    "hasRequestBody": true
   }
 }
 

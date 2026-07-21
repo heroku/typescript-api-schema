@@ -1056,6 +1056,11 @@ export interface AppUpdateOpts {
   name?: string
 }
 
+/** Refresh ACM for an app */
+export interface AppRefreshACMOpts {
+  acm_refresh: boolean
+}
+
 /** An audit trail archive represents a monthly json zipped file containing events */
 export interface Archive {
   /** when archive was created */
@@ -5049,7 +5054,7 @@ export interface HerokuClient {
   /** Disable ACM flag for an app */
   disableACM(appIdentity: string): Promise<App>
   /** Refresh ACM for an app */
-  refreshACM(appIdentity: string): Promise<App>
+  refreshACM(appIdentity: string, requestBody: AppRefreshACMOpts): Promise<App>
   }
   /** An audit trail archive represents a monthly json zipped file containing events */
   archive: {
