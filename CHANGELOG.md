@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.0.1](https://github.com/heroku/typescript-api-schema/compare/types-v4.0.0...types-v4.0.1) (2026-07-21)
+
+
+### Bug Fixes
+
+* make refreshACM send its acm_refresh body so cert auto-refresh works over the SDK ([#95](https://github.com/heroku/typescript-api-schema/issues/95)) ([dca680d](https://github.com/heroku/typescript-api-schema/commit/dca680d15b2b64b6e8b3be94a2534d5ba1cdebc8))
+
 ## [4.0.0](https://github.com/heroku/typescript-api-schema/compare/types-v3.0.0...types-v4.0.0) (2026-06-19)
 
 
