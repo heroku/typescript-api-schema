@@ -33,6 +33,13 @@
       "types": "./dist/metrics/routes.d.ts",
       "default": "./dist/metrics/routes.js"
     },
+    "./kolkrabbi": {
+      "types": "./dist/kolkrabbi/types.d.ts"
+    },
+    "./kolkrabbi/routes": {
+      "types": "./dist/kolkrabbi/routes.d.ts",
+      "default": "./dist/kolkrabbi/routes.js"
+    },
     "./types": {
       "types": "./dist/types.d.ts"
     }
