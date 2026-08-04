@@ -27,6 +27,7 @@ export interface JsonSchema {
   required?: string[]
   items?: JsonSchema
   anyOf?: JsonSchema[]
+  additionalProperties?: JsonSchema | boolean
 }
 
 export interface RouteSchema {
@@ -115,7 +116,13 @@ function objectSchemaToTypeRef(schema: JsonSchema): TypeRef {
   const props = schema.properties ?? {}
   const keys = Object.keys(props)
   if (keys.length === 0) {
-    return { kind: 'record', valueType: { kind: 'primitive', primitive: 'unknown' } }
+    // A property-less object with a typed `additionalProperties` becomes a
+    // typed record (e.g. `Record<string, (number | null)[]>`); without one it
+    // falls back to the permissive `Record<string, unknown>`.
+    const valueType = typeof schema.additionalProperties === 'object'
+      ? schemaToTypeRef(schema.additionalProperties)
+      : { kind: 'primitive', primitive: 'unknown' } as TypeRef
+    return { kind: 'record', valueType }
   }
   return { kind: 'object', shape: buildObjectShape(schema) }
 }

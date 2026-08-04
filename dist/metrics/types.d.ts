@@ -3,31 +3,31 @@
  */
 
 export interface FormationMetricErrorsResult {
-  data: Record<string, unknown>
+  data: Record<string, Array<number | null>>
   start_time: string
   end_time: string
-  step: string
+  step: number
 }
 
 export interface RouterMetricLatencyResult {
-  data: Record<string, unknown>
+  data: Record<string, Array<number | null>>
   start_time: string
   end_time: string
-  step: string
+  step: number
 }
 
 export interface RouterMetricErrorsResult {
-  data: Record<string, unknown>
+  data: Record<string, Array<number | null>>
   start_time: string
   end_time: string
-  step: string
+  step: number
 }
 
 export interface RouterMetricStatusResult {
-  data: Record<string, unknown>
+  data: Record<string, Array<number | null>>
   start_time: string
   end_time: string
-  step: string
+  step: number
 }
 
 export interface HerokuClient {

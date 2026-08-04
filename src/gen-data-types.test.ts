@@ -114,6 +114,39 @@ describe('generateDataTypes', () => {
   })
 })
 
+describe('additionalProperties', () => {
+  it('emits a typed Record for a property-less object with typed additionalProperties', () => {
+    const out = generateDataTypes(
+      { app: { series: { method: 'GET', path: '/series' } } },
+      {
+        'GET /series': routeSchema({
+          responses: {
+            '200': {
+              type: 'object',
+              required: ['data'],
+              properties: {
+                data: {
+                  type: 'object',
+                  additionalProperties: { type: 'array', items: { type: ['number', 'null'] } },
+                },
+              },
+            },
+          },
+        }),
+      },
+    )
+    expect(out).toMatch(/data: Record<string, Array<number \| null>>/)
+  })
+
+  it('still falls back to Record<string, unknown> when additionalProperties is absent', () => {
+    const out = generateDataTypes(
+      { app: { blob: { method: 'GET', path: '/blob' } } },
+      { 'GET /blob': routeSchema({ responses: { '200': { type: 'object' } } }) },
+    )
+    expect(out).toContain('export type AppBlobResult = Record<string, unknown>')
+  })
+})
+
 describe('query params', () => {
   it('emits a trailing query object param for routes declaring query', () => {
     const out = generateDataTypes(
