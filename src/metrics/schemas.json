@@ -1,0 +1,83 @@
+{
+  "$comment": "Hand-authored response schemas for api.metrics.heroku.com. NOT code-generated. Verified 2026-08-04 against github.com/heroku/metaas (v2/serializers/response.go, v2/models/points.go): all four endpoints return { start_time: time.Time (RFC3339), end_time: time.Time (RFC3339), step: int minutes, data: map[string][]*float64 }. `data` keys vary by endpoint (latency: latency.ms.p50/p95/p99/max; errors: router/dyno event codes like H12/R14; status: status_2xx/4xx/5xx). Values are per-time-bucket series aligned to start_time + n*step.",
+  "GET /apps/:app/router-metrics/latency": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": ["number", "null"] } }
+          },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "integer" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/router-metrics/errors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": ["number", "null"] } }
+          },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "integer" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/router-metrics/status": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": ["number", "null"] } }
+          },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "integer" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/formation/:formationType/metrics/errors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": ["number", "null"] } }
+          },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "integer" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}

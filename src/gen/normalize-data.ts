@@ -18,6 +18,7 @@ export interface RouteDef {
   method: string
   path: string
   hasRequestBody?: true
+  query?: string[]
 }
 
 export interface JsonSchema {
@@ -26,6 +27,7 @@ export interface JsonSchema {
   required?: string[]
   items?: JsonSchema
   anyOf?: JsonSchema[]
+  additionalProperties?: JsonSchema | boolean
 }
 
 export interface RouteSchema {
@@ -114,7 +116,13 @@ function objectSchemaToTypeRef(schema: JsonSchema): TypeRef {
   const props = schema.properties ?? {}
   const keys = Object.keys(props)
   if (keys.length === 0) {
-    return { kind: 'record', valueType: { kind: 'primitive', primitive: 'unknown' } }
+    // A property-less object with a typed `additionalProperties` becomes a
+    // typed record (e.g. `Record<string, (number | null)[]>`); without one it
+    // falls back to the permissive `Record<string, unknown>`.
+    const valueType = typeof schema.additionalProperties === 'object'
+      ? schemaToTypeRef(schema.additionalProperties)
+      : { kind: 'primitive', primitive: 'unknown' } as TypeRef
+    return { kind: 'record', valueType }
   }
   return { kind: 'object', shape: buildObjectShape(schema) }
 }
@@ -246,6 +254,21 @@ function buildMethod(
   }))
   if (p.optsName && optsEmitted.has(p.optsName)) {
     params.push({ name: 'requestBody', type: { kind: 'reference', name: p.optsName } })
+  }
+  if (p.route.query && p.route.query.length > 0) {
+    params.push({
+      name: 'query',
+      type: {
+        kind: 'object',
+        shape: {
+          properties: p.route.query.map(key => ({
+            key,
+            type: { kind: 'primitive', primitive: 'string' },
+            required: false,
+          })),
+        },
+      },
+    })
   }
   const returnType: TypeRef = resultEmitted.has(p.resultName)
     ? { kind: 'reference', name: p.resultName }

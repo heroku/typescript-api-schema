@@ -26,6 +26,13 @@
       "types": "./dist/data/routes.d.ts",
       "default": "./dist/data/routes.js"
     },
+    "./metrics": {
+      "types": "./dist/metrics/types.d.ts"
+    },
+    "./metrics/routes": {
+      "types": "./dist/metrics/routes.d.ts",
+      "default": "./dist/metrics/routes.js"
+    },
     "./types": {
       "types": "./dist/types.d.ts"
     }
@@ -40,6 +47,7 @@
     "typecheck": "tsc --noEmit",
     "generate": "tsx src/cli.ts",
     "generate:data": "tsx src/gen-data-types.ts",
+    "generate:metrics": "tsx src/gen-metrics-types.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
