@@ -1,0 +1,70 @@
+{
+  "GET /apps/:app/router-metrics/latency": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": { "type": "object" },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/router-metrics/errors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": { "type": "object" },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/router-metrics/status": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": { "type": "object" },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "GET /apps/:app/formation/:formationType/metrics/errors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["data", "start_time", "end_time", "step"],
+        "properties": {
+          "data": { "type": "object" },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" },
+          "step": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}

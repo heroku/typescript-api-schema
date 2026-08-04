@@ -122,6 +122,14 @@ describe('generateSharedTypesDTS', () => {
     const dts = generateSharedTypesDTS()
     expect(dts).toContain(`method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'`)
   })
+
+  it('emits RouteDefinition with an optional query field', () => {
+    const out = generateSharedTypesDTS()
+    expect(out).toContain('method:')
+    expect(out).toContain('path: string')
+    expect(out).toContain('hasRequestBody?: true')
+    expect(out).toContain('query?: string[]')
+  })
 })
 
 function parseExport(js: string, name: string): Record<string, Record<string, unknown>> {

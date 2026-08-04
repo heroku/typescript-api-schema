@@ -17,6 +17,9 @@ function formatResourceJS({ resource, entries }: ResourceRoutes): string {
     if (entry.hasRequestBody) {
       route.hasRequestBody = true
     }
+    if (entry.query) {
+      route.query = entry.query
+    }
     methods[toCamelCase(entry.titleKey)] = route
   }
   return `export const ${toCamelCase(resource)} = ${JSON.stringify(methods, null, 2)}`
@@ -28,7 +31,7 @@ function formatResourceDTS(resource: string): string {
 
 export function generateSharedTypesDTS(): string {
   const methodUnion = HTTP_METHODS.map(m => `'${m}'`).join(' | ')
-  return `export interface RouteDefinition {\n  method: ${methodUnion}\n  path: string\n  hasRequestBody?: true\n}\n`
+  return `export interface RouteDefinition {\n  method: ${methodUnion}\n  path: string\n  hasRequestBody?: true\n  query?: string[]\n}\n`
 }
 
 export function generateRoutesJS(schema: HerokuSchema): string {

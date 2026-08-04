@@ -59,4 +59,5 @@ export interface RouteDefinition {
   method: HttpMethod
   path: string
   hasRequestBody?: true
+  query?: string[]
 }

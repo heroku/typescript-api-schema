@@ -6,4 +6,5 @@ export interface RouteDefinition {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   path: string
   hasRequestBody?: true
+  query?: string[]
 }

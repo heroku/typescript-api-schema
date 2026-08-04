@@ -114,6 +114,27 @@ describe('generateDataTypes', () => {
   })
 })
 
+describe('query params', () => {
+  it('emits a trailing query object param for routes declaring query', () => {
+    const out = generateDataTypes(
+      {
+        routerMetric: {
+          latency: { method: 'GET', path: '/apps/{app}/router-metrics/latency', query: ['date', 'process_type'] },
+        },
+      },
+      {
+        'GET /apps/:app/router-metrics/latency': {
+          request: null,
+          responses: { '200': { type: 'object', properties: { step: { type: 'string' } } } },
+          request_example_count: 0,
+          response_example_count: 0,
+        },
+      },
+    )
+    expect(out).toMatch(/latency\(app: string, query: \{[^}]*date\?: string[^}]*process_type\?: string[^}]*\}\): Promise</)
+  })
+})
+
 describe('main', () => {
   function makeDeps(over: Partial<MainDeps> = {}): MainDeps {
     return {

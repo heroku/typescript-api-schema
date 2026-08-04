@@ -18,6 +18,7 @@ export interface RouteDef {
   method: string
   path: string
   hasRequestBody?: true
+  query?: string[]
 }
 
 export interface JsonSchema {
@@ -246,6 +247,21 @@ function buildMethod(
   }))
   if (p.optsName && optsEmitted.has(p.optsName)) {
     params.push({ name: 'requestBody', type: { kind: 'reference', name: p.optsName } })
+  }
+  if (p.route.query && p.route.query.length > 0) {
+    params.push({
+      name: 'query',
+      type: {
+        kind: 'object',
+        shape: {
+          properties: p.route.query.map(key => ({
+            key,
+            type: { kind: 'primitive', primitive: 'string' },
+            required: false,
+          })),
+        },
+      },
+    })
   }
   const returnType: TypeRef = resultEmitted.has(p.resultName)
     ? { kind: 'reference', name: p.resultName }
