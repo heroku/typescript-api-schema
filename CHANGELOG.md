@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.1.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.0.1...types-v4.1.0) (2026-08-04)
+
+
+### Features
+
+* add metrics support ([#99](https://github.com/heroku/typescript-api-schema/issues/99)) ([105969e](https://github.com/heroku/typescript-api-schema/commit/105969e9ab60e893a229cc43a412cb47afed1548))
+
 ## [4.0.1](https://github.com/heroku/typescript-api-schema/compare/types-v4.0.0...types-v4.0.1) (2026-07-21)
 
 
