@@ -1,9 +1,11 @@
+import type { RouteDefinition } from '../gen/schema-types.js'
+
 export const account = {
   infoWithToken: {
     method: 'GET',
     path: '/account/github/token',
   },
-}
+} as const satisfies Record<string, RouteDefinition>
 
 export const appLink = {
   info: {
@@ -15,14 +17,14 @@ export const appLink = {
     path: '/apps/{app}/github',
     hasRequestBody: true,
   },
-}
+} as const satisfies Record<string, RouteDefinition>
 
 export const pipeline = {
   listAppLinks: {
     method: 'GET',
     path: '/pipelines/{pipeline}/github',
   },
-}
+} as const satisfies Record<string, RouteDefinition>
 
 export const pipelineRepository = {
   info: {
@@ -39,11 +41,11 @@ export const pipelineRepository = {
     path: '/pipelines/{pipeline}/repository',
     hasRequestBody: true,
   },
-}
+} as const satisfies Record<string, RouteDefinition>
 
 export const githubTarball = {
   info: {
     method: 'GET',
     path: '/github/repos/{owner}/{repo}/tarball/{ref}',
   },
-}
+} as const satisfies Record<string, RouteDefinition>

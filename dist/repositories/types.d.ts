@@ -1,4 +1,8 @@
-export interface AccountWithToken {
+/**
+ * NOTE: the contents of this file are generated. Do not modify this file.
+ */
+
+export interface AccountInfoWithTokenResult {
   id: string
   heroku: {
     user_id: string
@@ -11,7 +15,7 @@ export interface AccountWithToken {
   updated_at: string | null
 }
 
-export interface AppLink {
+export interface AppLinkInfoResult {
   app: {
     id: string
   }
@@ -24,7 +28,7 @@ export interface AppLink {
   parent: null
   auto_deploy: boolean
   wait_for_ci: boolean
-  branch: string
+  branch: string | null
   created_at: string | null
   owner: {
     id: string
@@ -43,11 +47,11 @@ export interface AppLink {
 }
 
 export interface AppLinkUpdateOpts {
-  auto_deploy?: boolean
-  branch?: string
-  wait_for_ci?: boolean
+  auto_deploy?: boolean | null
+  branch?: string | null
+  wait_for_ci?: boolean | null
   pull_requests?: {
-    space_id?: any | null
+    space_id?: string | null
   }
 }
 
@@ -58,14 +62,14 @@ export interface AppLinkUpdateResult {
   pull_requests: {
     enabled: boolean
     auto_deploy: boolean
-    space_id: null
+    space_id: string | null
     auto_destroy: boolean
   }
   app_id: string
   auto_deploy: boolean
   id: string
   wait_for_ci: boolean
-  branch: string
+  branch: string | null
   created_at: string | null
   owner: {
     id: string
@@ -82,25 +86,25 @@ export interface AppLinkUpdateResult {
   updated_at: string | null
 }
 
-export interface GithubTarball {
+export interface GithubTarballInfoResult {
   archive_link: string
 }
 
-export interface PipelineAppLink {
+export type PipelineListAppLinksResult = Array<{
   app: {
     id: string
   }
   pull_requests: {
     enabled: boolean
     auto_deploy: boolean
-    space_id: null
+    space_id: string | null
     auto_destroy: boolean
   }
   app_id: string
   auto_deploy: boolean
   id: string
   wait_for_ci: boolean
-  branch: string
+  branch: string | null
   created_at: string | null
   owner: {
     id: string
@@ -115,9 +119,9 @@ export interface PipelineAppLink {
   repo_id: number
   repo_host: string
   updated_at: string | null
-}
+}>
 
-export interface PipelineRepository {
+export interface PipelineRepositoryInfoResult {
   ci: boolean
   created_at: string | null
   creator: {
@@ -150,11 +154,14 @@ export interface PipelineRepository {
     id: number
     name: string
     type: string
-    host: string
     updated_at: string | null
+    host: string
   }
-  statuses: Array<PipelineStatus>
   updated_at: string | null
+  statuses: Array<{
+    type: string
+    status: boolean
+  }>
 }
 
 export interface PipelineRepositoryCreateOpts {
@@ -194,17 +201,15 @@ export interface PipelineRepositoryCreateResult {
     id: number
     name: string
     type: string
-    host: string
     updated_at: string | null
+    host: string
   }
   updated_at: string | null
 }
 
 export interface PipelineRepositoryUpdateOpts {
-  ci?: boolean
+  ci?: boolean | null
   organization?: string | null
-  owner?: string
-  review_apps?: boolean
 }
 
 export interface PipelineRepositoryUpdateResult {
@@ -240,34 +245,29 @@ export interface PipelineRepositoryUpdateResult {
     id: number
     name: string
     type: string
-    host: string
     updated_at: string | null
+    host: string
   }
   updated_at: string | null
 }
 
-export interface PipelineStatus {
-  type: string
-  status: boolean
-}
-
 export interface HerokuClient {
   account: {
-    infoWithToken(): Promise<AccountWithToken>
+  infoWithToken(): Promise<AccountInfoWithTokenResult>
   }
   appLink: {
-    info(app: string): Promise<AppLink>
-    update(app: string, requestBody: AppLinkUpdateOpts): Promise<AppLinkUpdateResult>
+  info(app: string): Promise<AppLinkInfoResult>
+  update(app: string, requestBody: AppLinkUpdateOpts): Promise<AppLinkUpdateResult>
   }
   githubTarball: {
-    info(owner: string, repo: string, ref: string): Promise<GithubTarball>
+  info(owner: string, repo: string, ref: string): Promise<GithubTarballInfoResult>
   }
   pipeline: {
-    listAppLinks(pipeline: string): Promise<Array<PipelineAppLink>>
+  listAppLinks(pipeline: string): Promise<PipelineListAppLinksResult>
   }
   pipelineRepository: {
-    info(pipeline: string): Promise<PipelineRepository>
-    create(pipeline: string, requestBody: PipelineRepositoryCreateOpts): Promise<PipelineRepositoryCreateResult>
-    update(pipeline: string, requestBody: PipelineRepositoryUpdateOpts): Promise<PipelineRepositoryUpdateResult>
+  info(pipeline: string): Promise<PipelineRepositoryInfoResult>
+  create(pipeline: string, requestBody: PipelineRepositoryCreateOpts): Promise<PipelineRepositoryCreateResult>
+  update(pipeline: string, requestBody: PipelineRepositoryUpdateOpts): Promise<PipelineRepositoryUpdateResult>
   }
 }
