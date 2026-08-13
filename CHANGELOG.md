@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.2.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.1.0...types-v4.2.0) (2026-08-13)
+
+
+### Features
+
+* add repositories route registry and types ([#97](https://github.com/heroku/typescript-api-schema/issues/97)) ([d70ba98](https://github.com/heroku/typescript-api-schema/commit/d70ba98c3d6318bcce50601a64c7d8deb51c1efb))
+
 ## [4.1.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.0.1...types-v4.1.0) (2026-08-04)
 
 
