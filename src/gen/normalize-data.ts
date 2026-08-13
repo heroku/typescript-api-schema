@@ -80,6 +80,10 @@ function schemaToTypeRef(schema: JsonSchema | null | undefined): TypeRef {
   const nonNull = types.filter(t => t !== 'null')
   const nullable = types.includes('null')
 
+  if (nonNull.length === 0) {
+    return nullable ? { kind: 'reference', name: 'null' } : { kind: 'primitive', primitive: 'unknown' }
+  }
+
   let core: TypeRef
   if (nonNull.length > 1) {
     core = {
@@ -144,6 +148,10 @@ function buildObjectShape(schema: JsonSchema): ObjectShape {
 // equivalent at the type level and consistent with how nested empty objects
 // are rendered.
 function buildAuxType(name: string, schema: JsonSchema): AuxType {
+  if (schema.type === 'array') {
+    return { kind: 'alias', name, type: schemaToTypeRef(schema) }
+  }
+
   const props = schema.properties ?? {}
   if (Object.keys(props).length === 0) {
     return {

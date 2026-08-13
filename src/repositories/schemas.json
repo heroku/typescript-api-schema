@@ -1,0 +1,485 @@
+{
+  "GET /account/github/token": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["id", "heroku", "github", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "heroku": {
+            "type": "object",
+            "required": ["user_id"],
+            "properties": { "user_id": { "type": "string" } }
+          },
+          "github": {
+            "type": "object",
+            "required": ["user_id", "token"],
+            "properties": {
+              "user_id": { "type": ["integer", "null"] },
+              "token": { "type": ["string", "null"] }
+            }
+          },
+          "created_at": { "type": ["string", "null"] },
+          "updated_at": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "GET /apps/:app/github": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": [
+          "app", "pull_requests", "app_id", "id", "parent", "auto_deploy",
+          "wait_for_ci", "branch", "created_at", "owner", "pull_request",
+          "repo", "repo_id", "repo_host", "updated_at"
+        ],
+        "properties": {
+          "app": {
+            "type": "object",
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "pull_requests": {
+            "type": "object",
+            "required": ["enabled", "auto_deploy"],
+            "properties": {
+              "enabled": { "type": "boolean" },
+              "auto_deploy": { "type": "boolean" }
+            }
+          },
+          "app_id": { "type": "string" },
+          "id": { "type": "string" },
+          "parent": { "type": "null" },
+          "auto_deploy": { "type": "boolean" },
+          "wait_for_ci": { "type": "boolean" },
+          "branch": { "type": ["string", "null"] },
+          "created_at": { "type": ["string", "null"] },
+          "owner": {
+            "type": "object",
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "pull_request": { "type": "null" },
+          "repo": { "type": "string" },
+          "repo_id": { "type": "integer" },
+          "repo_host": { "type": "string" },
+          "updated_at": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "PATCH /apps/:app/github": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "auto_deploy": { "type": ["boolean", "null"] },
+        "branch": { "type": ["string", "null"] },
+        "wait_for_ci": { "type": ["boolean", "null"] },
+        "pull_requests": {
+          "type": "object",
+          "properties": {
+            "space_id": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": [
+          "app", "pull_requests", "app_id", "auto_deploy", "id", "wait_for_ci",
+          "branch", "created_at", "owner", "repo", "repo_id", "repo_host", "updated_at"
+        ],
+        "properties": {
+          "app": {
+            "type": "object",
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "pull_requests": {
+            "type": "object",
+            "required": ["enabled", "auto_deploy", "space_id", "auto_destroy"],
+            "properties": {
+              "enabled": { "type": "boolean" },
+              "auto_deploy": { "type": "boolean" },
+              "space_id": { "type": ["string", "null"] },
+              "auto_destroy": { "type": "boolean" }
+            }
+          },
+          "app_id": { "type": "string" },
+          "auto_deploy": { "type": "boolean" },
+          "id": { "type": "string" },
+          "wait_for_ci": { "type": "boolean" },
+          "branch": { "type": ["string", "null"] },
+          "created_at": { "type": ["string", "null"] },
+          "owner": {
+            "type": "object",
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "repo": { "type": "string" },
+          "repo_id": { "type": "integer" },
+          "repo_host": { "type": "string" },
+          "updated_at": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "POST /pipelines/:pipeline/repository": {
+    "request": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "repository": { "type": "integer" }
+      }
+    },
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["ci", "created_at", "creator", "id", "organization", "owner", "pipeline", "repository", "updated_at"],
+        "properties": {
+          "ci": { "type": "boolean" },
+          "created_at": { "type": ["string", "null"] },
+          "creator": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "id": { "type": "string" },
+          "organization": {
+            "type": ["object", "null"],
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "owner": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "pipeline": {
+            "type": "object",
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "repository": {
+            "type": "object",
+            "required": ["created_at", "id", "name", "type", "updated_at", "host"],
+            "properties": {
+              "created_at": { "type": ["string", "null"] },
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "updated_at": { "type": ["string", "null"] },
+              "host": { "type": "string" }
+            }
+          },
+          "updated_at": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "GET /pipelines/:pipeline/repository": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["ci", "created_at", "creator", "id", "organization", "owner", "pipeline", "repository", "updated_at", "statuses"],
+        "properties": {
+          "ci": { "type": "boolean" },
+          "created_at": { "type": ["string", "null"] },
+          "creator": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "id": { "type": "string" },
+          "organization": {
+            "type": ["object", "null"],
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "owner": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "pipeline": {
+            "type": "object",
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "repository": {
+            "type": "object",
+            "required": ["created_at", "id", "name", "type", "updated_at", "host"],
+            "properties": {
+              "created_at": { "type": ["string", "null"] },
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "updated_at": { "type": ["string", "null"] },
+              "host": { "type": "string" }
+            }
+          },
+          "updated_at": { "type": ["string", "null"] },
+          "statuses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "status"],
+              "properties": {
+                "type": { "type": "string" },
+                "status": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "PATCH /pipelines/:pipeline/repository": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "ci": { "type": ["boolean", "null"] },
+        "organization": { "type": ["string", "null"] }
+      }
+    },
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["ci", "created_at", "creator", "id", "organization", "owner", "pipeline", "repository", "updated_at"],
+        "properties": {
+          "ci": { "type": "boolean" },
+          "created_at": { "type": ["string", "null"] },
+          "creator": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "id": { "type": "string" },
+          "organization": {
+            "type": ["object", "null"],
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "owner": {
+            "type": ["object", "null"],
+            "required": ["id", "heroku", "github"],
+            "properties": {
+              "id": { "type": "string" },
+              "heroku": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": "string" } }
+              },
+              "github": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": { "user_id": { "type": ["integer", "null"] } }
+              }
+            }
+          },
+          "pipeline": {
+            "type": "object",
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          },
+          "repository": {
+            "type": "object",
+            "required": ["created_at", "id", "name", "type", "updated_at", "host"],
+            "properties": {
+              "created_at": { "type": ["string", "null"] },
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "updated_at": { "type": ["string", "null"] },
+              "host": { "type": "string" }
+            }
+          },
+          "updated_at": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "GET /github/repos/:owner/:repo/tarball/:ref": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["archive_link"],
+        "properties": {
+          "archive_link": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+
+  "GET /pipelines/:pipeline/github": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "app", "pull_requests", "app_id", "auto_deploy", "id", "wait_for_ci",
+            "branch", "created_at", "owner", "repo", "repo_id", "repo_host", "updated_at"
+          ],
+          "properties": {
+            "app": {
+              "type": "object",
+              "required": ["id"],
+              "properties": { "id": { "type": "string" } }
+            },
+            "pull_requests": {
+              "type": "object",
+              "required": ["enabled", "auto_deploy", "space_id", "auto_destroy"],
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "auto_deploy": { "type": "boolean" },
+                "space_id": { "type": ["string", "null"] },
+                "auto_destroy": { "type": "boolean" }
+              }
+            },
+            "app_id": { "type": "string" },
+            "auto_deploy": { "type": "boolean" },
+            "id": { "type": "string" },
+            "wait_for_ci": { "type": "boolean" },
+            "branch": { "type": ["string", "null"] },
+            "created_at": { "type": ["string", "null"] },
+            "owner": {
+              "type": "object",
+              "required": ["id", "heroku", "github"],
+              "properties": {
+                "id": { "type": "string" },
+                "heroku": {
+                  "type": "object",
+                  "required": ["user_id"],
+                  "properties": { "user_id": { "type": "string" } }
+                },
+                "github": {
+                  "type": "object",
+                  "required": ["user_id"],
+                  "properties": { "user_id": { "type": ["integer", "null"] } }
+                }
+              }
+            },
+            "repo": { "type": "string" },
+            "repo_id": { "type": "integer" },
+            "repo_host": { "type": "string" },
+            "updated_at": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}

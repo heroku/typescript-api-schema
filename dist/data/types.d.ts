@@ -26,9 +26,9 @@ export interface ConnectionPoolingInfoResult {
 }
 
 export interface ConnectionPoolingCreateOpts {
+  app?: string
   name?: string
   credential?: string
-  app?: string
 }
 
 export interface ConnectionPoolingCreateResult {
@@ -50,13 +50,13 @@ export interface DatabaseInfoResult {
   port?: number
   database_name?: string | null
   database_user?: string | null
-  target_transaction?: unknown | null
+  target_transaction?: null
   available_for_ingress?: boolean
   resource_url?: string | null
   database_password?: string
   'waiting?'?: boolean
   credentials?: number
-  leader?: unknown | null
+  leader?: null
   info?: Array<{
     name: string
     values: Array<number | string>
@@ -99,7 +99,7 @@ export interface DatabaseWaitStatusResult {
   'waiting?': boolean
 }
 
-export type LinkListResult = Record<string, unknown>
+export type LinkListResult = Array<unknown>
 
 export interface LinkCreateOpts {
   target: string
@@ -158,9 +158,9 @@ export interface MaintenanceInfoResult {
   scheduled_for: string
   method: string
   addon_description: string
-  started_at: unknown | null
-  completed_at: unknown | null
-  duration_seconds: unknown | null
+  started_at: null
+  completed_at: null
+  duration_seconds: null
   reason: string
   server_created_at: string
 }
@@ -179,17 +179,17 @@ export interface MaintenanceInfoByAppResult {
       name: string
       uuid: string
     }
-    window: unknown | null
+    window: null
     status: string
-    required_by: unknown | null
-    scheduled_for: unknown | null
+    required_by: null
+    scheduled_for: null
     method: string | null
     addon_description: string | null
-    started_at: unknown | null
-    completed_at: unknown | null
-    duration_seconds: unknown | null
-    reason: unknown | null
-    server_created_at: unknown | null
+    started_at: null
+    completed_at: null
+    duration_seconds: null
+    reason: null
+    server_created_at: null
   }>
 }
 
@@ -248,9 +248,9 @@ export interface MaintenanceScheduleResult {
   scheduled_for: string
   method: string
   addon_description: string
-  started_at: unknown | null
-  completed_at: unknown | null
-  duration_seconds: unknown | null
+  started_at: null
+  completed_at: null
+  duration_seconds: null
   reason: string
   server_created_at: string
   previously_scheduled_for: string
@@ -259,9 +259,9 @@ export interface MaintenanceScheduleResult {
 
 export interface MaintenanceWindowResult {
   window: string
-  previous_window: unknown | null
+  previous_window: null
   scheduled_for: string | null
-  previously_scheduled_for: unknown | null
+  previously_scheduled_for: null
 }
 
 export interface MaintenanceUpdateWindowOpts {
@@ -272,11 +272,20 @@ export interface MaintenanceUpdateWindowOpts {
 export interface MaintenanceUpdateWindowResult {
   window: string
   previous_window: string
-  scheduled_for: unknown | null
-  previously_scheduled_for: unknown | null
+  scheduled_for: null
+  previously_scheduled_for: null
 }
 
-export type MetricsInfoResult = Record<string, unknown>
+export type MetricsInfoResult = Array<{
+  load_avg_1m: null
+  load_avg_5m: null
+  load_avg_15m: null
+  memory_total: null
+  memory_free: null
+  memory_cached: null
+  postgres_memory: null
+  at: null
+}>
 
 export interface PostgresInfoResult {
   app: {
@@ -293,10 +302,10 @@ export interface PostgresInfoResult {
   status: string
   wait_status: {
     waiting: boolean
-    message: unknown | null
+    message: null
   }
   created_at: string
-  forked_from: unknown | null
+  forked_from: null
   features: {
     continuous_protection: {
       enabled: boolean
@@ -316,15 +325,15 @@ export interface PostgresInfoResult {
     }
     rollback: {
       enabled: boolean
-      earliest_time: unknown | null
-      latest_time: unknown | null
+      earliest_time: null
+      latest_time: null
     }
   }
   quotas: Array<{
     type: string
-    current_gb: unknown | null
-    warning_gb: unknown | null
-    critical_gb: unknown | null
+    current_gb: null
+    warning_gb: null
+    critical_gb: null
     enforcement_active: boolean
     enforcement_action: string
   }>
@@ -350,14 +359,14 @@ export interface PostgresInfoResult {
   }>
   metrics_sources: {
     cluster: string
-    database: unknown | null
-    leader: unknown | null
+    database: null
+    leader: null
   }
 }
 
 export interface PostgresWaitStatusResult {
   waiting: boolean
-  message: unknown | null
+  message: null
 }
 
 export type PostgresRotateCredentialsResult = Record<string, unknown>
@@ -553,8 +562,8 @@ export interface PostgresDatabaseConfigResult {
 }
 
 export interface PostgresDatabaseUpdateConfigOpts {
-  track_functions?: string
   log_min_duration_statement?: number
+  track_functions?: string
   log_connections?: boolean
 }
 
@@ -684,7 +693,19 @@ export interface PostgresDatabaseUpdateConfigResult {
   }
 }
 
-export type PostgresDatabaseListCredentialsResult = Record<string, unknown>
+export type PostgresDatabaseListCredentialsResult = Array<{
+  uuid: string
+  name: string
+  state: string
+  database: string
+  host: string
+  port: number
+  credentials: Array<{
+    user: string
+    password: string
+    state: string
+  }>
+}>
 
 export interface PostgresDatabaseCreateCredentialsOpts {
   name: string
@@ -803,7 +824,7 @@ export interface PostgresQuotaListResult {
 
 export interface PostgresQuotaInfoResult {
   type: string
-  current_gb: unknown | null
+  current_gb: null
   warning_gb: number
   critical_gb: number
   enforcement_active: boolean
@@ -818,7 +839,7 @@ export interface PostgresQuotaUpdateOpts {
 
 export interface PostgresQuotaUpdateResult {
   type: string
-  current_gb: unknown | null
+  current_gb: null
   warning_gb: number | null
   critical_gb: number | null
   enforcement_active: boolean
@@ -831,8 +852,8 @@ export interface PostgresSettingsInfoResult {
     current: boolean | number
     default: boolean | number
     reboot_required: boolean
-    description: unknown | null
-    override: unknown | null
+    description: null
+    override: null
   }>
 }
 
@@ -966,31 +987,56 @@ export interface RestoreCreateResult {
   to_type: string
 }
 
-export type TransferListByAppResult = Record<string, unknown>
-
-export interface TransferInfoByAppResult {
+export type TransferListByAppResult = Array<{
   uuid: string
-  num: string
-  from_type: string
-  to_type: string
+  num?: string
   from_name?: string
   from_uuid?: string
+  from_type?: string
   from_url?: string
   to_name?: string
   to_uuid?: string
+  to_type?: string
   to_url?: string
   options?: Record<string, unknown>
   source_bytes?: number
   processed_bytes?: number
-  succeeded?: unknown | null
+  succeeded?: null
   warnings?: number
   created_at?: string
-  started_at?: unknown | null
-  canceled_at?: unknown | null
+  started_at?: null
+  canceled_at?: null
   updated_at?: string
-  finished_at?: unknown | null
-  deleted_at?: unknown | null
-  purged_at?: unknown | null
+  finished_at?: null
+  deleted_at?: null
+  purged_at?: null
+  num_keep?: number
+  logs?: Array<unknown>
+}>
+
+export interface TransferInfoByAppResult {
+  uuid: string
+  num: string
+  from_name?: string
+  from_uuid?: string
+  from_type: string
+  from_url?: string
+  to_name?: string
+  to_uuid?: string
+  to_type: string
+  to_url?: string
+  options?: Record<string, unknown>
+  source_bytes?: number
+  processed_bytes?: number
+  succeeded?: null
+  warnings?: number
+  created_at?: string
+  started_at?: null
+  canceled_at?: null
+  updated_at?: string
+  finished_at?: null
+  deleted_at?: null
+  purged_at?: null
   num_keep?: number
   logs?: Array<unknown>
 }
@@ -1015,20 +1061,29 @@ export interface TransferPublicUrlResult {
 }
 
 export interface TransferCreateOpts {
-  from_url: string
   from_name: string
-  to_url: string | null
+  from_url: string
   to_name?: string
+  to_url: string | null
 }
 
 export interface TransferCreateResult {
   uuid: string
-  num?: string
   from_type: string
   to_type: string
+  num?: string
 }
 
-export type TransferScheduleListResult = Record<string, unknown>
+export type TransferScheduleListResult = Array<{
+  uuid: string
+  name: string
+  callback_url: string
+  days: Array<string>
+  hour: number
+  timezone: string
+  retain_weeks: number
+  retain_months: number
+}>
 
 export interface TransferScheduleCreateOpts {
   hour: number
