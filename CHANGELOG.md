@@ -15,6 +15,18 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.3.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.2.0...types-v4.3.0) (2026-08-18)
+
+
+### Features
+
+* add Dashboard Backend favorite route types ([#102](https://github.com/heroku/typescript-api-schema/issues/102)) ([eef2115](https://github.com/heroku/typescript-api-schema/commit/eef21150befa9fea08f03550755360684030d952))
+
+
+### Bug Fixes
+
+* scope release validation to repository tests ([#104](https://github.com/heroku/typescript-api-schema/issues/104)) ([5bfaa02](https://github.com/heroku/typescript-api-schema/commit/5bfaa025bc7ad264f6b530c979a49fd0f511ed7b))
+
 ## [4.2.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.1.0...types-v4.2.0) (2026-08-13)
 
 
