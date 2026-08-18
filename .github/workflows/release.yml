@@ -79,7 +79,7 @@ jobs:
         with:
           package-manager: npm
           lint_command: ''
-          test_command: 'npm test'
+          test_command: 'test -- src tests'
 
   publish:
     needs: [release-please, validate]
