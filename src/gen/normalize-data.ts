@@ -61,7 +61,9 @@ export function pickPrincipalResponse(
   for (const status of ['200', '201', '202']) {
     if (responses[status]) return responses[status]
   }
-  for (const v of Object.values(responses)) {
+  const hasNoContent = Object.prototype.hasOwnProperty.call(responses, '204')
+  for (const [status, v] of Object.entries(responses)) {
+    if (status === '204' || (hasNoContent && !/^2\d\d$/.test(status))) continue
     if (v) return v
   }
   return null
@@ -278,9 +280,22 @@ function buildMethod(
       },
     })
   }
-  const returnType: TypeRef = resultEmitted.has(p.resultName)
-    ? { kind: 'reference', name: p.resultName }
-    : { kind: 'primitive', primitive: 'unknown' }
+  const hasNoContent = p.schema !== null
+    && Object.prototype.hasOwnProperty.call(p.schema.responses, '204')
+  const hasResult = resultEmitted.has(p.resultName)
+  const returnType: TypeRef = hasResult && hasNoContent
+    ? {
+        kind: 'union',
+        members: [
+          { kind: 'reference', name: p.resultName },
+          { kind: 'primitive', primitive: 'void' },
+        ],
+      }
+    : hasResult
+      ? { kind: 'reference', name: p.resultName }
+      : hasNoContent
+        ? { kind: 'primitive', primitive: 'void' }
+        : { kind: 'primitive', primitive: 'unknown' }
   return { name: p.method, params, returnType }
 }
 

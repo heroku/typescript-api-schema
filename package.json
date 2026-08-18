@@ -26,6 +26,13 @@
       "types": "./dist/data/routes.d.ts",
       "default": "./dist/data/routes.js"
     },
+    "./dashboard-backend": {
+      "types": "./dist/dashboard-backend/types.d.ts"
+    },
+    "./dashboard-backend/routes": {
+      "types": "./dist/dashboard-backend/routes.d.ts",
+      "default": "./dist/dashboard-backend/routes.js"
+    },
     "./metrics": {
       "types": "./dist/metrics/types.d.ts"
     },
@@ -54,6 +61,7 @@
     "typecheck": "tsc --noEmit",
     "generate": "tsx src/cli.ts",
     "generate:data": "tsx src/gen-data-types.ts",
+    "generate:dashboard-backend": "tsx src/gen-dashboard-backend-types.ts",
     "generate:metrics": "tsx src/gen-metrics-types.ts",
     "generate:repositories": "tsx src/gen-repositories-types.ts",
     "test": "vitest run",

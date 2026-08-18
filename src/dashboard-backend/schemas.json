@@ -1,0 +1,54 @@
+{
+  "GET /favorites": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "resource_id", "resource_name", "type"],
+          "properties": {
+            "id": { "type": "string" },
+            "resource_id": { "type": "string" },
+            "resource_name": { "type": "string" },
+            "type": { "type": "string" }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "POST /favorites": {
+    "request": {
+      "type": "object",
+      "required": ["resource_id", "type"],
+      "properties": {
+        "resource_id": { "type": "string" },
+        "type": { "type": "string" }
+      }
+    },
+    "responses": {
+      "201": {
+        "type": "object",
+        "required": ["id", "resource_id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "resource_id": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      },
+      "204": {}
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "DELETE /favorites/:id": {
+    "request": null,
+    "responses": {
+      "204": {}
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}
