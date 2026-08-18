@@ -114,6 +114,21 @@ describe('generateDataTypes', () => {
     expect(out).not.toContain('AppDestroyResult')
   })
 
+  it('preserves an error-only response as the result when no 204 is declared', () => {
+    const out = generateDataTypes(
+      { app: { fail: { method: 'GET', path: '/apps/fail' } } },
+      {
+        'GET /apps/fail': routeSchema({
+          responses: {
+            '404': { type: 'object', properties: { message: { type: 'string' } } },
+          },
+        }),
+      },
+    )
+    expect(out).toContain('export interface AppFailResult')
+    expect(out).toMatch(/fail\(\): Promise<AppFailResult>/)
+  })
+
   it('uses other successful JSON responses as the principal result', () => {
     const out = generateDataTypes(
       { app: { partial: { method: 'GET', path: '/apps/partial' } } },
@@ -129,6 +144,22 @@ describe('generateDataTypes', () => {
     )
     expect(out).toContain('export interface AppPartialResult')
     expect(out).toMatch(/partial\(\): Promise<AppPartialResult \| void>/)
+  })
+
+  it('uses a 206-only response as the principal result without adding void', () => {
+    const out = generateDataTypes(
+      { app: { partial: { method: 'GET', path: '/apps/partial' } } },
+      {
+        'GET /apps/partial': routeSchema({
+          responses: {
+            '206': { type: 'object', properties: { id: { type: 'string' } } },
+          },
+        }),
+      },
+    )
+    expect(out).toContain('export interface AppPartialResult')
+    expect(out).toMatch(/partial\(\): Promise<AppPartialResult>/)
+    expect(out).not.toMatch(/partial\(\): Promise<AppPartialResult \| void>/)
   })
 
   it('matches schema keys regardless of {param} vs :param form', () => {
