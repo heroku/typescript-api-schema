@@ -1225,6 +1225,13 @@ export const spaceAppAccess = {
   }
 }
 
+export const spaceDyno = {
+  "list": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/dynos"
+  }
+}
+
 export const spaceNat = {
   "info": {
     "method": "GET",

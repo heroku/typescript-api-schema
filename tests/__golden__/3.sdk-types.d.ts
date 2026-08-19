@@ -4797,6 +4797,14 @@ export interface UsageInfoGetResult {
   }>
 }
 
+/** Dynos running in a space, grouped by app. */
+export interface SpaceDyno {
+  /** unique name of app */
+  app_name: string
+  /** dynos running for this app in the space */
+  dynos: Array<Dyno>
+}
+
 export interface HerokuClient {
   /** A Heroku account becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent accounts if their invoices remain unpaid. */
   accountDelinquency: {
@@ -5939,5 +5947,10 @@ export interface HerokuClient {
    * 
    */
   infoGet(teamIdentity: string): Promise<UsageInfoGetResult>
+  }
+  /** Dynos running in a space, grouped by app. */
+  spaceDyno: {
+  /** Current running dynos for a space, grouped by app. */
+  list(spaceIdentity: string): Promise<Array<SpaceDyno>>
   }
 }

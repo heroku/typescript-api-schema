@@ -148,6 +148,8 @@ export declare const source: Record<string, RouteDefinition>
 
 export declare const spaceAppAccess: Record<string, RouteDefinition>
 
+export declare const spaceDyno: Record<string, RouteDefinition>
+
 export declare const spaceNat: Record<string, RouteDefinition>
 
 export declare const spaceTopology: Record<string, RouteDefinition>
