@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.4.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.3.0...types-v4.4.0) (2026-08-20)
+
+
+### Features
+
+* add spaceDyno.list route to @heroku/types ([#105](https://github.com/heroku/typescript-api-schema/issues/105)) ([0450bf5](https://github.com/heroku/typescript-api-schema/commit/0450bf5619f36fd6b2cbda698ad6463f581679e4))
+
 ## [4.3.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.2.0...types-v4.3.0) (2026-08-18)
 
 
