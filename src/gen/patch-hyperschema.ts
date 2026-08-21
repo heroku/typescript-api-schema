@@ -89,6 +89,43 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
     } else if (!hasSpaceDynoListLink(spaceDyno.links)) {
       spaceDyno.links = [...(spaceDyno.links ?? []), structuredClone(SPACE_DYNO_LIST_LINK)]
     }
+
+    // WHY: The upstream hyperschema's space "Create" link doesn't declare a
+    // `kpi_url` property on its request schema, even though the API accepts
+    // (and `spaces:create` forwards) a hidden `--kpi-url` flag for a
+    // self-managed KPI endpoint. Without this, the generated
+    // `SpaceCreateOpts` type lacks the field and the CLI has to `as`-cast
+    // around it.
+    //
+    // We inject the property here as optional (never added to `required`).
+    // The guard only fires when the Create link exists and has a `schema`,
+    // so this SELF-HEALS to a no-op if upstream ever adds the property
+    // itself.
+    const space = definitions['space']
+    const createLink = space?.links?.find(
+      l => l.title === 'Create' && l.method?.toUpperCase() === 'POST',
+    )
+    if (createLink?.schema) {
+      createLink.schema.properties ??= {}
+      createLink.schema.properties.kpi_url ??= { type: ['string'] }
+    }
+
+    // WHY: The upstream hyperschema's `space-topology` apps-item property is
+    // named `formation` (singular), but the topology response is a straight
+    // control-plane passthrough (not an API serializer), and the live
+    // payload key has always been `formations` (plural) — the CLI reads
+    // `app.formations`. We rename the property KEY here; the `$ref`
+    // definition target keeps its `formation` name.
+    //
+    // The guard only fires when `formation` is present and `formations` is
+    // absent, so this SELF-HEALS to a no-op if upstream ever renames the
+    // property itself (or if the property is absent entirely).
+    const spaceTopology = definitions['space-topology']
+    const topologyAppProps = spaceTopology?.properties?.['apps']?.items?.properties
+    if (topologyAppProps?.formation && !topologyAppProps.formations) {
+      topologyAppProps.formations = topologyAppProps.formation
+      delete topologyAppProps.formation
+    }
   }
 
   return schema
