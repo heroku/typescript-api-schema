@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.5.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.4.0...types-v4.5.0) (2026-08-25)
+
+
+### Features
+
+* patch space Create kpi_url and topology formations ([#107](https://github.com/heroku/typescript-api-schema/issues/107)) ([745466c](https://github.com/heroku/typescript-api-schema/commit/745466c9f998aebafb2ed78efacd8a3899bec719))
+
 ## [4.4.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.3.0...types-v4.4.0) (2026-08-20)
 
 
