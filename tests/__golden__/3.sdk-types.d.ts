@@ -3295,7 +3295,7 @@ export interface SpaceTopology {
     id?: string
     domains?: unknown[]
     /** formations for application */
-    formation?: Array<{
+    formations?: Array<{
       /** unique identifier of this process type */
       id?: string
       /** Name of process type */
@@ -3396,6 +3396,7 @@ export interface SpaceCreateOpts {
   supported_features?: unknown[]
   /** EKS version for the space infrastructure */
   eks_version?: string
+  kpi_url?: string
 }
 
 /** Stacks are the different application execution environments available in the Heroku platform. */
