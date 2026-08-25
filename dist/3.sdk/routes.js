@@ -1225,13 +1225,6 @@ export const spaceAppAccess = {
   }
 }
 
-export const spaceDyno = {
-  "list": {
-    "method": "GET",
-    "path": "/spaces/{spaceIdentity}/dynos"
-  }
-}
-
 export const spaceNat = {
   "info": {
     "method": "GET",
@@ -1500,6 +1493,11 @@ export const team = {
   "delete": {
     "method": "DELETE",
     "path": "/teams/{teamIdentity}"
+  },
+  "transfer": {
+    "method": "POST",
+    "path": "/teams/{teamIdentity}/actions/transfer",
+    "hasRequestBody": true
   },
   "listByEnterpriseAccount": {
     "method": "GET",
@@ -1785,5 +1783,12 @@ export const usage = {
   "infoGet": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/usage"
+  }
+}
+
+export const spaceDyno = {
+  "list": {
+    "method": "GET",
+    "path": "/spaces/{spaceIdentity}/dynos"
   }
 }
