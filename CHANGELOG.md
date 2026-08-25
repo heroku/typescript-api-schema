@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.6.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.5.0...types-v4.6.0) (2026-08-25)
+
+
+### Features
+
+* regenerate 3.sdk types (kpi_url, topology formations + upstream drift) ([#111](https://github.com/heroku/typescript-api-schema/issues/111)) ([5d2ab92](https://github.com/heroku/typescript-api-schema/commit/5d2ab921c500165f96de83b45630250623b9c763))
+
 ## [4.5.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.4.0...types-v4.5.0) (2026-08-25)
 
 
