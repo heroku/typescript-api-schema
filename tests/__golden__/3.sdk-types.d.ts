@@ -4806,6 +4806,16 @@ export interface SpaceDyno {
   dynos: Array<Dyno>
 }
 
+/** Repositories selected by an installation */
+export interface GithubRepository {
+  /** name of the repository */
+  name?: string
+  /** The full name with owner of a repository */
+  full_name?: string
+  /** the GitHub id of the repository */
+  id?: number
+}
+
 export interface HerokuClient {
   /** A Heroku account becomes delinquent due to non-payment. We [suspend and delete](https://help.heroku.com/EREVRILX/what-happens-if-i-have-unpaid-heroku-invoices) delinquent accounts if their invoices remain unpaid. */
   accountDelinquency: {
@@ -5953,5 +5963,10 @@ export interface HerokuClient {
   spaceDyno: {
   /** Current running dynos for a space, grouped by app. */
   list(spaceIdentity: string): Promise<Array<SpaceDyno>>
+  }
+  /** Repositories selected by an installation */
+  githubRepository: {
+  /** Get Repository Information for a pipeline */
+  getRepositoryInformationForAPipeline(pipelineIdentity: string): Promise<GithubRepository>
   }
 }

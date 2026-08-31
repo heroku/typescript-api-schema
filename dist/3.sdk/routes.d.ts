@@ -235,3 +235,5 @@ export declare const usageHistory: Record<string, RouteDefinition>
 export declare const usage: Record<string, RouteDefinition>
 
 export declare const spaceDyno: Record<string, RouteDefinition>
+
+export declare const githubRepository: Record<string, RouteDefinition>

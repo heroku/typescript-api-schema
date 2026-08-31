@@ -1792,3 +1792,10 @@ export const spaceDyno = {
     "path": "/spaces/{spaceIdentity}/dynos"
   }
 }
+
+export const githubRepository = {
+  "getRepositoryInformationForAPipeline": {
+    "method": "GET",
+    "path": "/pipelines/{pipelineIdentity}/repo"
+  }
+}
