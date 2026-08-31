@@ -1,0 +1,23 @@
+{
+  "GET /pipelines/:pipelineIdentity/repo": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}

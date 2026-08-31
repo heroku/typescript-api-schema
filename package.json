@@ -19,6 +19,13 @@
       "types": "./dist/3.sdk/routes.d.ts",
       "default": "./dist/3.sdk/routes.js"
     },
+    "./repositories-api": {
+      "types": "./dist/repositories-api/types.d.ts"
+    },
+    "./repositories-api/routes": {
+      "types": "./dist/repositories-api/routes.d.ts",
+      "default": "./dist/repositories-api/routes.js"
+    },
     "./data": {
       "types": "./dist/data/types.d.ts"
     },
@@ -60,6 +67,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "generate": "tsx src/cli.ts",
+    "generate:repositories-api": "tsx src/gen-repositories-api-types.ts",
     "generate:data": "tsx src/gen-data-types.ts",
     "generate:dashboard-backend": "tsx src/gen-dashboard-backend-types.ts",
     "generate:metrics": "tsx src/gen-metrics-types.ts",
