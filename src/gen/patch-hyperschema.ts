@@ -67,61 +67,8 @@ const SPACE_DYNO_DEFINITION: ResourceDefinition = {
   links: [SPACE_DYNO_LIST_LINK],
 }
 
-const GITHUB_REPOSITORY_PIPELINE_HREF = '/pipelines/{(%23%2Fdefinitions%2Fpipeline%2Fdefinitions%2Fidentity)}/repo'
-
-const GITHUB_REPOSITORY_DEFINITIONS = {
-  name: {
-    description: 'name of the repository',
-    example: 'repository_name',
-    readOnly: true,
-    type: ['string'],
-  },
-  full_name: {
-    description: 'The full name with owner of a repository',
-    example: 'owner/repository_name',
-    readOnly: true,
-    type: ['string'],
-  },
-  id: {
-    description: 'the GitHub id of the repository',
-    example: 123,
-    readOnly: true,
-    type: ['integer'],
-  },
-} satisfies Record<string, SchemaNode>
-
-const GITHUB_REPOSITORY_PROPERTIES = {
-  name: {$ref: '#/definitions/github-repository/definitions/name'},
-  full_name: {$ref: '#/definitions/github-repository/definitions/full_name'},
-  id: {$ref: '#/definitions/github-repository/definitions/id'},
-} satisfies Record<string, SchemaNode>
-
-const GITHUB_REPOSITORY_PIPELINE_LINK: SchemaLink = {
-  description: 'Get Repository Information for a pipeline',
-  href: GITHUB_REPOSITORY_PIPELINE_HREF,
-  method: 'GET',
-  rel: 'self',
-  title: 'Get repository information for a pipeline',
-  targetSchema: {$ref: '#/definitions/github-repository'},
-}
-
-const GITHUB_REPOSITORY_DEFINITION: ResourceDefinition = {
-  description: 'Repositories selected by an installation',
-  strictProperties: false,
-  type: ['object'],
-  definitions: GITHUB_REPOSITORY_DEFINITIONS,
-  properties: GITHUB_REPOSITORY_PROPERTIES,
-  links: [GITHUB_REPOSITORY_PIPELINE_LINK],
-}
-
 function hasSpaceDynoListLink(links: SchemaLink[] | undefined): boolean {
   return Boolean(links?.some(l => l.rel === 'instances' && l.method?.toUpperCase() === 'GET'))
-}
-
-function hasGithubRepositoryPipelineLink(links: SchemaLink[] | undefined): boolean {
-  return Boolean(links?.some(
-    link => link.method?.toUpperCase() === 'GET' && link.href === GITHUB_REPOSITORY_PIPELINE_HREF,
-  ))
 }
 
 // Mutates `schema` in place and returns it for chaining.
@@ -141,28 +88,6 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       definitions['space-dyno'] = structuredClone(SPACE_DYNO_DEFINITION)
     } else if (!hasSpaceDynoListLink(spaceDyno.links)) {
       spaceDyno.links = [...(spaceDyno.links ?? []), structuredClone(SPACE_DYNO_LIST_LINK)]
-    }
-
-    const githubRepository = definitions['github-repository']
-    if (!githubRepository) {
-      definitions['github-repository'] = structuredClone(GITHUB_REPOSITORY_DEFINITION)
-    } else {
-      githubRepository.definitions ??= {}
-      githubRepository.definitions.name ??= structuredClone(GITHUB_REPOSITORY_DEFINITIONS.name)
-      githubRepository.definitions.full_name ??= structuredClone(GITHUB_REPOSITORY_DEFINITIONS.full_name)
-      githubRepository.definitions.id ??= structuredClone(GITHUB_REPOSITORY_DEFINITIONS.id)
-
-      githubRepository.properties ??= {}
-      githubRepository.properties.name ??= structuredClone(GITHUB_REPOSITORY_PROPERTIES.name)
-      githubRepository.properties.full_name ??= structuredClone(GITHUB_REPOSITORY_PROPERTIES.full_name)
-      githubRepository.properties.id ??= structuredClone(GITHUB_REPOSITORY_PROPERTIES.id)
-
-      if (!hasGithubRepositoryPipelineLink(githubRepository.links)) {
-        githubRepository.links = [
-          ...(githubRepository.links ?? []),
-          structuredClone(GITHUB_REPOSITORY_PIPELINE_LINK),
-        ]
-      }
     }
 
     // WHY: The upstream hyperschema's space "Create" link doesn't declare a
