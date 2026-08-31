@@ -5,8 +5,9 @@
  * it separate from both the Platform `3.sdk` and Kolkrabbi `repositories`
  * clients so consumers can select the correct host and media type.
  */
-import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
-import {dirname, resolve} from 'node:path'
+import {mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {join, dirname, resolve} from 'node:path'
+import {tmpdir} from 'node:os'
 import {fileURLToPath} from 'node:url'
 import ts from 'typescript'
 
@@ -62,31 +63,34 @@ export async function main(deps: Partial<MainDeps> = {}) {
 
   const schemas = JSON.parse(options.readFile(options.schemaPath)) as Record<string, RouteSchema>
   const generatedTypes = generateRepositoriesApiTypes(routesByResource, schemas)
-  const temporaryOutDir = resolve(REPOSITORIES_API_DIST, '.tmp')
+  const outputDir = dirname(options.outPath)
+  const temporaryOutDir = mkdtempSync(join(tmpdir(), 'heroku-types-repositories-api-'))
 
-  const emitted = options.emitTypedSource({
-    sourcePath: options.routesPath,
-    rootDir: HERE,
-    outDir: temporaryOutDir,
-    banner: GENERATED_CONTENT_PREAMBLE,
-  })
-  if (emitted.diagnostics.length > 0) {
+  try {
+    const emitted = options.emitTypedSource({
+      sourcePath: options.routesPath,
+      rootDir: HERE,
+      outDir: temporaryOutDir,
+      banner: GENERATED_CONTENT_PREAMBLE,
+    })
+    if (emitted.diagnostics.length > 0) {
+      const summary = emitted.diagnostics
+        .map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'))
+        .join('\n')
+      throw new Error(`emitTypedSource returned ${emitted.diagnostics.length} diagnostic(s):\n${summary}`)
+    }
+
+    const resources = Object.keys(routesByResource)
+    options.writeFile(options.outPath, generatedTypes)
+    options.writeFile(resolve(outputDir, 'routes.js'), options.readFile(emitted.jsPath))
+    options.writeFile(
+      resolve(outputDir, 'routes.d.ts'),
+      GENERATED_CONTENT_PREAMBLE + generateRoutesDTSForResources(resources),
+    )
+    options.log(`Wrote ${options.outPath}`)
+  } finally {
     rmSync(temporaryOutDir, {recursive: true, force: true})
-    const summary = emitted.diagnostics
-      .map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'))
-      .join('\n')
-    throw new Error(`emitTypedSource returned ${emitted.diagnostics.length} diagnostic(s):\n${summary}`)
   }
-
-  const resources = Object.keys(routesByResource)
-  options.writeFile(options.outPath, generatedTypes)
-  options.writeFile(resolve(REPOSITORIES_API_DIST, 'routes.js'), options.readFile(emitted.jsPath))
-  options.writeFile(
-    resolve(REPOSITORIES_API_DIST, 'routes.d.ts'),
-    GENERATED_CONTENT_PREAMBLE + generateRoutesDTSForResources(resources),
-  )
-  rmSync(temporaryOutDir, {recursive: true, force: true})
-  options.log(`Wrote ${options.outPath}`)
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

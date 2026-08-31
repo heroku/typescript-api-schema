@@ -1,5 +1,6 @@
-import {readFileSync} from 'node:fs'
-import {dirname, resolve} from 'node:path'
+import {existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {tmpdir} from 'node:os'
+import {dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {describe, expect, it, vi} from 'vitest'
@@ -18,23 +19,23 @@ describe('repositories-api generation', () => {
   it('generates the pipeline repository method with its source-faithful response shape', () => {
     const types = generateRepositoriesApiTypes(routes, schemas)
 
-    expect(types).toContain(`export interface GithubRepositoryGetRepositoryInformationForAPipelineResult {
+    expect(types).toContain(`export interface GithubRepositoryInfoResult {
   name?: string
   full_name?: string
   id?: number
 }`)
     expect(types).toContain(
-      'getRepositoryInformationForAPipeline(pipelineIdentity: string): Promise<GithubRepositoryGetRepositoryInformationForAPipelineResult>',
+      'info(pipelineIdentity: string): Promise<GithubRepositoryInfoResult>',
     )
-    expect(types).not.toContain('export interface GithubRepositoryGetRepositoryInformationForAPipelineOpts')
+    expect(types).not.toContain('export interface GithubRepositoryInfoOpts')
   })
 
   it('keeps the route separate from the Kolkrabbi repository path', () => {
-    expect(routes.githubRepository.getRepositoryInformationForAPipeline).toEqual({
+    expect(routes.githubRepository.info).toEqual({
       method: 'GET',
       path: '/pipelines/{pipelineIdentity}/repo',
     })
-    expect(routes.githubRepository.getRepositoryInformationForAPipeline.path).not.toContain('/repository')
+    expect(routes.githubRepository.info.path).not.toContain('/repository')
   })
 
   it('keeps the generated package artifacts in sync with the curated source', () => {
@@ -70,5 +71,43 @@ describe('repositories-api generation', () => {
       log: vi.fn(),
     })).rejects.toThrow('emitTypedSource returned 1 diagnostic(s):\ninvalid route source')
     expect(writeFile).not.toHaveBeenCalled()
+  })
+
+  it('writes all artifacts beside an injected outPath and copies the emitted routes exactly', async () => {
+    const outputDir = mkdtempSync(join(tmpdir(), 'repositories-api-output-'))
+    const outPath = join(outputDir, 'types.d.ts')
+    const schemaPath = '/source/repositories-api/schemas.json'
+    const emittedRoutes = '// emitted routes\n'
+    let stagingDir = ''
+
+    try {
+      await main({
+        routesPath: '/source/repositories-api/routes.ts',
+        schemaPath,
+        outPath,
+        readFile: path => path === schemaPath ? JSON.stringify(schemas) : readFileSync(path, 'utf8'),
+        writeFile: writeFileSync,
+        importRoutes: async () => routes,
+        emitTypedSource: options => {
+          stagingDir = options.outDir
+          const jsPath = join(stagingDir, 'repositories-api/routes.js')
+          mkdirSync(dirname(jsPath), {recursive: true})
+          writeFileSync(jsPath, emittedRoutes)
+          return {jsPath, diagnostics: []}
+        },
+        log: vi.fn(),
+      })
+
+      expect(readFileSync(outPath, 'utf8')).toBe(generateRepositoriesApiTypes(routes, schemas))
+      expect(readFileSync(join(outputDir, 'routes.js'), 'utf8')).toBe(emittedRoutes)
+      expect(readFileSync(join(outputDir, 'routes.d.ts'), 'utf8')).toContain(
+        'export declare const githubRepository: Record<string, RouteDefinition>',
+      )
+      expect(stagingDir.startsWith(tmpdir())).toBe(true)
+      expect(relative(tmpdir(), stagingDir).startsWith('heroku-types-repositories-api-')).toBe(true)
+      expect(existsSync(stagingDir)).toBe(false)
+    } finally {
+      rmSync(outputDir, {recursive: true, force: true})
+    }
   })
 })

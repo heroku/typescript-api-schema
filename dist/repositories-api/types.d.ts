@@ -2,7 +2,7 @@
  * NOTE: the contents of this file are generated. Do not modify this file.
  */
 
-export interface GithubRepositoryGetRepositoryInformationForAPipelineResult {
+export interface GithubRepositoryInfoResult {
   name?: string
   full_name?: string
   id?: number
@@ -10,6 +10,6 @@ export interface GithubRepositoryGetRepositoryInformationForAPipelineResult {
 
 export interface HerokuClient {
   githubRepository: {
-  getRepositoryInformationForAPipeline(pipelineIdentity: string): Promise<GithubRepositoryGetRepositoryInformationForAPipelineResult>
+  info(pipelineIdentity: string): Promise<GithubRepositoryInfoResult>
   }
 }

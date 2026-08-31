@@ -3,7 +3,7 @@
  */
 
 export const githubRepository = {
-    getRepositoryInformationForAPipeline: {
+    info: {
         method: 'GET',
         path: '/pipelines/{pipelineIdentity}/repo',
     },

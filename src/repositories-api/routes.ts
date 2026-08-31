@@ -1,7 +1,7 @@
 import type { RouteDefinition } from '../gen/schema-types.js'
 
 export const githubRepository = {
-  getRepositoryInformationForAPipeline: {
+  info: {
     method: 'GET',
     path: '/pipelines/{pipelineIdentity}/repo',
   },
