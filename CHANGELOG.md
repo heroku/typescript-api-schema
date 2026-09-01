@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [4.8.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.7.0...types-v4.8.0) (2026-09-01)
+
+
+### Features
+
+* add notifications route registry and types ([#116](https://github.com/heroku/typescript-api-schema/issues/116)) ([efbb8bb](https://github.com/heroku/typescript-api-schema/commit/efbb8bb28859fb8ae5bb1fc5a713dd104b5314d4))
+
 ## [4.7.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.6.0...types-v4.7.0) (2026-08-31)
 
 
