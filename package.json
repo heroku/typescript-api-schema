@@ -54,6 +54,13 @@
       "types": "./dist/repositories/routes.d.ts",
       "default": "./dist/repositories/routes.js"
     },
+    "./notifications": {
+      "types": "./dist/notifications/types.d.ts"
+    },
+    "./notifications/routes": {
+      "types": "./dist/notifications/routes.d.ts",
+      "default": "./dist/notifications/routes.js"
+    },
     "./types": {
       "types": "./dist/types.d.ts"
     }
@@ -71,6 +78,7 @@
     "generate:data": "tsx src/gen-data-types.ts",
     "generate:dashboard-backend": "tsx src/gen-dashboard-backend-types.ts",
     "generate:metrics": "tsx src/gen-metrics-types.ts",
+    "generate:notifications": "tsx src/gen-notifications-types.ts",
     "generate:repositories": "tsx src/gen-repositories-types.ts",
     "test": "vitest run",
     "test:watch": "vitest",
