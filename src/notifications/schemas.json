@@ -1,0 +1,85 @@
+{
+  "GET /user/notifications": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "created_at", "title", "read", "body", "target", "followup"],
+          "properties": {
+            "id": { "type": "string" },
+            "created_at": { "type": "string" },
+            "title": { "type": "string" },
+            "read": { "type": "boolean" },
+            "body": { "type": "string" },
+            "target": {
+              "type": "object",
+              "required": ["type", "id"],
+              "properties": {
+                "type": { "type": "string" },
+                "id": { "type": "string" }
+              }
+            },
+            "followup": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["created_at", "body"],
+                "properties": {
+                  "created_at": { "type": "string" },
+                  "body": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "PATCH /user/notifications/:id": {
+    "request": {
+      "type": "object",
+      "required": ["read"],
+      "properties": {
+        "read": { "type": "boolean" }
+      }
+    },
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["id", "created_at", "title", "read", "body", "target", "followup"],
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string" },
+          "title": { "type": "string" },
+          "read": { "type": "boolean" },
+          "body": { "type": "string" },
+          "target": {
+            "type": "object",
+            "required": ["type", "id"],
+            "properties": {
+              "type": { "type": "string" },
+              "id": { "type": "string" }
+            }
+          },
+          "followup": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["created_at", "body"],
+              "properties": {
+                "created_at": { "type": "string" },
+                "body": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  }
+}
