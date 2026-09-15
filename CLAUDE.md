@@ -12,6 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Run a single test:** `npm test -- src/path/to/file.test.ts`
 - **Type-check:** `npm run typecheck` (runs `tsc --noEmit`)
 - **Generate types:** `npm run generate` (runs CLI via `tsx` → fetches schema → writes types + routes into `dist/<variant>/`)
+- **Generate data types:** `npm run generate:data`
 
 The generator is executed directly from TypeScript via `tsx`; there is no compile step for the generator's own source. Generated artifacts go to `dist/`.
 
@@ -29,19 +30,22 @@ TypeScript strict mode is enabled. `resolveJsonModule` is on for JSON schema imp
 
 ### Key modules
 
-The two generator pipelines (hyperschema → `3.sdk`, Shogun + curated routes → `data`) share a single emitter. Each pipeline normalizes its input into an intermediate `TypesModel` and feeds it to `ts-emit.ts`.
+The two generator pipelines (hyperschema → `3.sdk`, OpenAPI spec (fetched live) + curated routes → `data`) share a single emitter. Each pipeline normalizes its input into an intermediate `TypesModel` and feeds it to `ts-emit.ts`.
 
 - `src/cli.ts` — CLI entry point (`heroku-types` bin). Parses `--variant`, `--base-url` args. Orchestrates fetch → generate → verify → write. Also updates `package.json` exports/files for the variant.
 - `src/data/routes.ts` — Hand-curated source of truth for the `data` variant's resource grouping. Typed via `as const satisfies Record<string, RouteDefinition>`. Compiled by the data pipeline into `dist/data/routes.{js,d.ts}`.
-- `src/gen-data-types.ts` — Driver for the `data` variant. Imports `src/data/routes.ts`, loads Shogun `api_schemas.json`, calls `generateDataTypes()`, writes `dist/data/types.d.ts`, and uses `emitTypedSource` to emit `dist/data/routes.{js,d.ts}`.
+- `src/gen/data-schema.ts` — Fetches the `heroku/data-api` OpenAPI 3.0.1 spec live from its staging Rswag endpoint at generate time; tests use the pinned `tests/__fixtures__/data-api-swagger.yaml` instead and never hit the network.
+- `src/gen-data-types.ts` — Driver for the `data` variant. Imports `src/data/routes.ts`, fetches and parses the spec via `fetchDataApiSpec()`, calls `generateDataTypes()` (→ `normalizeOpenApi()` + `emitTypes()`), writes `dist/data/types.d.ts`, and uses `emitTypedSource` to emit `dist/data/routes.{js,d.ts}`.
 - `src/gen/emit-typed-source.ts` — Generic helper that compiles a single typed `.ts` source file into `.js` + `.d.ts` via the TypeScript compiler API, optionally prepending a banner. Used by the data pipeline.
 - `src/gen/schema.ts` — Fetches the hyperschema from Heroku API (default variant `3.sdk`).
 - `src/gen/schema-types.ts` — TypeScript interfaces for the hyperschema (`HerokuSchema`, `SchemaNode`, `SchemaLink`, `RouteDefinition`, `HttpMethod`, etc.).
+- `src/gen/openapi-types.ts` — Minimal structural types for the OpenAPI 3.0.1 subset consumed by the data pipeline (`OpenApiDocument`, `OpenApiSchema`, `OpenApiOperation`, etc.).
 - `src/gen/utils.ts` — Pure string/schema utilities (`toPascalCase`, `toCamelCase`, `disambiguateLinkTitles`).
 - `src/gen/model.ts` — Intermediate model: `TypesModel`, `ResourceModel`, `MethodModel`, `AuxType`, `ObjectShape`, `TypeRef`. The contract between normalizers and the emitter.
 - `src/gen/ts-emit.ts` — `emitTypes(model, options?)` — pure model-to-text renderer. Owns every output style choice (quoting, indentation, JSDoc formatting, identifier escaping, union ordering, `HerokuClient` assembly).
 - `src/gen/normalize-hyperschema.ts` — Heroku hyperschema → `TypesModel`. Resolves `$ref`, disambiguates link titles, parses hRef params, detects cross-resource targetSchemas. Also exports `extractRouteEntries()` for the route registry.
-- `src/gen/normalize-data.ts` — Shogun JSON-Schemas + curated routes → `TypesModel`. Schemas without properties become `Record<string, unknown>` aliases. Also exports `summarizeCoverage()` for stats reporting.
+- `src/gen/normalize-openapi.ts` — OpenAPI spec + curated routes → `TypesModel` for the `data` variant. Matches curated routes to spec paths by exact path template, fully dereferences `$ref`, hard-fails on unmatched routes, and lowers `enum`/`oneOf`/`allOf`/`nullable` composition. Also exports `summarizeOpenApiCoverage()` for stats reporting.
+- `src/gen/normalize-json-schema.ts` — JSON-Schema + curated routes → `TypesModel`. Schemas without properties become `Record<string, unknown>` aliases. Also exports `summarizeCoverage()` for stats reporting.
 - `src/gen/route-generator.ts` — Generates the route registry: `generateRoutesJS()` emits per-resource named exports with method/path/hasRequestBody, `generateRoutesDTS()` emits the corresponding `.d.ts`. Uses `extractRouteEntries()` from the hyperschema normalizer.
 - `src/gen/generator.ts` — Thin pipeline driver: `generateTypes(schema) = emitTypes(normalizeHyperschema(schema))`.
 - `src/gen/verify.ts` — Validates the emitted `.d.ts` content by running the TypeScript compiler in-memory and returning any diagnostics.

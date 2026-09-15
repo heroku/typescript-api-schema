@@ -2,7 +2,7 @@
 
 This package provides TypeScript types and a runtime route registry, generated from the Heroku API Hyperschema. Generated files are organized by API variant. For example, the `3.sdk` variant outputs to `dist/3.sdk/types.d.ts` and `dist/3.sdk/routes.js`.
 
-> NOTE: This package currently provides two variants: `3.sdk` (Heroku Platform API, fully generated from the hyperschema) and `data` (Heroku's data services control plane / Shogun, where types are generated from spec-captured payloads against a hand-curated resource grouping).
+> NOTE: This package currently provides two variants: `3.sdk` (Heroku Platform API, fully generated from the hyperschema) and `data` (Heroku's data services surface, where types are generated from the `heroku/data-api` OpenAPI spec against a hand-curated resource grouping).
 
 ## Installation
 
@@ -54,28 +54,31 @@ For example, to generate types for a different schema variant:
 npm run generate -- --variant 3.webhooks
 ```
 
-## The `data` variant (Shogun)
+## The `data` variant
 
-The `data` variant covers Heroku's data services control plane (Shogun). Unlike `3.sdk`, Shogun does not publish a hyperschema, so the resource grouping in `src/data/routes.ts` is curated by hand. The body of `dist/data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from request/response payloads captured during Shogun's spec suite. The runtime route registry at `dist/data/routes.{js,d.ts}` is compiled from `src/data/routes.ts` by the same pipeline. Given the Shogun spec artifact, `dist/` is fully reproducible from source.
+The `data` variant covers Heroku's data services surface. Types are generated from the OpenAPI 3.0.1 spec fetched live at generate time from the data-api team's staging Rswag endpoint, against a hand-curated resource grouping in `src/data/routes.ts`. The body of `dist/data/types.d.ts` — every `*Opts` and `*Result` interface, plus the `HerokuClient` method signatures — is generated from the spec. The runtime route registry at `dist/data/routes.{js,d.ts}` is compiled from `src/data/routes.ts` by the same pipeline. Tests use a pinned fixture spec (`tests/__fixtures__/data-api-swagger.yaml`) instead of hitting the live endpoint.
 
 ### Pipeline
 
-1. **Capture payloads in Shogun.** From a Shogun checkout, with the spec DB running:
+1. **Generate types in this repo:**
    ```sh
-   bundle exec rspec spec/shogun/endpoints
-   bundle exec rake api_schemas:build
+   npm run generate:data
    ```
-   This writes `tmp/api_schemas.json` (schemas keyed by `"VERB /path"`).
+   This fetches the spec live from staging (see `src/gen/data-schema.ts`) for request/response schemas, reads `src/data/routes.ts` for the curated resource grouping, emits `dist/data/types.d.ts`, and emits `dist/data/routes.{js,d.ts}` from the same source. A curated route with no match in the spec aborts generation with an error naming the offending HTTP method and path template — the spec is treated as authoritative, so an unmatched route means `routes.ts` needs fixing, not that coverage is expected to be incomplete.
 
-2. **Generate types in this repo.** Point the generator at the artifact:
-   ```sh
-   SHOGUN_SCHEMA_PATH=/path/to/shogun/tmp/api_schemas.json npm run generate:data
-   ```
-   This reads `src/data/routes.ts` for the curated resource grouping, emits `dist/data/types.d.ts`, and emits `dist/data/routes.{js,d.ts}` from the same source. Methods with no schema coverage are typed as `Promise<unknown>` and annotated with a `// TODO: no spec coverage` comment.
+2. **Refreshing the pinned test fixture.** 
+    When `heroku/data-api` publishes spec changes, update `tests/__fixtures__/data-api-swagger.yaml` to match. Review the diff to `dist/data/types.d.ts` and `tests/__golden__/data-types.d.ts` like any other generated-artifact change.
 
 ### What the generator preserves
 
-The grouping in `src/data/routes.ts` is the source of truth. The generator never invents new resources or moves methods between resources — it only fills in `Opts`/`Result` types from the schema artifact. To add or rename a resource, edit `src/data/routes.ts` and re-run the generator. **Do not edit `dist/data/routes.{js,d.ts}` directly** — those files are regenerated on every `npm run generate:data` invocation.
+The grouping in `src/data/routes.ts` is the source of truth. The generator never invents new resources or moves methods between resources — it only fills in `Opts`/`Result` types from the spec. To add or rename a resource, edit `src/data/routes.ts` and re-run the generator. **Do not edit `dist/data/routes.{js,d.ts}` directly** — those files are regenerated on every `npm run generate:data` invocation.
+
+### Why grouping is curated
+
+The spec's path structure was designed for the service that owns it, not for an SDK. The same logical resource can span multiple path prefixes, and similar names can be genuinely different APIs:
+
+- `transfer` spans `/client/v11/apps/{name}/transfers/*` and `/client/v11/databases/{name}/transfers/*`
+- `postgres` and `postgresDatabase` both relate to Postgres but live under `/data/postgres/v1/*` and `/postgres/v0/databases/*`
 
 ## Running Tests
 
