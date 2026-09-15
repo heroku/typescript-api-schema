@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parse } from 'yaml'
 import { generateTypes } from '../src/gen/generator.js'
 import { generateRoutesJS } from '../src/gen/route-generator.js'
-import { generateDataTypes, type RouteDef, type RouteSchema } from '../src/gen-data-types.js'
+import { generateDataTypes, type RouteDefinition } from '../src/gen-data-types.js'
 import type { HerokuSchema } from '../src/gen/schema-types.js'
+import type { OpenApiDocument } from '../src/gen/openapi-types.js'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const FIXTURES = resolve(HERE, '__fixtures__')
@@ -17,17 +19,19 @@ const herokuSchema = JSON.parse(
 const sdkGolden = readFileSync(resolve(GOLDENS, '3.sdk-types.d.ts'), 'utf8')
 
 const dataGolden = readFileSync(resolve(GOLDENS, 'data-types.d.ts'), 'utf8')
-const shogunSchemas = JSON.parse(
-  readFileSync(resolve(FIXTURES, 'shogun-schemas.json'), 'utf8'),
-) as Record<string, RouteSchema>
+const dataApiSpec = parse(
+  readFileSync(resolve(FIXTURES, 'data-api-swagger.yaml'), 'utf8'),
+) as OpenApiDocument
 
 // Routes fixture is JSON (not .js) so iteration order is deterministic
 // across runtimes — vitest and Node treat dynamic ESM imports' key order
 // differently, which would otherwise cause the golden to diverge between
-// production (Node) and the test (vitest).
+// production (Node) and the test (vitest). It's a snapshot of the real
+// src/data/routes.ts, not a synthetic fixture — keep in sync when routes.ts
+// changes.
 const dataRoutes = JSON.parse(
   readFileSync(resolve(FIXTURES, 'data-routes.json'), 'utf8'),
-) as Record<string, Record<string, RouteDef>>
+) as Record<string, Record<string, RouteDefinition>>
 
 describe('golden output regression', () => {
   it('3.sdk types match the golden byte-for-byte', () => {
@@ -35,7 +39,7 @@ describe('golden output regression', () => {
   })
 
   it('data types match the golden byte-for-byte', () => {
-    expect(generateDataTypes(dataRoutes, shogunSchemas)).toBe(dataGolden)
+    expect(generateDataTypes(dataRoutes, dataApiSpec)).toBe(dataGolden)
   })
 
   // filter-apps.Apps is the canonical case where link.schema is a $ref to a

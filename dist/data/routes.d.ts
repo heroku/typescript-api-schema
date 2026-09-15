@@ -18,6 +18,8 @@ export declare const maintenance: Record<string, RouteDefinition>
 
 export declare const metrics: Record<string, RouteDefinition>
 
+export declare const objectStore: Record<string, RouteDefinition>
+
 export declare const postgres: Record<string, RouteDefinition>
 
 export declare const postgresCredential: Record<string, RouteDefinition>
@@ -26,7 +28,13 @@ export declare const postgresDatabase: Record<string, RouteDefinition>
 
 export declare const postgresLevel: Record<string, RouteDefinition>
 
+export declare const postgresLogicalReplication: Record<string, RouteDefinition>
+
+export declare const postgresMigration: Record<string, RouteDefinition>
+
 export declare const postgresPool: Record<string, RouteDefinition>
+
+export declare const postgresProvisioning: Record<string, RouteDefinition>
 
 export declare const postgresQuota: Record<string, RouteDefinition>
 
