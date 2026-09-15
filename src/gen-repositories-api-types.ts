@@ -14,7 +14,7 @@ import ts from 'typescript'
 import {emitTypes} from './gen/ts-emit.js'
 import {emitTypedSource as defaultEmitTypedSource, type EmitTypedSourceResult} from './gen/emit-typed-source.js'
 import {GENERATED_CONTENT_PREAMBLE} from './gen/generator.js'
-import {normalizeData, type RouteDef, type RouteSchema} from './gen/normalize-data.js'
+import {normalizeJsonSchema, type RouteDef, type RouteSchema} from './gen/normalize-json-schema.js'
 import {generateRoutesDTSForResources} from './gen/route-generator.js'
 
 const BANNER = '/**\n * NOTE: the contents of this file are generated. Do not modify this file.\n */\n'
@@ -23,7 +23,7 @@ export function generateRepositoriesApiTypes(
   routesByResource: Record<string, Record<string, RouteDef>>,
   schemas: Record<string, RouteSchema>,
 ): string {
-  return `${BANNER}\n${emitTypes(normalizeData(routesByResource, schemas), {emitResourceShapes: false})}`
+  return `${BANNER}\n${emitTypes(normalizeJsonSchema(routesByResource, schemas), {emitResourceShapes: false})}`
 }
 
 interface MainDeps {

@@ -1,6 +1,7 @@
-// JSON Schema (from spec traffic) → TypesModel normalizer for the data
-// variant. Curated route grouping is preserved; resource-level shapes are
-// not (the data pipeline doesn't carry them — its inputs are per-route).
+// JSON Schema + curated routes → TypesModel normalizer.
+// Shared by the repositories-api, dashboard-backend, notifications, metrics,
+// and repositories variant drivers. Curated route grouping is preserved;
+// resource-level shapes are not (these pipelines' inputs are per-route).
 
 import type {
   AuxType,
@@ -200,7 +201,7 @@ function buildPlans(
   return plans
 }
 
-export function normalizeData(
+export function normalizeJsonSchema(
   routesByResource: Record<string, Record<string, RouteDef>>,
   schemas: Record<string, RouteSchema>,
 ): TypesModel {
@@ -225,11 +226,11 @@ export function normalizeData(
     }
   }
 
-  // The data variant has no resource-level shape. Pack all aux types onto a
+  // These variants have no resource-level shape. Pack all aux types onto a
   // single synthetic resource — the emitter walks resources to emit aux
   // types in order.
   const resources: ResourceModel[] = auxTypes.length > 0
-    ? [{ name: '__data__', auxTypes }]
+    ? [{ name: '__aux__', auxTypes }]
     : []
 
   // Group methods by resource for HerokuClient.
