@@ -3,23 +3,20 @@ import {
   generateDataTypes,
   main,
   type MainDeps,
-  type RouteDef,
-  type RouteSchema,
 } from './gen-data-types.js'
+import type { OpenApiDocument, OpenApiPathItem } from './gen/openapi-types.js'
 
-function routeSchema(over: Partial<RouteSchema> = {}): RouteSchema {
-  return {
-    request: null,
-    responses: {},
-    request_example_count: 0,
-    response_example_count: 0,
-    ...over,
-  }
+function spec(paths: Record<string, OpenApiPathItem>): OpenApiDocument {
+  return { paths, components: { schemas: {} } }
+}
+
+function json(schema: object) {
+  return { content: { 'application/json': { schema } } }
 }
 
 describe('generateDataTypes', () => {
   it('emits the generated banner', () => {
-    expect(generateDataTypes({}, {})).toContain('NOTE: the contents of this file are generated.')
+    expect(generateDataTypes({}, spec({}))).toContain('NOTE: the contents of this file are generated.')
   })
 
   it('emits HerokuClient grouped by resource', () => {
@@ -28,14 +25,10 @@ describe('generateDataTypes', () => {
         app: { list: { method: 'GET', path: '/apps' } },
         dyno: { list: { method: 'GET', path: '/apps/{name}/dynos' } },
       },
-      {
-        'GET /apps': routeSchema({
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-        }),
-        'GET /apps/:name/dynos': routeSchema({
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-        }),
-      },
+      spec({
+        '/apps': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
+        '/apps/{name}/dynos': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
+      }),
     )
     expect(out).toContain('export interface HerokuClient {')
     expect(out).toMatch(/app: \{[^}]*list\(/)
@@ -45,7 +38,9 @@ describe('generateDataTypes', () => {
   it('hoists path parameters to positional string arguments', () => {
     const out = generateDataTypes(
       { app: { info: { method: 'GET', path: '/apps/{name}' } } },
-      { 'GET /apps/:name': routeSchema({ responses: { '200': { type: 'object' } } }) },
+      spec({
+        '/apps/{name}': { get: { responses: { '200': json({ type: 'object' }) } } },
+      }),
     )
     expect(out).toMatch(/info\(name: string\)/)
   })
@@ -53,36 +48,39 @@ describe('generateDataTypes', () => {
   it('emits an Opts interface and request body parameter when hasRequestBody is set', () => {
     const out = generateDataTypes(
       { app: { create: { method: 'POST', path: '/apps', hasRequestBody: true } } },
-      {
-        'POST /apps': routeSchema({
-          request: { type: 'object', properties: { name: { type: 'string' } } },
-          responses: { '201': { type: 'object' } },
-        }),
-      },
+      spec({
+        '/apps': {
+          post: {
+            requestBody: json({ type: 'object', properties: { name: { type: 'string' } } }),
+            responses: { '201': json({ type: 'object' }) },
+          },
+        },
+      }),
     )
     expect(out).toContain('export interface AppCreateOpts')
     expect(out).toMatch(/create\(requestBody: AppCreateOpts\)/)
   })
 
-  it('returns Promise<unknown> when no schema is matched', () => {
-    const out = generateDataTypes(
+  it('throws when a curated route has no matching spec path', () => {
+    expect(() => generateDataTypes(
       { app: { list: { method: 'GET', path: '/apps' } } },
-      {},
-    )
-    expect(out).toMatch(/list\(\): Promise<unknown>/)
+      spec({}),
+    )).toThrow(/No spec match for GET \/apps/)
   })
 
   it('includes void when a route has both a JSON response and no-content response', () => {
     const out = generateDataTypes(
       { app: { create: { method: 'POST', path: '/apps' } } },
-      {
-        'POST /apps': routeSchema({
-          responses: {
-            '201': { type: 'object', properties: { id: { type: 'string' } } },
-            '204': {},
+      spec({
+        '/apps': {
+          post: {
+            responses: {
+              '201': json({ type: 'object', properties: { id: { type: 'string' } } }),
+              '204': {},
+            },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toMatch(/create\(\): Promise<AppCreateResult \| void>/)
   })
@@ -90,9 +88,9 @@ describe('generateDataTypes', () => {
   it('returns Promise<void> when a route has only a no-content response', () => {
     const out = generateDataTypes(
       { app: { destroy: { method: 'DELETE', path: '/apps/{name}' } } },
-      {
-        'DELETE /apps/:name': routeSchema({ responses: { '204': {} } }),
-      },
+      spec({
+        '/apps/{name}': { delete: { responses: { '204': {} } } },
+      }),
     )
     expect(out).toMatch(/destroy\(name: string\): Promise<void>/)
     expect(out).not.toMatch(/destroy\(name: string\): Promise<unknown>/)
@@ -101,29 +99,33 @@ describe('generateDataTypes', () => {
   it('does not use an error response as the result for a no-content route', () => {
     const out = generateDataTypes(
       { app: { destroy: { method: 'DELETE', path: '/apps/{name}' } } },
-      {
-        'DELETE /apps/:name': routeSchema({
-          responses: {
-            '204': {},
-            '400': { type: 'object', properties: { message: { type: 'string' } } },
+      spec({
+        '/apps/{name}': {
+          delete: {
+            responses: {
+              '204': {},
+              '400': json({ type: 'object', properties: { message: { type: 'string' } } }),
+            },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toMatch(/destroy\(name: string\): Promise<void>/)
     expect(out).not.toContain('AppDestroyResult')
   })
 
-  it('preserves an error-only response as the result when no 204 is declared', () => {
+  it('preserves an error-only response as the result when no 2xx is declared', () => {
     const out = generateDataTypes(
       { app: { fail: { method: 'GET', path: '/apps/fail' } } },
-      {
-        'GET /apps/fail': routeSchema({
-          responses: {
-            '404': { type: 'object', properties: { message: { type: 'string' } } },
+      spec({
+        '/apps/fail': {
+          get: {
+            responses: {
+              '404': json({ type: 'object', properties: { message: { type: 'string' } } }),
+            },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toContain('export interface AppFailResult')
     expect(out).toMatch(/fail\(\): Promise<AppFailResult>/)
@@ -132,15 +134,17 @@ describe('generateDataTypes', () => {
   it('uses other successful JSON responses as the principal result', () => {
     const out = generateDataTypes(
       { app: { partial: { method: 'GET', path: '/apps/partial' } } },
-      {
-        'GET /apps/partial': routeSchema({
-          responses: {
-            '204': {},
-            '206': { type: 'object', properties: { id: { type: 'string' } } },
-            '400': { type: 'object', properties: { message: { type: 'string' } } },
+      spec({
+        '/apps/partial': {
+          get: {
+            responses: {
+              '204': {},
+              '206': json({ type: 'object', properties: { id: { type: 'string' } } }),
+              '400': json({ type: 'object', properties: { message: { type: 'string' } } }),
+            },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toContain('export interface AppPartialResult')
     expect(out).toMatch(/partial\(\): Promise<AppPartialResult \| void>/)
@@ -149,29 +153,19 @@ describe('generateDataTypes', () => {
   it('uses a 206-only response as the principal result without adding void', () => {
     const out = generateDataTypes(
       { app: { partial: { method: 'GET', path: '/apps/partial' } } },
-      {
-        'GET /apps/partial': routeSchema({
-          responses: {
-            '206': { type: 'object', properties: { id: { type: 'string' } } },
+      spec({
+        '/apps/partial': {
+          get: {
+            responses: {
+              '206': json({ type: 'object', properties: { id: { type: 'string' } } }),
+            },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toContain('export interface AppPartialResult')
     expect(out).toMatch(/partial\(\): Promise<AppPartialResult>/)
     expect(out).not.toMatch(/partial\(\): Promise<AppPartialResult \| void>/)
-  })
-
-  it('matches schema keys regardless of {param} vs :param form', () => {
-    const out = generateDataTypes(
-      { app: { info: { method: 'GET', path: '/apps/{name}' } } },
-      {
-        'GET /apps/:name': routeSchema({
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-        }),
-      },
-    )
-    expect(out).toContain('export interface AppInfoResult')
   })
 
   it('emits each Opts/Result interface only once', () => {
@@ -182,14 +176,10 @@ describe('generateDataTypes', () => {
           listAll: { method: 'GET', path: '/apps/all' },
         },
       },
-      {
-        'GET /apps': routeSchema({
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-        }),
-        'GET /apps/all': routeSchema({
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-        }),
-      },
+      spec({
+        '/apps': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
+        '/apps/all': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
+      }),
     )
     expect((out.match(/export interface AppListResult/g) ?? []).length).toBe(1)
     expect((out.match(/export interface AppListAllResult/g) ?? []).length).toBe(1)
@@ -198,7 +188,9 @@ describe('generateDataTypes', () => {
   it('emits empty result schemas as Record<string, unknown> aliases', () => {
     const out = generateDataTypes(
       { app: { ping: { method: 'GET', path: '/ping' } } },
-      { 'GET /ping': routeSchema({ responses: { '200': { type: 'object' } } }) },
+      spec({
+        '/ping': { get: { responses: { '200': json({ type: 'object' }) } } },
+      }),
     )
     expect(out).toContain('export type AppPingResult = Record<string, unknown>')
   })
@@ -208,22 +200,24 @@ describe('additionalProperties', () => {
   it('emits a typed Record for a property-less object with typed additionalProperties', () => {
     const out = generateDataTypes(
       { app: { series: { method: 'GET', path: '/series' } } },
-      {
-        'GET /series': routeSchema({
-          responses: {
-            '200': {
-              type: 'object',
-              required: ['data'],
-              properties: {
-                data: {
-                  type: 'object',
-                  additionalProperties: { type: 'array', items: { type: ['number', 'null'] } },
+      spec({
+        '/series': {
+          get: {
+            responses: {
+              '200': json({
+                type: 'object',
+                required: ['data'],
+                properties: {
+                  data: {
+                    type: 'object',
+                    additionalProperties: { type: 'array', items: { type: 'number', nullable: true } },
+                  },
                 },
-              },
+              }),
             },
           },
-        }),
-      },
+        },
+      }),
     )
     expect(out).toMatch(/data: Record<string, Array<number \| null>>/)
   })
@@ -231,7 +225,9 @@ describe('additionalProperties', () => {
   it('still falls back to Record<string, unknown> when additionalProperties is absent', () => {
     const out = generateDataTypes(
       { app: { blob: { method: 'GET', path: '/blob' } } },
-      { 'GET /blob': routeSchema({ responses: { '200': { type: 'object' } } }) },
+      spec({
+        '/blob': { get: { responses: { '200': json({ type: 'object' }) } } },
+      }),
     )
     expect(out).toContain('export type AppBlobResult = Record<string, unknown>')
   })
@@ -245,14 +241,17 @@ describe('query params', () => {
           latency: { method: 'GET', path: '/apps/{app}/router-metrics/latency', query: ['date', 'process_type'] },
         },
       },
-      {
-        'GET /apps/:app/router-metrics/latency': {
-          request: null,
-          responses: { '200': { type: 'object', properties: { step: { type: 'string' } } } },
-          request_example_count: 0,
-          response_example_count: 0,
+      spec({
+        '/apps/{app}/router-metrics/latency': {
+          get: {
+            parameters: [
+              { name: 'date', in: 'query', schema: { type: 'string' } },
+              { name: 'process_type', in: 'query', schema: { type: 'string' } },
+            ],
+            responses: { '200': json({ type: 'object', properties: { step: { type: 'string' } } }) },
+          },
         },
-      },
+      }),
     )
     expect(out).toMatch(/latency\(app: string, query: \{[^}]*date\?: string[^}]*process_type\?: string[^}]*\}\): Promise</)
   })
@@ -262,9 +261,8 @@ describe('main', () => {
   function makeDeps(over: Partial<MainDeps> = {}): MainDeps {
     return {
       routesPath: '/fake/routes.ts',
-      schemaPath: '/fake/schemas.json',
       outPath: '/fake/types.d.ts',
-      readFile: vi.fn().mockReturnValue('{}'),
+      fetchSpec: vi.fn().mockResolvedValue(spec({})),
       writeFile: vi.fn(),
       importRoutes: vi.fn().mockResolvedValue({}),
       emitTypedSource: vi.fn().mockReturnValue({
@@ -282,13 +280,8 @@ describe('main', () => {
       importRoutes: vi.fn().mockResolvedValue({
         app: { list: { method: 'GET', path: '/apps' } },
       }),
-      readFile: vi.fn().mockReturnValue(JSON.stringify({
-        'GET /apps': {
-          request: null,
-          responses: { '200': { type: 'object', properties: { id: { type: 'string' } } } },
-          request_example_count: 0,
-          response_example_count: 0,
-        },
+      fetchSpec: vi.fn().mockResolvedValue(spec({
+        '/apps': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
       })),
       writeFile,
     })
@@ -308,7 +301,9 @@ describe('main', () => {
         default: { app: { ignored: { method: 'GET', path: '/x' } } },
         app: { list: { method: 'GET', path: '/apps' } },
       }),
-      readFile: vi.fn().mockReturnValue('{}'),
+      fetchSpec: vi.fn().mockResolvedValue(spec({
+        '/apps': { get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } } },
+      })),
       writeFile,
     })
     await main(deps)
@@ -323,31 +318,49 @@ describe('main', () => {
   it('logs summary stats after writing', async () => {
     const log = vi.fn()
     const deps = makeDeps({
-      importRoutes: vi.fn().mockResolvedValue({ app: { list: { method: 'GET', path: '/apps' } } }),
-      readFile: vi.fn().mockReturnValue('{}'),
+      importRoutes: vi.fn().mockResolvedValue({
+        app: {
+          list: { method: 'GET', path: '/apps' },
+          create: { method: 'POST', path: '/apps', hasRequestBody: true },
+        },
+      }),
+      fetchSpec: vi.fn().mockResolvedValue(spec({
+        '/apps': {
+          get: { responses: { '200': json({ type: 'object', properties: { id: { type: 'string' } } }) } },
+          post: {
+            requestBody: json({ type: 'object', properties: { name: { type: 'string' } } }),
+            responses: { '201': json({ type: 'object', properties: { id: { type: 'string' } } }) },
+          },
+        },
+      })),
       log,
     })
     await main(deps)
 
     const messages = log.mock.calls.map(c => c[0] as string)
     expect(messages.some(m => m.startsWith('Wrote '))).toBe(true)
-    expect(messages.some(m => m.includes('Methods total:'))).toBe(true)
+    expect(messages.some(m => m.includes('Methods total:        2'))).toBe(true)
+    expect(messages.some(m => m.includes('With request schema:  1'))).toBe(true)
+    expect(messages.some(m => m.includes('With response schema: 2'))).toBe(true)
   })
 
   it('does not touch the filesystem when deps are stubbed', async () => {
     const deps = makeDeps()
     await main(deps)
-    // No assertion needed beyond "did not throw" — readFile/writeFile/importRoutes are spies.
+    // No assertion needed beyond "did not throw" — writeFile/importRoutes are spies.
   })
 
   it("defaults routesPath to the typed source under src/", async () => {
     const importRoutes = vi.fn().mockResolvedValue({})
     await main({
-      schemaPath: '/fake/schemas.json',
       outPath: '/fake/types.d.ts',
-      readFile: vi.fn().mockReturnValue('{}'),
+      fetchSpec: vi.fn().mockResolvedValue(spec({})),
       writeFile: vi.fn(),
       importRoutes,
+      emitTypedSource: vi.fn().mockReturnValue({
+        jsPath: '/fake/dist/data/routes.js',
+        diagnostics: [],
+      }),
       log: vi.fn(),
     })
     expect(importRoutes).toHaveBeenCalledWith(expect.stringMatching(/src\/data\/routes\.ts$/))
@@ -377,11 +390,16 @@ describe('main', () => {
         transfer: { list: { method: 'GET', path: '/x' } },
         backup: { create: { method: 'POST', path: '/y', hasRequestBody: true } },
       }),
+      fetchSpec: vi.fn().mockResolvedValue(spec({
+        '/x': { get: { responses: {} } },
+        '/y': { post: { requestBody: json({ type: 'object' }), responses: {} } },
+      })),
       writeFile,
     }))
     const dtsCall = writeFile.mock.calls.find((c: unknown[]) => /routes\.d\.ts$/.test(c[0] as string))
     expect(dtsCall).toBeDefined()
     const content = dtsCall![1] as string
+    expect(content).toContain('NOTE: the contents of this file are generated')
     expect(content).toContain(`import type { RouteDefinition } from '../types'`)
     expect(content).toContain('export declare const transfer: Record<string, RouteDefinition>')
     expect(content).toContain('export declare const backup: Record<string, RouteDefinition>')
