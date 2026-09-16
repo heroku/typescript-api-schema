@@ -15,6 +15,17 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [5.0.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.8.0...types-v5.0.0) (2026-09-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate data variant to live OpenAPI spec generation ([#123](https://github.com/heroku/typescript-api-schema/issues/123))
+
+### Features
+
+* migrate data variant to live OpenAPI spec generation ([#123](https://github.com/heroku/typescript-api-schema/issues/123)) ([a7bbced](https://github.com/heroku/typescript-api-schema/commit/a7bbcedb7e4b4685eb58910d4fb001f04c984fc0))
+
 ## [4.8.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.7.0...types-v4.8.0) (2026-09-01)
 
 
