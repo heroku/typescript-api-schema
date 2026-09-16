@@ -75,10 +75,11 @@ The grouping in `src/data/routes.ts` is the source of truth. The generator never
 
 ### Why grouping is curated
 
-The spec's path structure was designed for the service that owns it, not for an SDK. The same logical resource can span multiple path prefixes, and similar names can be genuinely different APIs:
+The spec groups endpoints by tag and path prefix, which doesn't match how we want resources grouped in the SDK. For example, the same logical resource can span multiple path prefixes:
 
 - `transfer` spans `/client/v11/apps/{name}/transfers/*` and `/client/v11/databases/{name}/transfers/*`
-- `postgres` and `postgresDatabase` both relate to Postgres but live under `/data/postgres/v1/*` and `/postgres/v0/databases/*`
+
+Curating `src/data/routes.ts` lets us pick the grouping we want; the generator still fills in every type from the spec.
 
 ## Running Tests
 
