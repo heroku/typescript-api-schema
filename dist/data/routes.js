@@ -10,6 +10,7 @@ export const transfer = {
     infoByApp: {
         method: 'GET',
         path: '/client/v11/apps/{name}/transfers/{xfer_id}',
+        query: ['verbose'],
     },
     deleteByApp: {
         method: 'DELETE',
@@ -22,10 +23,7 @@ export const transfer = {
     publicUrl: {
         method: 'POST',
         path: '/client/v11/apps/{name}/transfers/{xfer_id}/actions/public-url',
-    },
-    list: {
-        method: 'GET',
-        path: '/client/v11/databases/{name}/transfers',
+        hasRequestBody: true,
     },
     create: {
         method: 'POST',
@@ -36,7 +34,11 @@ export const transfer = {
 export const database = {
     info: { method: 'GET', path: '/client/v11/databases/{name}' },
     connectionReset: { method: 'POST', path: '/client/v11/databases/{name}/connection_reset' },
-    reset: { method: 'PUT', path: '/client/v11/databases/{name}/reset' },
+    reset: {
+        method: 'PUT',
+        path: '/client/v11/databases/{name}/reset',
+        hasRequestBody: true,
+    },
     unfollow: { method: 'PUT', path: '/client/v11/databases/{name}/unfollow' },
     cancelUpgrade: { method: 'POST', path: '/client/v11/databases/{name}/upgrade/cancel' },
     dryRunUpgrade: {
@@ -56,13 +58,14 @@ export const database = {
     },
     upgradeWaitStatus: { method: 'GET', path: '/client/v11/databases/{name}/upgrade/wait_status' },
     waitStatus: { method: 'GET', path: '/client/v11/databases/{name}/wait_status' },
+    expensiveQueries: {
+        method: 'GET',
+        path: '/client/v11/database/{name}/expensive-queries',
+        query: ['limit'],
+    },
 };
 export const backup = {
-    create: {
-        method: 'POST',
-        path: '/client/v11/databases/{name}/backups',
-        hasRequestBody: true,
-    },
+    create: { method: 'POST', path: '/client/v11/databases/{name}/backups' },
 };
 export const burstStatus = {
     info: { method: 'GET', path: '/client/v11/databases/{name}/burst_status' },
@@ -108,75 +111,142 @@ export const transferSchedule = {
     },
 };
 export const maintenance = {
-    info: { method: 'GET', path: '/data/maintenances/v1/{uuid}' },
-    infoByApp: { method: 'GET', path: '/data/maintenances/v1/apps/{uuid}' },
-    history: { method: 'GET', path: '/data/maintenances/v1/{uuid}/history' },
+    info: { method: 'GET', path: '/data/maintenances/v1/{addon_id}' },
+    infoByApp: { method: 'GET', path: '/data/maintenances/v1/apps/{app_id}' },
+    history: {
+        method: 'GET',
+        path: '/data/maintenances/v1/{addon_id}/history',
+        query: ['limit'],
+    },
     run: {
         method: 'POST',
-        path: '/data/maintenances/v1/{uuid}/run',
-        hasRequestBody: true,
+        path: '/data/maintenances/v1/{addon_id}/run',
     },
     schedule: {
         method: 'POST',
-        path: '/data/maintenances/v1/{uuid}/schedule',
+        path: '/data/maintenances/v1/{addon_id}/schedule',
         hasRequestBody: true,
     },
-    window: { method: 'GET', path: '/data/maintenances/v1/{uuid}/window' },
+    window: { method: 'GET', path: '/data/maintenances/v1/{addon_id}/window' },
     updateWindow: {
         method: 'POST',
-        path: '/data/maintenances/v1/{uuid}/window',
+        path: '/data/maintenances/v1/{addon_id}/window',
         hasRequestBody: true,
     },
 };
 export const postgres = {
-    info: { method: 'GET', path: '/data/postgres/v1/{uuid}/info' },
-    waitStatus: { method: 'GET', path: '/data/postgres/v1/{uuid}/wait_status' },
-    rotateCredentials: { method: 'POST', path: '/data/postgres/v1/{uuid}/rotate_credentials' },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/info' },
+    waitStatus: { method: 'GET', path: '/data/postgres/v1/{addon_id}/wait_status' },
+    rotateCredentials: {
+        method: 'POST',
+        path: '/data/postgres/v1/{addon_id}/rotate_credentials',
+        hasRequestBody: true,
+    },
     runUpgrade: {
         method: 'POST',
-        path: '/data/postgres/v1/{uuid}/upgrade/run',
+        path: '/data/postgres/v1/{addon_id}/upgrade/run',
+        hasRequestBody: true,
+    },
+    reset: {
+        method: 'POST',
+        path: '/data/postgres/v1/{addon_id}/reset',
+        hasRequestBody: true,
+    },
+    diagnose: { method: 'GET', path: '/data/postgres/v1/{addon_id}/diagnose' },
+    expensiveQueries: { method: 'GET', path: '/data/postgres/v1/{addon_id}/expensive-queries' },
+};
+export const postgresMigration = {
+    create: {
+        method: 'POST',
+        path: '/data/postgres/v1/{addon_id}/migrations',
+        hasRequestBody: true,
+    },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/migrations' },
+    run: { method: 'POST', path: '/data/postgres/v1/{addon_id}/migrations/run' },
+    cancel: { method: 'POST', path: '/data/postgres/v1/{addon_id}/migrations/cancel' },
+};
+export const postgresLogicalReplication = {
+    enablePublishing: { method: 'POST', path: '/data/postgres/v1/{addon_id}/logical-replication/publishing/enable' },
+    enableSubscribing: { method: 'POST', path: '/data/postgres/v1/{addon_id}/logical-replication/subscribing/enable' },
+    list: { method: 'GET', path: '/data/postgres/v1/{addon_id}/logical-replication/publications' },
+    create: {
+        method: 'POST',
+        path: '/data/postgres/v1/{addon_id}/logical-replication/publications',
+        hasRequestBody: true,
+    },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/logical-replication/publications/{name}' },
+    update: {
+        method: 'PUT',
+        path: '/data/postgres/v1/{addon_id}/logical-replication/publications/{name}',
+        hasRequestBody: true,
+    },
+    delete: { method: 'DELETE', path: '/data/postgres/v1/{addon_id}/logical-replication/publications/{name}' },
+};
+export const objectStore = {
+    info: { method: 'GET', path: '/object-stores/{uuid}' },
+    rotateCredential: { method: 'POST', path: '/object-stores/{uuid}/credential/rotate' },
+};
+export const postgresProvisioning = {
+    create: {
+        method: 'POST',
+        path: '/addons/heroku-postgresql/heroku/resources',
+        hasRequestBody: true,
+    },
+    update: {
+        method: 'PUT',
+        path: '/addons/heroku-postgresql/heroku/resources/{id}',
+        hasRequestBody: true,
+    },
+    delete: { method: 'DELETE', path: '/addons/heroku-postgresql/heroku/resources/{id}' },
+    attach: {
+        method: 'POST',
+        path: '/addons/heroku-postgresql/heroku/resources/{id}/namespaces',
         hasRequestBody: true,
     },
 };
 export const postgresCredential = {
-    list: { method: 'GET', path: '/data/postgres/v1/{uuid}/credentials' },
+    list: { method: 'GET', path: '/data/postgres/v1/{addon_id}/credentials' },
     create: {
         method: 'POST',
-        path: '/data/postgres/v1/{uuid}/credentials',
+        path: '/data/postgres/v1/{addon_id}/credentials',
         hasRequestBody: true,
     },
-    delete: { method: 'DELETE', path: '/data/postgres/v1/{uuid}/credentials/{cred_name}' },
-    info: { method: 'GET', path: '/data/postgres/v1/{uuid}/credentials/{cred_name}' },
-    rotate: { method: 'POST', path: '/data/postgres/v1/{uuid}/credentials/{cred_name}/rotate' },
+    delete: { method: 'DELETE', path: '/data/postgres/v1/{addon_id}/credentials/{cred_name}' },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/credentials/{cred_name}' },
+    rotate: {
+        method: 'POST',
+        path: '/data/postgres/v1/{addon_id}/credentials/{cred_name}/rotate',
+        hasRequestBody: true,
+    },
 };
 export const postgresPool = {
     create: {
         method: 'POST',
-        path: '/data/postgres/v1/{uuid}/pools',
+        path: '/data/postgres/v1/{addon_id}/pools',
         hasRequestBody: true,
     },
-    delete: { method: 'DELETE', path: '/data/postgres/v1/{uuid}/pools/{pool_id}' },
-    info: { method: 'GET', path: '/data/postgres/v1/{uuid}/pools/{pool_id}' },
+    delete: { method: 'DELETE', path: '/data/postgres/v1/{addon_id}/pools/{pool_id}' },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/pools/{pool_id}' },
     update: {
         method: 'PATCH',
-        path: '/data/postgres/v1/{uuid}/pools/{pool_id}',
+        path: '/data/postgres/v1/{addon_id}/pools/{pool_id}',
         hasRequestBody: true,
     },
 };
 export const postgresQuota = {
-    list: { method: 'GET', path: '/data/postgres/v1/{uuid}/quotas' },
-    info: { method: 'GET', path: '/data/postgres/v1/{uuid}/quotas/{quota_type}' },
+    list: { method: 'GET', path: '/data/postgres/v1/{addon_id}/quotas' },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/quotas/{quota_type}' },
     update: {
         method: 'PATCH',
-        path: '/data/postgres/v1/{uuid}/quotas/{quota_type}',
+        path: '/data/postgres/v1/{addon_id}/quotas/{quota_type}',
         hasRequestBody: true,
     },
 };
 export const postgresSettings = {
-    info: { method: 'GET', path: '/data/postgres/v1/{uuid}/settings' },
+    info: { method: 'GET', path: '/data/postgres/v1/{addon_id}/settings' },
     update: {
         method: 'PUT',
-        path: '/data/postgres/v1/{uuid}/settings',
+        path: '/data/postgres/v1/{addon_id}/settings',
         hasRequestBody: true,
     },
 };
@@ -199,6 +269,7 @@ export const postgresDatabase = {
     rotateCredentials: {
         method: 'POST',
         path: '/postgres/v0/databases/{name}/credentials_rotation',
+        query: ['forced'],
     },
     deleteCredential: {
         method: 'DELETE',
@@ -211,6 +282,7 @@ export const postgresDatabase = {
     rotateCredential: {
         method: 'POST',
         path: '/postgres/v0/databases/{name}/credentials/{cred_name}/credentials_rotation',
+        query: ['forced'],
     },
     repairDefault: { method: 'POST', path: '/postgres/v0/databases/{name}/repair-default' },
 };

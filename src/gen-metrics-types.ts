@@ -17,11 +17,11 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 import { emitTypes } from "./gen/ts-emit.js";
 import {
-  normalizeData,
+  normalizeJsonSchema,
   summarizeCoverage,
   type RouteDef,
   type RouteSchema,
-} from "./gen/normalize-data.js";
+} from "./gen/normalize-json-schema.js";
 import { emitTypedSource as defaultEmitTypedSource, type EmitTypedSourceResult } from "./gen/emit-typed-source.js";
 import { GENERATED_CONTENT_PREAMBLE } from "./gen/generator.js";
 import { generateRoutesDTSForResources, generateSharedTypesDTS } from "./gen/route-generator.js";
@@ -32,7 +32,7 @@ export function generateMetricsTypes(
   routesByResource: Record<string, Record<string, RouteDef>>,
   schemas: Record<string, RouteSchema>,
 ): string {
-  const model = normalizeData(routesByResource, schemas);
+  const model = normalizeJsonSchema(routesByResource, schemas);
   return BANNER + "\n" + emitTypes(model, { emitResourceShapes: false });
 }
 

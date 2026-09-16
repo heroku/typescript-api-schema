@@ -3,50 +3,48 @@
  *
  * Reads:
  *   - data/routes.js          (curated resource grouping; (method, path) per call)
- *   - <SCHEMA_PATH>           (Shogun's tmp/api_schemas.json — schemas keyed by "VERB /path")
+ *   - OpenAPI 3.0.1 spec      (see `./gen/data-schema.ts`)
  *
  * Emits a `data/types.d.ts` whose `HerokuClient` interface preserves the
  * curated resource grouping but replaces every `Promise<unknown>` with
- * concrete request/response types inferred from spec traffic. Uses the
+ * concrete request/response types sourced from the spec. Uses the
  * same Opts/Result naming convention as `3.sdk/types.d.ts`.
  *
  * Usage:
- *   SHOGUN_SCHEMA_PATH=/path/to/shogun/tmp/api_schemas.json \
- *     node --experimental-strip-types src/gen-data-types.ts
+ *   npm run generate:data
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { fetchDataApiSpec } from "./gen/data-schema.js";
 import { emitTypes } from "./gen/ts-emit.js";
 import {
-  normalizeData,
-  summarizeCoverage,
-  type RouteDef,
-  type RouteSchema,
-} from "./gen/normalize-data.js";
+  normalizeOpenApi,
+  summarizeOpenApiCoverage,
+} from "./gen/normalize-openapi.js";
+import type { OpenApiDocument } from "./gen/openapi-types.js";
+import type { RouteDefinition } from "./gen/schema-types.js";
 import { emitTypedSource as defaultEmitTypedSource, type EmitTypedSourceResult } from "./gen/emit-typed-source.js";
 import { GENERATED_CONTENT_PREAMBLE } from "./gen/generator.js";
 import { generateRoutesDTSForResources } from "./gen/route-generator.js";
 
-export type { RouteDef, RouteSchema } from "./gen/normalize-data.js";
-export type { JsonSchema } from "./gen/normalize-data.js";
+export type {RouteDefinition} from "./gen/schema-types.js";
 
 const BANNER = "/**\n * NOTE: the contents of this file are generated. Do not modify this file.\n */\n";
 
 export function generateDataTypes(
-  routesByResource: Record<string, Record<string, RouteDef>>,
-  schemas: Record<string, RouteSchema>,
+  routesByResource: Record<string, Record<string, RouteDefinition>>,
+  spec: OpenApiDocument,
 ): string {
-  const model = normalizeData(routesByResource, schemas);
+  const model = normalizeOpenApi(routesByResource, spec);
   return BANNER + "\n" + emitTypes(model, { emitResourceShapes: false });
 }
 
 export interface MainDeps {
   routesPath: string
-  schemaPath: string
   outPath: string
-  readFile: (path: string) => string
+  fetchSpec: () => Promise<OpenApiDocument>
   writeFile: (path: string, content: string) => void
   importRoutes: (path: string) => Promise<Record<string, unknown>>
   emitTypedSource: (opts: { sourcePath: string; rootDir: string; outDir: string; banner?: string }) => EmitTypedSourceResult
@@ -59,9 +57,8 @@ const DIST = resolve(HERE, "../dist");
 
 const defaultDeps: MainDeps = {
   routesPath: resolve(SRC, "data/routes.ts"),
-  schemaPath: process.env.SHOGUN_SCHEMA_PATH ?? resolve('.', "../shogun/tmp/api_schemas.json"),
   outPath: resolve(DIST, "data/types.d.ts"),
-  readFile: (p) => readFileSync(p, "utf8"),
+  fetchSpec: () => fetchDataApiSpec() as Promise<OpenApiDocument>,
   writeFile: writeFileSync,
   importRoutes: (p) => import(p),
   emitTypedSource: defaultEmitTypedSource,
@@ -69,16 +66,16 @@ const defaultDeps: MainDeps = {
 };
 
 export async function main(deps: Partial<MainDeps> = {}) {
-  const { routesPath, schemaPath, outPath, readFile, writeFile, importRoutes, emitTypedSource, log } = { ...defaultDeps, ...deps };
+  const { routesPath, outPath, fetchSpec, writeFile, importRoutes, emitTypedSource, log } = { ...defaultDeps, ...deps };
 
   const routesModule = await importRoutes(routesPath);
-  const routesByResource: Record<string, Record<string, RouteDef>> = {};
+  const routesByResource: Record<string, Record<string, RouteDefinition>> = {};
   for (const [k, v] of Object.entries(routesModule)) {
-    if (k !== "default") routesByResource[k] = v as Record<string, RouteDef>;
+    if (k !== "default") routesByResource[k] = v as Record<string, RouteDefinition>;
   }
 
-  const schemas: Record<string, RouteSchema> = JSON.parse(readFile(schemaPath));
-  const output = generateDataTypes(routesByResource, schemas);
+  const spec: OpenApiDocument = await fetchSpec();
+  const output = generateDataTypes(routesByResource, spec);
 
   const emitResult = emitTypedSource({
     sourcePath: routesPath,
@@ -95,12 +92,11 @@ export async function main(deps: Partial<MainDeps> = {}) {
   writeFile(routesDtsPath, GENERATED_CONTENT_PREAMBLE + generateRoutesDTSForResources(Object.keys(routesByResource)));
   writeFile(outPath, output);
 
-  const s = summarizeCoverage(routesByResource, schemas);
+  const s = summarizeOpenApiCoverage(routesByResource, spec);
   log(`Wrote ${outPath}`);
   log(`Wrote ${emitResult.jsPath}`);
   log(`Wrote ${routesDtsPath}`);
   log(`  Methods total:        ${s.total}`);
-  log(`  With any schema:      ${s.withSchema} (${(100 * s.withSchema / s.total).toFixed(1)}%)`);
   log(`  With request schema:  ${s.withOpts}`);
   log(`  With response schema: ${s.withResult}`);
 }

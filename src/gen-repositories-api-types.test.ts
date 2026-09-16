@@ -7,7 +7,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import * as routes from './repositories-api/routes.js'
 import {generateRepositoriesApiTypes, main} from './gen-repositories-api-types.js'
-import type {RouteSchema} from './gen/normalize-data.js'
+import type {RouteSchema} from './gen/normalize-json-schema.js'
 import {verifyTypes} from './gen/verify.js'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
