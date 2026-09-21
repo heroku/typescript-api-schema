@@ -126,6 +126,35 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       topologyAppProps.formations = topologyAppProps.formation
       delete topologyAppProps.formation
     }
+
+    // WHY: The upstream hyperschema gives all three `usage` GET links the same
+    // title ("Info"), so the generator's title disambiguation collapses them to
+    // a single `infoGet` route key (last-write-wins keeps only
+    // `GET /teams/{team}/usage`). The two app-scoped overloads
+    // (`infoGet(appIdentity)` and `infoGet(teamIdentity, teamAppIdentity)`)
+    // still type-check but MIS-DISPATCH at runtime to `/teams/{that-arg}/usage`,
+    // so app and team-app usage are unreachable through the generated client.
+    //
+    // We give each link a distinct title so the registry emits three real keys:
+    // `forApp` (GET /apps/:app/usage), `forTeamApp`
+    // (GET /teams/:team/apps/:app/usage), and `infoGet` (unchanged — the team
+    // route GET /teams/:team/usage, whose result type stays UsageInfoGetResult).
+    // Links are matched by `href` so we don't depend on the colliding title text.
+    //
+    // The guard only renames a link whose title differs from its target, so this
+    // SELF-HEALS to a no-op if upstream ever gives these links distinct titles.
+    const usage = definitions['usage']
+    if (usage?.links) {
+      for (const link of usage.links) {
+        if (link.method?.toUpperCase() !== 'GET' || !link.href?.endsWith('/usage')) continue
+        const hasTeam = link.href.includes('/teams/')
+        const hasApp = link.href.includes('/apps/')
+        const target = hasTeam && hasApp ? 'For Team App' : hasTeam ? 'Info Get' : 'For App'
+        if (link.title !== target) {
+          link.title = target
+        }
+      }
+    }
   }
 
   return schema
