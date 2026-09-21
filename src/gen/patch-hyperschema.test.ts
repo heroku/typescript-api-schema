@@ -253,3 +253,98 @@ describe('patchHyperschema space-topology formations rename', () => {
     expect(appProps.formations).toBeUndefined()
   })
 })
+
+// The upstream hyperschema titles all three `usage` GET links "Info", so the
+// generator's title disambiguation collapses them to a single `infoGet` route
+// key (last-write-wins keeps only GET /teams/:team/usage). patchHyperschema
+// renames the links by href so the route registry emits three real keys —
+// forApp, forTeamApp, and infoGet — matching the three typed overloads.
+
+function schemaWithUsageLinks(): HerokuSchema {
+  return {
+    definitions: {
+      usage: {
+        type: ['object'],
+        properties: { id: { type: ['string'] } },
+        links: [
+          {
+            title: 'Info',
+            method: 'GET',
+            rel: 'self',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}/usage',
+            targetSchema: { $ref: '#/definitions/usage' },
+          },
+          {
+            title: 'Info',
+            method: 'GET',
+            rel: 'self',
+            href: '/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/apps/{(%23%2Fdefinitions%2Fteam-app%2Fdefinitions%2Fidentity)}/usage',
+            targetSchema: { $ref: '#/definitions/usage' },
+          },
+          {
+            title: 'Info',
+            method: 'GET',
+            rel: 'self',
+            href: '/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/usage',
+            targetSchema: { type: ['array'], items: { $ref: '#/definitions/usage' } },
+          },
+        ],
+      },
+    },
+  }
+}
+
+describe('patchHyperschema usage route de-collision', () => {
+  it('renames the three usage GET link titles by href', () => {
+    const schema = schemaWithUsageLinks()
+    patchHyperschema(schema)
+    const byHref = (needle: string) =>
+      schema.definitions.usage.links!.find(l => l.href!.includes(needle) && l.href!.endsWith('/usage'))!
+    expect(byHref('/apps/').title).toBe('For App')
+    // team-app: has both /teams/ and /apps/
+    expect(
+      schema.definitions.usage.links!.find(l => l.href!.includes('/teams/') && l.href!.includes('/apps/'))!.title,
+    ).toBe('For Team App')
+    // team-only: /teams/ without /apps/ — title stays "Info Get" so the key is infoGet
+    expect(
+      schema.definitions.usage.links!.find(l => l.href!.includes('/teams/') && !l.href!.includes('/apps/'))!.title,
+    ).toBe('Info Get')
+  })
+
+  it('emits three distinct route keys (forApp, forTeamApp, infoGet), not one collapsed infoGet', () => {
+    const routes = generateRoutesJS(schemaWithUsageLinks())
+    const usageBlock = routes.match(/export const usage = \{[\s\S]*?\n\}/)![0]
+    expect(usageBlock).toContain('"forApp"')
+    expect(usageBlock).toContain('"forTeamApp"')
+    expect(usageBlock).toContain('"infoGet"')
+    // the team-only route keeps the infoGet key and its /teams/:team/usage path
+    expect(usageBlock).toMatch(/"infoGet": \{[^}]*"path": "\/teams\/\{teamIdentity\}\/usage"/)
+    // the app route is now reachable and points at /apps/:app/usage
+    expect(usageBlock).toMatch(/"forApp": \{[^}]*"path": "\/apps\/\{appIdentity\}\/usage"/)
+  })
+
+  it('exposes the three methods on the generated HerokuClient usage surface', () => {
+    const types = generateTypes(schemaWithUsageLinks())
+    expect(types).toContain('forApp(appIdentity: string)')
+    expect(types).toContain('forTeamApp(teamIdentity: string, teamAppIdentity: string)')
+    expect(types).toContain('infoGet(teamIdentity: string)')
+  })
+
+  it('self-heals to a no-op when the usage links already have distinct titles', () => {
+    const schema = schemaWithUsageLinks()
+    schema.definitions.usage.links![0].title = 'For App'
+    schema.definitions.usage.links![1].title = 'For Team App'
+    schema.definitions.usage.links![2].title = 'Info Get'
+    patchHyperschema(schema)
+    expect(schema.definitions.usage.links!.map(l => l.title)).toEqual([
+      'For App',
+      'For Team App',
+      'Info Get',
+    ])
+  })
+
+  it('does not throw when there is no usage definition', () => {
+    const schema: HerokuSchema = { definitions: {} }
+    expect(() => patchHyperschema(schema)).not.toThrow()
+  })
+})

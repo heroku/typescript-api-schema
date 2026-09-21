@@ -5994,12 +5994,12 @@ export interface HerokuClient {
    * Retrieves usage for an app.
    * 
    */
-  infoGet(appIdentity: string): Promise<Usage>
+  forApp(appIdentity: string): Promise<Usage>
   /**
    * Retrieves usage for an app belonging to a particular team.
    * 
    */
-  infoGet(teamIdentity: string, teamAppIdentity: string): Promise<Usage>
+  forTeamApp(teamIdentity: string, teamAppIdentity: string): Promise<Usage>
   /**
    * Retrieves usage for apps belonging to a particular team.
    * 

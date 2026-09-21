@@ -1780,6 +1780,14 @@ export const usageHistory = {
 }
 
 export const usage = {
+  "forApp": {
+    "method": "GET",
+    "path": "/apps/{appIdentity}/usage"
+  },
+  "forTeamApp": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/apps/{teamAppIdentity}/usage"
+  },
   "infoGet": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/usage"
