@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [5.1.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.0.0...types-v5.1.0) (2026-09-21)
+
+
+### Features
+
+* de-collide usage GET routes into forApp/forTeamApp/infoGet ([#129](https://github.com/heroku/typescript-api-schema/issues/129)) ([479890e](https://github.com/heroku/typescript-api-schema/commit/479890e1184971e1c36fb373f7d6d2e5a62dac88))
+
 ## [5.0.0](https://github.com/heroku/typescript-api-schema/compare/types-v4.8.0...types-v5.0.0) (2026-09-16)
 
 
