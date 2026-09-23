@@ -6,4 +6,6 @@ import type { RouteDefinition } from '../types'
 
 export declare const formationMetric: Record<string, RouteDefinition>
 
+export declare const formationMonitor: Record<string, RouteDefinition>
+
 export declare const routerMetric: Record<string, RouteDefinition>

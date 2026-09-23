@@ -79,5 +79,109 @@
     },
     "request_example_count": 0,
     "response_example_count": 0
+  },
+  "$monitorComment": "Autoscaling monitor shape grounded on the live CLI callers (cli/src/commands/ps/autoscale/{enable,disable}.ts): they read `id`/`action_type`/`max_quantity`/`min_quantity`/`value` off each monitor and write `action_type`,`is_active`,`notification_channels`,`notification_period`,`op`,`period`,`max_quantity`,`min_quantity`,`name`,`value` when creating/updating. Only `id` and `action_type` are marked required (the two fields the CLI relies on being present); every settable field is optional so the partial PATCH bodies (e.g. disable sends only is_active/op/period) type-check. metaas is not in this workspace to verify further.",
+  "GET /apps/:app/formation/:formationType/monitors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "action_type"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "action_type": { "type": "string" },
+            "is_active": { "type": "boolean" },
+            "op": { "type": "string" },
+            "period": { "type": "integer" },
+            "notification_period": { "type": "integer" },
+            "notification_channels": { "type": "array", "items": { "type": "string" } },
+            "max_quantity": { "type": "integer" },
+            "min_quantity": { "type": "integer" },
+            "value": { "type": "number" }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "POST /apps/:app/formation/:formationType/monitors": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "action_type": { "type": "string" },
+        "is_active": { "type": "boolean" },
+        "op": { "type": "string" },
+        "period": { "type": "integer" },
+        "notification_period": { "type": "integer" },
+        "notification_channels": { "type": "array", "items": { "type": "string" } },
+        "max_quantity": { "type": "integer" },
+        "min_quantity": { "type": "integer" },
+        "value": { "type": "number" }
+      }
+    },
+    "responses": {
+      "201": {
+        "type": "object",
+        "required": ["id", "action_type"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "action_type": { "type": "string" },
+          "is_active": { "type": "boolean" },
+          "op": { "type": "string" },
+          "period": { "type": "integer" },
+          "notification_period": { "type": "integer" },
+          "notification_channels": { "type": "array", "items": { "type": "string" } },
+          "max_quantity": { "type": "integer" },
+          "min_quantity": { "type": "integer" },
+          "value": { "type": "number" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "PATCH /apps/:app/formation/:formationType/monitors/:monitorId": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "action_type": { "type": "string" },
+        "is_active": { "type": "boolean" },
+        "op": { "type": "string" },
+        "period": { "type": "integer" },
+        "notification_period": { "type": "integer" },
+        "notification_channels": { "type": "array", "items": { "type": "string" } },
+        "max_quantity": { "type": "integer" },
+        "min_quantity": { "type": "integer" },
+        "value": { "type": "number" }
+      }
+    },
+    "responses": {
+      "200": {
+        "type": "object",
+        "required": ["id", "action_type"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "action_type": { "type": "string" },
+          "is_active": { "type": "boolean" },
+          "op": { "type": "string" },
+          "period": { "type": "integer" },
+          "notification_period": { "type": "integer" },
+          "notification_channels": { "type": "array", "items": { "type": "string" } },
+          "max_quantity": { "type": "integer" },
+          "min_quantity": { "type": "integer" },
+          "value": { "type": "number" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
   }
 }

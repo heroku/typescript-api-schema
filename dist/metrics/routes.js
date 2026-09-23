@@ -26,3 +26,25 @@ export const formationMetric = {
         query: ['start_time', 'end_time', 'step'],
     },
 };
+// Autoscaling monitor CRUD on api.metrics.heroku.com. metaas is not checked out
+// in this workspace, so paths and the monitor body/response shape are grounded on
+// the only live callers: cli/src/commands/ps/autoscale/{enable,disable}.ts. Those
+// GET the monitor list, POST a new `scale` monitor, and PATCH an existing one by id
+// (all against METRICS_HOST, no Accept-version header). If metaas diverges, update
+// this file and metrics/schemas.json by hand.
+export const formationMonitor = {
+    list: {
+        method: 'GET',
+        path: '/apps/{app}/formation/{formationType}/monitors',
+    },
+    create: {
+        method: 'POST',
+        path: '/apps/{app}/formation/{formationType}/monitors',
+        hasRequestBody: true,
+    },
+    update: {
+        method: 'PATCH',
+        path: '/apps/{app}/formation/{formationType}/monitors/{monitorId}',
+        hasRequestBody: true,
+    },
+};
