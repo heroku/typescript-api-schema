@@ -38,16 +38,6 @@ export interface FormationMonitorCreateOpts {
 
 export interface FormationMonitorCreateResult {
   id: string
-  name?: string
-  action_type: string
-  is_active?: boolean
-  op?: string
-  period?: number
-  notification_period?: number
-  notification_channels?: Array<string>
-  max_quantity?: number
-  min_quantity?: number
-  value?: number
 }
 
 export interface FormationMonitorUpdateOpts {
@@ -63,19 +53,7 @@ export interface FormationMonitorUpdateOpts {
   value?: number
 }
 
-export interface FormationMonitorUpdateResult {
-  id: string
-  name?: string
-  action_type: string
-  is_active?: boolean
-  op?: string
-  period?: number
-  notification_period?: number
-  notification_channels?: Array<string>
-  max_quantity?: number
-  min_quantity?: number
-  value?: number
-}
+export type FormationMonitorUpdateResult = Record<string, unknown>
 
 export interface RouterMetricLatencyResult {
   data: Record<string, Array<number | null>>
