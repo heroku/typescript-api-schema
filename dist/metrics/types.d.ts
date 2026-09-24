@@ -53,8 +53,6 @@ export interface FormationMonitorUpdateOpts {
   value?: number
 }
 
-export type FormationMonitorUpdateResult = Record<string, unknown>
-
 export interface RouterMetricLatencyResult {
   data: Record<string, Array<number | null>>
   start_time: string
@@ -87,7 +85,7 @@ export interface HerokuClient {
   formationMonitor: {
   list(app: string, formationType: string): Promise<FormationMonitorListResult>
   create(app: string, formationType: string, requestBody: FormationMonitorCreateOpts): Promise<FormationMonitorCreateResult>
-  update(app: string, formationType: string, monitorId: string, requestBody: FormationMonitorUpdateOpts): Promise<FormationMonitorUpdateResult>
+  update(app: string, formationType: string, monitorId: string, requestBody: FormationMonitorUpdateOpts): Promise<void>
   }
   routerMetric: {
   latency(app: string, query: {
