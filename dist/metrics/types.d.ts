@@ -9,6 +9,50 @@ export interface FormationMetricErrorsResult {
   step: number
 }
 
+export type FormationMonitorListResult = Array<{
+  id: string
+  name?: string
+  action_type: string
+  is_active?: boolean
+  op?: string
+  period?: number
+  notification_period?: number
+  notification_channels?: Array<string>
+  max_quantity?: number
+  min_quantity?: number
+  value?: number
+}>
+
+export interface FormationMonitorCreateOpts {
+  name?: string
+  action_type?: string
+  is_active?: boolean
+  op?: string
+  period?: number
+  notification_period?: number
+  notification_channels?: Array<string>
+  max_quantity?: number
+  min_quantity?: number
+  value?: number
+}
+
+export interface FormationMonitorCreateResult {
+  id: string
+}
+
+export interface FormationMonitorUpdateOpts {
+  name?: string
+  action_type?: string
+  is_active?: boolean
+  op?: string
+  period?: number
+  notification_period?: number
+  notification_channels?: Array<string>
+  max_quantity?: number
+  min_quantity?: number
+  value?: number
+}
+
 export interface RouterMetricLatencyResult {
   data: Record<string, Array<number | null>>
   start_time: string
@@ -37,6 +81,11 @@ export interface HerokuClient {
   end_time?: string
   step?: string
 }): Promise<FormationMetricErrorsResult>
+  }
+  formationMonitor: {
+  list(app: string, formationType: string): Promise<FormationMonitorListResult>
+  create(app: string, formationType: string, requestBody: FormationMonitorCreateOpts): Promise<FormationMonitorCreateResult>
+  update(app: string, formationType: string, monitorId: string, requestBody: FormationMonitorUpdateOpts): Promise<void>
   }
   routerMetric: {
   latency(app: string, query: {

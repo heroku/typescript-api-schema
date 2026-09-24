@@ -79,5 +79,83 @@
     },
     "request_example_count": 0,
     "response_example_count": 0
+  },
+  "$monitorComment": "Autoscaling monitor routes for the CLI ps:autoscale commands, grounded against github.com/heroku/metaas (api/routes/monitoring/{routes,models}.go). List returns a subset of `apiMonitor`; only `id`/`action_type` are required (the fields the CLI reads). Every request field is optional so partial PATCH bodies type-check. Create returns 202 `{id}`; update returns 202 with no body.",
+  "GET /apps/:app/formation/:formationType/monitors": {
+    "request": null,
+    "responses": {
+      "200": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "action_type"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "action_type": { "type": "string" },
+            "is_active": { "type": "boolean" },
+            "op": { "type": "string" },
+            "period": { "type": "integer" },
+            "notification_period": { "type": "integer" },
+            "notification_channels": { "type": "array", "items": { "type": "string" } },
+            "max_quantity": { "type": "integer" },
+            "min_quantity": { "type": "integer" },
+            "value": { "type": "number" }
+          }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "POST /apps/:app/formation/:formationType/monitors": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "action_type": { "type": "string" },
+        "is_active": { "type": "boolean" },
+        "op": { "type": "string" },
+        "period": { "type": "integer" },
+        "notification_period": { "type": "integer" },
+        "notification_channels": { "type": "array", "items": { "type": "string" } },
+        "max_quantity": { "type": "integer" },
+        "min_quantity": { "type": "integer" },
+        "value": { "type": "number" }
+      }
+    },
+    "responses": {
+      "202": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" }
+        }
+      }
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
+  },
+  "PATCH /apps/:app/formation/:formationType/monitors/:monitorId": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "action_type": { "type": "string" },
+        "is_active": { "type": "boolean" },
+        "op": { "type": "string" },
+        "period": { "type": "integer" },
+        "notification_period": { "type": "integer" },
+        "notification_channels": { "type": "array", "items": { "type": "string" } },
+        "max_quantity": { "type": "integer" },
+        "min_quantity": { "type": "integer" },
+        "value": { "type": "number" }
+      }
+    },
+    "responses": {
+      "204": {}
+    },
+    "request_example_count": 0,
+    "response_example_count": 0
   }
 }
