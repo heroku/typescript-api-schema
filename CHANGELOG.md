@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [5.2.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.1.0...types-v5.2.0) (2026-09-24)
+
+
+### Features
+
+* add metrics formationMonitor routes and types (W-23388930) ([#131](https://github.com/heroku/typescript-api-schema/issues/131)) ([c360699](https://github.com/heroku/typescript-api-schema/commit/c3606992a9b0f9e3b340fbe39d893e2bbfd0d42f))
+
 ## [5.1.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.0.0...types-v5.1.0) (2026-09-21)
 
 
