@@ -1,0 +1,27 @@
+name: Test
+on:
+  push:
+    # Only run on pushes to main; PRs trigger via pull_request to avoid duplicate runs
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Cross-platform test matrix: coverage runs on every OS/node combo.
+  # This is a public repo, so it uses GitHub-hosted runners.
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - name: unit tests
+        run: npm run test:coverage
