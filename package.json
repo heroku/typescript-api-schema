@@ -82,7 +82,7 @@
     "generate:repositories": "tsx src/gen-repositories-types.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage --coverage.reporter=text-summary --coverage.reporter=lcovonly"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

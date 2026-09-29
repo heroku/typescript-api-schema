@@ -25,7 +25,8 @@ describe('main (metrics driver)', () => {
   it('writes routes.js, routes.d.ts, and types.d.ts', async () => {
     const writes: Record<string, string> = {}
     const deps: Partial<MainDeps> = {
-      writeFile: (p, c) => { writes[p] = c },
+      // Normalize to POSIX separators so the endsWith checks below hold on Windows too.
+      writeFile: (p, c) => { writes[String(p).replace(/\\/g, '/')] = c },
       emitTypedSource: () => ({ jsPath: '/fake/dist/metrics/routes.js', diagnostics: [] }),
       log: () => {},
     }
