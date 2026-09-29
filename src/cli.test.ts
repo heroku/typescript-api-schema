@@ -5,6 +5,10 @@ import { GENERATED_CONTENT_PREAMBLE } from './gen/generator.js'
 
 const STUB_PACKAGE_JSON = JSON.stringify({ name: '@heroku/types', exports: {}, files: [] })
 
+// Matches both POSIX '/' and Windows '\' path separators so writeFile path
+// assertions hold on every OS in the CI matrix.
+const SEP = '[/\\\\]'
+
 function makeDeps(overrides: Partial<MainDeps> & { argv: string[] }): MainDeps {
   return {
     fetchSchema: overrides.fetchSchema ?? vi.fn().mockResolvedValue({ definitions: {} }),
@@ -33,7 +37,7 @@ describe('main', () => {
     expect(deps.fetchSchema).toHaveBeenCalledWith(undefined, DEFAULT_SCHEMA_VARIANT)
     expect(deps.generateTypes).toHaveBeenCalled()
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(new RegExp(`/dist/${DEFAULT_SCHEMA_VARIANT}/types\\.d\\.ts$`)),
+      expect.stringMatching(new RegExp(`${SEP}dist${SEP}${DEFAULT_SCHEMA_VARIANT}${SEP}types\\.d\\.ts$`)),
       GENERATED_CONTENT_PREAMBLE + '// types',
     )
     expect(deps.exit).not.toHaveBeenCalled()
@@ -51,7 +55,7 @@ describe('main', () => {
     await main(deps)
 
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(/\/dist\/3\.platform\/types\.d\.ts$/),
+      expect.stringMatching(new RegExp(`${SEP}dist${SEP}3\\.platform${SEP}types\\.d\\.ts$`)),
       GENERATED_CONTENT_PREAMBLE + '// types',
     )
   })
@@ -97,11 +101,11 @@ describe('main', () => {
     await main(deps)
 
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(new RegExp(`/dist/${DEFAULT_SCHEMA_VARIANT}/routes\\.js$`)),
+      expect.stringMatching(new RegExp(`${SEP}dist${SEP}${DEFAULT_SCHEMA_VARIANT}${SEP}routes\\.js$`)),
       GENERATED_CONTENT_PREAMBLE + '// routes',
     )
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(new RegExp(`/dist/${DEFAULT_SCHEMA_VARIANT}/routes\\.d\\.ts$`)),
+      expect.stringMatching(new RegExp(`${SEP}dist${SEP}${DEFAULT_SCHEMA_VARIANT}${SEP}routes\\.d\\.ts$`)),
       GENERATED_CONTENT_PREAMBLE + '// routes dts',
     )
   })
@@ -111,7 +115,7 @@ describe('main', () => {
     await main(deps)
 
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(/\/dist\/types\.d\.ts$/),
+      expect.stringMatching(new RegExp(`${SEP}dist${SEP}types\\.d\\.ts$`)),
       GENERATED_CONTENT_PREAMBLE + '// shared types',
     )
   })

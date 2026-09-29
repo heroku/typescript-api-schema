@@ -6,6 +6,9 @@ import {
 } from './gen-data-types.js'
 import type { OpenApiDocument, OpenApiPathItem } from './gen/openapi-types.js'
 
+// Matches both POSIX '/' and Windows '\' path separators.
+const SEP = '[/\\\\]'
+
 function spec(paths: Record<string, OpenApiPathItem>): OpenApiDocument {
   return { paths, components: { schemas: {} } }
 }
@@ -363,7 +366,7 @@ describe('main', () => {
       }),
       log: vi.fn(),
     })
-    expect(importRoutes).toHaveBeenCalledWith(expect.stringMatching(/src\/data\/routes\.ts$/))
+    expect(importRoutes).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`src${SEP}data${SEP}routes\\.ts$`)))
   })
 
   it("emits dist/data/routes.js from the typed source", async () => {
