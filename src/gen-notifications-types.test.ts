@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { notification } from './notifications/routes.js'
 import { generateNotificationsTypes, main, type MainDeps } from './gen-notifications-types.js'
 
+// Matches both POSIX '/' and Windows '\' path separators.
+const SEP = '[/\\\\]'
+
 const schemas = JSON.parse(
   (await import('node:fs')).readFileSync(new URL('./notifications/schemas.json', import.meta.url), 'utf8'),
 )
@@ -32,14 +35,14 @@ describe('main', () => {
     await main(deps)
 
     expect(deps.emitTypedSource).toHaveBeenCalledWith(expect.objectContaining({
-      sourcePath: expect.stringContaining('notifications/routes.ts'),
+      sourcePath: expect.stringMatching(new RegExp(`notifications${SEP}routes\\.ts`)),
     }))
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringContaining('notifications/types.d.ts'),
+      expect.stringMatching(new RegExp(`notifications${SEP}types\\.d\\.ts`)),
       expect.stringContaining('HerokuClient'),
     )
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringContaining('notifications/routes.d.ts'),
+      expect.stringMatching(new RegExp(`notifications${SEP}routes\\.d\\.ts`)),
       expect.stringContaining('notification'),
     )
   })

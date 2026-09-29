@@ -3,6 +3,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { favorite } from './dashboard-backend/routes.js'
 import { generateDashboardBackendTypes, main, type MainDeps } from './gen-dashboard-backend-types.js'
 
+// Matches both POSIX '/' and Windows '\' path separators.
+const SEP = '[/\\\\]'
+
 const schemas = JSON.parse(
   readFileSync(new URL('./dashboard-backend/schemas.json', import.meta.url), 'utf8'),
 )
@@ -36,14 +39,14 @@ describe('main', () => {
     await main(deps)
 
     expect(deps.emitTypedSource).toHaveBeenCalledWith(expect.objectContaining({
-      sourcePath: expect.stringContaining('dashboard-backend/routes.ts'),
+      sourcePath: expect.stringMatching(new RegExp(`dashboard-backend${SEP}routes\\.ts`)),
     }))
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringContaining('dashboard-backend/types.d.ts'),
+      expect.stringMatching(new RegExp(`dashboard-backend${SEP}types\\.d\\.ts`)),
       expect.stringContaining('HerokuClient'),
     )
     expect(deps.writeFile).toHaveBeenCalledWith(
-      expect.stringContaining('dashboard-backend/routes.d.ts'),
+      expect.stringMatching(new RegExp(`dashboard-backend${SEP}routes\\.d\\.ts`)),
       expect.stringContaining('favorite'),
     )
   })
