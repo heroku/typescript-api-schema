@@ -21,14 +21,10 @@ function formatResourceJS({ resource, entries }: ResourceRoutes): string {
       route.query = entry.query
     }
     const key = toCamelCase(entry.titleKey)
-    // Fail loudly on a method-key collision rather than silently overwriting.
-    // The route table is an object keyed by method name, so two links that
-    // reduce to the same camelCased key (same title + same HTTP method on
-    // different paths) would drop one route here while the type emitter — whose
-    // methods are an array — keeps both as overloads. That mismatch ships a
-    // typed method with no runtime route (see the stack/generation/payment/usage
-    // de-collisions in patch-hyperschema.ts). Any new such collision must be
-    // disambiguated there; this guard makes it a build failure, not a silent gap.
+    // Fail loudly rather than overwrite: two links reducing to the same key
+    // (same title + method, different paths) would drop one route here, while
+    // the type emitter keeps both as overloads — shipping a typed method with no
+    // route. Disambiguate new collisions in patch-hyperschema.ts.
     if (Object.hasOwn(methods, key)) {
       const existing = methods[key] as { path?: string }
       throw new Error(

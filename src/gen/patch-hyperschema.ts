@@ -1,18 +1,8 @@
-// Targeted hyperschema patches for gaps in the upstream Heroku hyperschema.
+// Targeted patches for gaps in the upstream Heroku hyperschema.
 //
-// WHY: The upstream hyperschema's "Refresh ACM" link (PATCH /apps/{id}/acm)
-// on the `app` definition ships with NO `schema` block at all — the key is
-// absent (not null). Unlike the sibling "Update" link, it declares no request
-// body, so the generator emits neither a `requestBody` param on the TS method
-// nor a `hasRequestBody: true` flag on the route. But the API actually requires
-// `{ acm_refresh: true }`, so the SDK dispatcher silently drops the body.
-//
-// We patch @heroku/types to reflect what the web service actually accepts,
-// rather than blocking on an upstream hyperschema fix.
-//
-// We inject the missing schema here. The guard only fires when the link exists
-// and has NO schema, so this SELF-HEALS to a no-op if upstream ever adds the
-// schema block itself.
+// "Refresh ACM" (PATCH /apps/{id}/acm) on `app` ships no `schema` block, so the
+// generator emits no requestBody param or flag — but the API requires
+// `{ acm_refresh: true }`. Inject it. Self-heals if upstream adds the schema.
 
 import type { HerokuSchema, ResourceDefinition, SchemaLink, SchemaNode } from './schema-types.js'
 
@@ -22,16 +12,10 @@ const REFRESH_ACM_SCHEMA: SchemaNode = {
   required: ['acm_refresh'],
 }
 
-// WHY: The upstream hyperschema has no `space-dyno` resource at all, so
-// `GET /spaces/{spaceIdentity}/dynos` (used by the CLI's `heroku spaces:ps`)
-// has no generated route or type. We inject a minimal resource mirroring the
-// existing `space-host` "list of self" shape: each item is `{ app_name,
-// dynos }`, where `dynos` reuses the already-generated top-level `Dyno` type
-// via a resource-level $ref rather than duplicating its shape.
-//
-// The guard checks for the resource AND a GET/"instances" link on it, so this
-// SELF-HEALS to a no-op if upstream ever adds `space-dyno` (with or without
-// the list link) itself.
+// Upstream has no `space-dyno` resource, so GET /spaces/{id}/dynos (heroku
+// spaces:ps) has no route or type. Inject a minimal resource mirroring
+// `space-host`: each item is { app_name, dynos }, with `dynos` reusing the
+// generated `Dyno` type via $ref. Self-heals if upstream adds `space-dyno`.
 const SPACE_DYNO_LIST_LINK: SchemaLink = {
   title: 'List',
   description: 'Current running dynos for a space, grouped by app.',
@@ -90,17 +74,9 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       spaceDyno.links = [...(spaceDyno.links ?? []), structuredClone(SPACE_DYNO_LIST_LINK)]
     }
 
-    // WHY: The upstream hyperschema's space "Create" link doesn't declare a
-    // `kpi_url` property on its request schema, even though the API accepts
-    // (and `spaces:create` forwards) a hidden `--kpi-url` flag for a
-    // self-managed KPI endpoint. Without this, the generated
-    // `SpaceCreateOpts` type lacks the field and the CLI has to `as`-cast
-    // around it.
-    //
-    // We inject the property here as optional (never added to `required`).
-    // The guard only fires when the Create link exists and has a `schema`,
-    // so this SELF-HEALS to a no-op if upstream ever adds the property
-    // itself.
+    // The space "Create" link omits `kpi_url`, though the API accepts it (and
+    // spaces:create forwards a hidden --kpi-url flag). Inject it as optional so
+    // SpaceCreateOpts carries it without an `as`-cast. Self-heals if upstream adds it.
     const space = definitions['space']
     const createLink = space?.links?.find(
       l => l.title === 'Create' && l.method?.toUpperCase() === 'POST',
@@ -110,16 +86,10 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       createLink.schema.properties.kpi_url ??= { type: ['string'] }
     }
 
-    // WHY: The upstream hyperschema's `space-topology` apps-item property is
-    // named `formation` (singular), but the topology response is a straight
-    // control-plane passthrough (not an API serializer), and the live
-    // payload key has always been `formations` (plural) — the CLI reads
-    // `app.formations`. We rename the property KEY here; the `$ref`
-    // definition target keeps its `formation` name.
-    //
-    // The guard only fires when `formation` is present and `formations` is
-    // absent, so this SELF-HEALS to a no-op if upstream ever renames the
-    // property itself (or if the property is absent entirely).
+    // `space-topology`'s apps-item property is `formation` (singular), but the
+    // response is a control-plane passthrough whose live key is `formations`
+    // (plural) — the CLI reads `app.formations`. Rename the property key only
+    // (the $ref target keeps `formation`). Self-heals if upstream renames it.
     const spaceTopology = definitions['space-topology']
     const topologyAppProps = spaceTopology?.properties?.['apps']?.items?.properties
     if (topologyAppProps?.formation && !topologyAppProps.formations) {
@@ -127,22 +97,12 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       delete topologyAppProps.formation
     }
 
-    // WHY: The upstream hyperschema gives all three `usage` GET links the same
-    // title ("Info"), so the generator's title disambiguation collapses them to
-    // a single `infoGet` route key (last-write-wins keeps only
-    // `GET /teams/{team}/usage`). The two app-scoped overloads
-    // (`infoGet(appIdentity)` and `infoGet(teamIdentity, teamAppIdentity)`)
-    // still type-check but MIS-DISPATCH at runtime to `/teams/{that-arg}/usage`,
-    // so app and team-app usage are unreachable through the generated client.
-    //
-    // We give each link a distinct title so the registry emits three real keys:
-    // `forApp` (GET /apps/:app/usage), `forTeamApp`
-    // (GET /teams/:team/apps/:app/usage), and `infoGet` (unchanged — the team
-    // route GET /teams/:team/usage, whose result type stays UsageInfoGetResult).
-    // Links are matched by `href` so we don't depend on the colliding title text.
-    //
-    // The guard only renames a link whose title differs from its target, so this
-    // SELF-HEALS to a no-op if upstream ever gives these links distinct titles.
+    // All three `usage` GET links share the title "Info", so title disambiguation
+    // collapses them to one `infoGet` key (last-write-wins keeps GET
+    // /teams/{team}/usage); the app and team-app overloads type-check but
+    // mis-dispatch at runtime. Retitle by href so the registry emits three keys:
+    // `forApp`, `forTeamApp`, and `infoGet` (the unchanged team route). Matched by
+    // href, not the colliding title; self-heals if upstream gives distinct titles.
     const usage = definitions['usage']
     if (usage?.links) {
       for (const link of usage.links) {
@@ -156,20 +116,12 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       }
     }
 
-    // WHY: `stack` has two GET links both titled "List" — GET /stacks (every
-    // stack) and GET /apps/{app}/available-stacks (stacks available to an app).
-    // Identical title+method defeats the title disambiguation (it can only
-    // append the method, which is also identical), so both collapse to a single
-    // `listGet` route key. Last-write-wins keeps only the app-scoped route, so
-    // the global stack list is unreachable through the generated client, and the
-    // no-arg `listGet()` overload that still type-checks mis-dispatches at
-    // runtime to /apps/{app}/available-stacks (missing path param -> throws).
-    //
-    // We retitle the app-scoped link so the registry emits two real keys: `list`
-    // (GET /stacks, matching every other resource's collection list) and
-    // `listAvailable` (GET /apps/{app}/available-stacks). Matched by href so we
-    // don't depend on the colliding title text; self-heals if upstream gives the
-    // links distinct titles.
+    // `stack` has two GET links both titled "List" — GET /stacks (all stacks) and
+    // GET /apps/{app}/available-stacks. Identical title+method defeats title
+    // disambiguation, so both collapse to one `listGet` key; last-write-wins drops
+    // the global list and the no-arg `listGet()` overload mis-dispatches at runtime
+    // (missing path param -> throws). Retitle the app-scoped link so the registry
+    // emits `list` and `listAvailable`. Matched by href; self-heals as above.
     const stack = definitions['stack']
     const stackAvailable = stack?.links?.find(
       l => l.method?.toUpperCase() === 'GET' && l.href?.endsWith('/available-stacks'),
@@ -178,13 +130,9 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       stackAvailable.title = 'List Available'
     }
 
-    // WHY: `generation` has the same two-"List"-GET-links collision as `stack`
-    // — GET /generations (all generations) and
-    // GET /teams/{team}/available-generations (generations available to a team)
-    // — collapsing to one `listGet` key and silently dropping the global list.
-    // Retitle the team-scoped link so the registry emits `list`
-    // (GET /generations) and `listAvailable`
-    // (GET /teams/{team}/available-generations). Self-heals as above.
+    // Same two-"List"-GET collision as `stack`: GET /generations and
+    // GET /teams/{team}/available-generations collapse to one `listGet` key.
+    // Retitle the team-scoped link so the registry emits `list` and `listAvailable`.
     const generation = definitions['generation']
     const generationAvailable = generation?.links?.find(
       l => l.method?.toUpperCase() === 'GET' && l.href?.endsWith('/available-generations'),
@@ -193,12 +141,10 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
       generationAvailable.title = 'List Available'
     }
 
-    // WHY: `payment` has two POST links both titled "Create" — POST
-    // /account/payments (the authenticated account's own payment) and POST
-    // /teams/{team}/payments (a team's payment). Identical title+method collapse
-    // to one `create` key; last-write-wins drops the account route. Retitle the
-    // team-scoped link so the registry emits `create` (POST /account/payments)
-    // and `createForTeam` (POST /teams/{team}/payments). Self-heals as above.
+    // Same collision for `payment`: POST /account/payments and
+    // POST /teams/{team}/payments both titled "Create" collapse to one `create`
+    // key. Retitle the team-scoped link so the registry emits `create` and
+    // `createForTeam`.
     const payment = definitions['payment']
     const teamPaymentCreate = payment?.links?.find(
       l => l.method?.toUpperCase() === 'POST' && l.href?.includes('/teams/'),
