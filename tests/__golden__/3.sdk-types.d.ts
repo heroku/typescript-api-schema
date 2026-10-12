@@ -4627,7 +4627,7 @@ export interface Payment {
 }
 
 /** Create a payment on an existing account */
-export interface PaymentCreatePostOpts {
+export interface PaymentCreateOpts {
   /** amount of payment in cents */
   amount: number
   invoice_id: number
@@ -4636,7 +4636,7 @@ export interface PaymentCreatePostOpts {
 }
 
 /** Create a payment on an existing team */
-export interface PaymentCreatePostOpts {
+export interface PaymentCreateForTeamOpts {
   /** amount of payment in cents */
   amount: number
   invoice_id: number
@@ -5268,9 +5268,9 @@ export interface HerokuClient {
   /** Info for generation. */
   info(stackIdentity: string): Promise<Generation>
   /** List available generations. */
-  listGet(): Promise<Array<Generation>>
+  list(): Promise<Array<Generation>>
   /** List available generations for a team. */
-  listGet(teamIdentity: string): Promise<Array<Generation>>
+  listAvailable(teamIdentity: string): Promise<Array<Generation>>
   }
   /** Identity Providers represent the SSO configuration of an Enterprise Account or Team. */
   identityProvider: {
@@ -5616,9 +5616,9 @@ export interface HerokuClient {
   /** Stack info. */
   info(stackIdentity: string): Promise<Stack>
   /** List available stacks. */
-  listGet(): Promise<Array<Stack>>
+  list(): Promise<Array<Stack>>
   /** List available app stacks for an app. */
-  listGet(appIdentity: string): Promise<Array<Stack>>
+  listAvailable(appIdentity: string): Promise<Array<Stack>>
   }
   teamAddOn: {
   /** List add-ons used across all Team apps */
@@ -5885,9 +5885,9 @@ export interface HerokuClient {
   /** A payment represents money collected for an account */
   payment: {
   /** Create a payment on an existing account */
-  createPost(requestBody: PaymentCreatePostOpts): Promise<Payment>
+  create(requestBody: PaymentCreateOpts): Promise<Payment>
   /** Create a payment on an existing team */
-  createPost(teamIdentity: string, requestBody: PaymentCreatePostOpts): Promise<Payment>
+  createForTeam(teamIdentity: string, requestBody: PaymentCreateForTeamOpts): Promise<Payment>
   }
   /** Plan meters describe how a metered add-on plan bills for usage. */
   planMeter: {
