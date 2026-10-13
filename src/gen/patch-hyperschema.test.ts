@@ -348,3 +348,127 @@ describe('patchHyperschema usage route de-collision', () => {
     expect(() => patchHyperschema(schema)).not.toThrow()
   })
 })
+
+// `stack` and `generation` each ship two GET links both titled "List" — a
+// global collection and an "available for a parent" scoped list — which collapse
+// to a single `listGet` route key (last-write-wins drops the global list).
+// `payment` ships two POST "Create" links (account vs team) with the same
+// problem. patchHyperschema retitles the scoped link in each so the registry
+// emits two real keys.
+
+function schemaWithStackLinks(): HerokuSchema {
+  return {
+    definitions: {
+      stack: {
+        type: ['object'],
+        properties: { id: { type: ['string'] } },
+        links: [
+          { title: 'Info', method: 'GET', rel: 'self', href: '/stacks/{(%23%2Fdefinitions%2Fstack%2Fdefinitions%2Fidentity)}' },
+          { title: 'List', method: 'GET', rel: 'instances', href: '/stacks' },
+          {
+            title: 'List',
+            method: 'GET',
+            rel: 'instances',
+            href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}/available-stacks',
+          },
+        ],
+      },
+    },
+  }
+}
+
+function schemaWithGenerationLinks(): HerokuSchema {
+  return {
+    definitions: {
+      generation: {
+        type: ['object'],
+        properties: { id: { type: ['string'] } },
+        links: [
+          { title: 'List', method: 'GET', rel: 'instances', href: '/generations' },
+          {
+            title: 'List',
+            method: 'GET',
+            rel: 'instances',
+            href: '/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/available-generations',
+          },
+        ],
+      },
+    },
+  }
+}
+
+function schemaWithPaymentLinks(): HerokuSchema {
+  return {
+    definitions: {
+      payment: {
+        type: ['object'],
+        properties: { id: { type: ['string'] } },
+        links: [
+          { title: 'Create', method: 'POST', href: '/account/payments' },
+          {
+            title: 'Create',
+            method: 'POST',
+            href: '/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/payments',
+          },
+        ],
+      },
+    },
+  }
+}
+
+describe('patchHyperschema stack route de-collision', () => {
+  it('retitles the app-scoped List link to "List Available"', () => {
+    const schema = schemaWithStackLinks()
+    patchHyperschema(schema)
+    const byHref = (needle: string) => schema.definitions.stack.links!.find(l => l.href!.endsWith(needle))!
+    expect(byHref('/available-stacks').title).toBe('List Available')
+    expect(byHref('/stacks').title).toBe('List')
+  })
+
+  it('emits distinct `list` and `listAvailable` route keys with the right paths', () => {
+    const routes = generateRoutesJS(schemaWithStackLinks())
+    const block = routes.match(/export const stack = \{[\s\S]*?\n\}/)![0]
+    expect(block).toMatch(/"list": \{[^}]*"path": "\/stacks"/)
+    expect(block).toMatch(/"listAvailable": \{[^}]*"path": "\/apps\/\{appIdentity\}\/available-stacks"/)
+    expect(block).not.toContain('"listGet"')
+  })
+
+  it('exposes both methods on the generated client, each with its real arity', () => {
+    const types = generateTypes(schemaWithStackLinks())
+    expect(types).toContain('list()')
+    expect(types).toContain('listAvailable(appIdentity: string)')
+  })
+
+  it('self-heals to a no-op when the links already have distinct titles', () => {
+    const schema = schemaWithStackLinks()
+    schema.definitions.stack.links!.find(l => l.href!.endsWith('/available-stacks'))!.title = 'List Available'
+    patchHyperschema(schema)
+    expect(schema.definitions.stack.links!.map(l => l.title)).toEqual(['Info', 'List', 'List Available'])
+  })
+
+  it('does not throw when there is no stack definition', () => {
+    expect(() => patchHyperschema({ definitions: {} })).not.toThrow()
+  })
+})
+
+describe('patchHyperschema generation route de-collision', () => {
+  it('retitles the available-generations link and emits distinct keys', () => {
+    const schema = schemaWithGenerationLinks()
+    patchHyperschema(schema)
+    expect(schema.definitions.generation.links!.find(l => l.href!.endsWith('/available-generations'))!.title).toBe('List Available')
+    const block = generateRoutesJS(schemaWithGenerationLinks()).match(/export const generation = \{[\s\S]*?\n\}/)![0]
+    expect(block).toMatch(/"list": \{[^}]*"path": "\/generations"/)
+    expect(block).toMatch(/"listAvailable": \{[^}]*"path": "\/teams\/\{teamIdentity\}\/available-generations"/)
+  })
+})
+
+describe('patchHyperschema payment route de-collision', () => {
+  it('retitles the team Create link and emits distinct keys', () => {
+    const schema = schemaWithPaymentLinks()
+    patchHyperschema(schema)
+    expect(schema.definitions.payment.links!.find(l => l.href!.includes('/teams/'))!.title).toBe('Create For Team')
+    const block = generateRoutesJS(schemaWithPaymentLinks()).match(/export const payment = \{[\s\S]*?\n\}/)![0]
+    expect(block).toMatch(/"create": \{[^}]*"path": "\/account\/payments"/)
+    expect(block).toMatch(/"createForTeam": \{[^}]*"path": "\/teams\/\{teamIdentity\}\/payments"/)
+  })
+})

@@ -75,6 +75,26 @@ describe('generateRoutesJS', () => {
     const js = generateRoutesJS(schema)
     expect(js).not.toContain('configVar')
   })
+
+  it('throws on a method-key collision instead of silently dropping a route', () => {
+    // Two links with the same title AND HTTP method on different paths reduce to
+    // the same camelCased key; the route table (an object) would overwrite one.
+    // Known offenders are disambiguated in patch-hyperschema.ts; an unpatched
+    // one like this must fail the build loudly.
+    const colliding: HerokuSchema = {
+      definitions: {
+        widget: {
+          type: ['object'],
+          properties: { id: { type: ['string'] } },
+          links: [
+            { title: 'List', method: 'GET', href: '/widgets', rel: 'instances' },
+            { title: 'List', method: 'GET', href: '/kits/{(%23%2Fdefinitions%2Fkit%2Fdefinitions%2Fid)}/widgets', rel: 'instances' },
+          ],
+        },
+      },
+    }
+    expect(() => generateRoutesJS(colliding)).toThrow(/Duplicate route method 'listGet' on resource 'widget'/)
+  })
 })
 
 describe('generateRoutesDTS', () => {

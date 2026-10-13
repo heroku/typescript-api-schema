@@ -20,7 +20,20 @@ function formatResourceJS({ resource, entries }: ResourceRoutes): string {
     if (entry.query) {
       route.query = entry.query
     }
-    methods[toCamelCase(entry.titleKey)] = route
+    const key = toCamelCase(entry.titleKey)
+    // Fail loudly rather than overwrite: two links reducing to the same key
+    // (same title + method, different paths) would drop one route here, while
+    // the type emitter keeps both as overloads — shipping a typed method with no
+    // route. Disambiguate new collisions in patch-hyperschema.ts.
+    if (Object.hasOwn(methods, key)) {
+      const existing = methods[key] as { path?: string }
+      throw new Error(
+        `Duplicate route method '${key}' on resource '${resource}': ` +
+          `'${existing.path}' and '${entry.path}' collide. Two links share a title and ` +
+          `HTTP method — disambiguate them in patch-hyperschema.ts.`,
+      )
+    }
+    methods[key] = route
   }
   return `export const ${toCamelCase(resource)} = ${JSON.stringify(methods, null, 2)}`
 }
