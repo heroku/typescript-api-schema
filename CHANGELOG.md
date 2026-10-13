@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [5.3.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.2.0...types-v5.3.0) (2026-10-13)
+
+
+### Features
+
+* de-collide stack/generation/payment routes and guard against future collisions ([#137](https://github.com/heroku/typescript-api-schema/issues/137)) ([246e7dc](https://github.com/heroku/typescript-api-schema/commit/246e7dc501ff011acc4d2b44e32c4f3e9d73f687))
+
 ## [5.2.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.1.0...types-v5.2.0) (2026-09-24)
 
 
