@@ -214,11 +214,17 @@ export declare const identityProviderActions: Record<string, RouteDefinition>
 
 export declare const identityProviderCertificate: Record<string, RouteDefinition>
 
+export declare const paymentMethodCheckoutSession: Record<string, RouteDefinition>
+
 export declare const paymentMethod: Record<string, RouteDefinition>
 
 export declare const payment: Record<string, RouteDefinition>
 
+export declare const pendingTeamPaymentMethod: Record<string, RouteDefinition>
+
 export declare const planMeter: Record<string, RouteDefinition>
+
+export declare const shareTokens: Record<string, RouteDefinition>
 
 export declare const spaceHost: Record<string, RouteDefinition>
 
