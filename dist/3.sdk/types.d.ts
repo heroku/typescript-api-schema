@@ -132,6 +132,13 @@ export interface Account {
     /** unique name of team */
     name: string
   } | null
+  /** the team this token belongs to; null unless authenticated with a team (service account) token */
+  service_account_team: {
+    /** unique identifier of team */
+    id: string
+    /** unique name of team */
+    name: string
+  } | null
 }
 
 /** Update account. */
@@ -2203,6 +2210,8 @@ export interface OauthClient {
   redirect_uri: string
   /** secret used to obtain OAuth authorizations under this client */
   secret: string
+  /** whether the client is a trusted (first-party) Heroku client */
+  trusted: boolean
   /** when OAuth client was updated */
   updated_at: string
 }
@@ -2213,6 +2222,12 @@ export interface OauthClientCreateOpts {
   name: string
   /** endpoint for redirection after authorization with OAuth client */
   redirect_uri: string
+}
+
+/** Info for an OAuth client looked up by its `client_id`. Unlike the path-based lookup, the `client_id` is supplied as a query parameter so that URL-shaped identifiers (such as a client ID metadata document URL) can be used. The output for unauthenticated requests excludes the `secret` parameter. */
+export interface OauthClientInfoByClientIDOpts {
+  /** identifier used to look up an OAuth client. This is either the client's UUID or a client ID metadata document (CIMD) URL. */
+  client_id: string
 }
 
 /** Update OAuth client */
@@ -4587,6 +4602,46 @@ export interface IdentityProviderCertificateUpdateOpts {
   name?: string | null
 }
 
+/** Stripe hosted checkout session for payment method setup */
+export interface PaymentMethodCheckoutSession {
+  /** unique identifier of checkout session */
+  session_id: string
+  /** Stripe hosted checkout URL */
+  session_url: string
+  /** status of the checkout session */
+  status: 'success' | 'pending' | 'expired'
+  /** when checkout session expires (Unix timestamp) */
+  expires_at: number
+  /** when checkout session was created (Unix timestamp) */
+  created_at: number
+  /** whether the completed checkout session still needs an e-mandate step before the payment method is usable */
+  mandate_required: boolean
+}
+
+/** Create a new checkout session for account payment method setup */
+export interface PaymentMethodCheckoutSessionCreateOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create a new checkout session for team payment method setup */
+export interface PaymentMethodCheckoutSessionCreateForTeamOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create a new checkout session for a team that has not been created yet */
+export interface PaymentMethodCheckoutSessionCreateForNewTeamOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create an e-mandate setup intent for a completed checkout session */
+export interface PaymentMethodCheckoutSessionMandateResult {
+  mandate_client_secret?: string
+  mandate_status?: string
+}
+
 /** The on file payment method for an account */
 export interface PaymentMethod {
   /** street address line 1 */
@@ -4680,7 +4735,7 @@ export interface Payment {
 }
 
 /** Create a payment on an existing account */
-export interface PaymentCreatePostOpts {
+export interface PaymentCreateOpts {
   /** amount of payment in cents */
   amount: number
   invoice_id: number
@@ -4689,12 +4744,27 @@ export interface PaymentCreatePostOpts {
 }
 
 /** Create a payment on an existing team */
-export interface PaymentCreatePostOpts {
+export interface PaymentCreateForTeamOpts {
   /** amount of payment in cents */
   amount: number
   invoice_id: number
   /** unique identifier for a payment transaction */
   uuid: string
+}
+
+/** Payment method summary for a team that has not been created yet */
+export interface PendingTeamPaymentMethod {
+  /** payment card summary, or null when no payment method is attached */
+  payment_method: {
+    /** last four digits of the payment card */
+    card_last4: string
+    /** payment card brand */
+    card_type: string
+    /** payment card expiration month */
+    exp_month: number
+    /** payment card expiration year */
+    exp_year: number
+  } | null
 }
 
 /** Plan meters describe how a metered add-on plan bills for usage. */
@@ -4729,6 +4799,18 @@ export interface PlanMeter {
   created_at: string
   /** when this meter was last updated */
   updated_at: string
+}
+
+/** JWT for apps shared behind guest-idp */
+export interface ShareTokens {
+  /** JWT for guest-idp */
+  jwt: string
+}
+
+/** Mints a JWT */
+export interface ShareTokensCreateOpts {
+  /** mode: bearer or session */
+  mode: string
 }
 
 /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
@@ -5323,9 +5405,9 @@ export interface HerokuClient {
   /** Info for generation. */
   info(stackIdentity: string): Promise<Generation>
   /** List available generations. */
-  listGet(): Promise<Array<Generation>>
+  list(): Promise<Array<Generation>>
   /** List available generations for a team. */
-  listGet(teamIdentity: string): Promise<Array<Generation>>
+  listAvailable(teamIdentity: string): Promise<Array<Generation>>
   }
   /** Identity Providers represent the SSO configuration of an Enterprise Account or Team. */
   identityProvider: {
@@ -5415,6 +5497,8 @@ export interface HerokuClient {
   delete(oauthClientIdentity: string): Promise<OauthClient>
   /** Info for an OAuth client. The output for unauthenticated requests excludes the `secret` parameter. */
   info(oauthClientIdentity: string): Promise<OauthClient>
+  /** Info for an OAuth client looked up by its `client_id`. Unlike the path-based lookup, the `client_id` is supplied as a query parameter so that URL-shaped identifiers (such as a client ID metadata document URL) can be used. The output for unauthenticated requests excludes the `secret` parameter. */
+  infoByClientID(requestBody: OauthClientInfoByClientIDOpts): Promise<OauthClient>
   /** List OAuth clients */
   list(): Promise<Array<OauthClient>>
   /** Update OAuth client */
@@ -5671,9 +5755,9 @@ export interface HerokuClient {
   /** Stack info. */
   info(stackIdentity: string): Promise<Stack>
   /** List available stacks. */
-  listGet(): Promise<Array<Stack>>
+  list(): Promise<Array<Stack>>
   /** List available app stacks for an app. */
-  listGet(appIdentity: string): Promise<Array<Stack>>
+  listAvailable(appIdentity: string): Promise<Array<Stack>>
   }
   teamAddOn: {
   /** List add-ons used across all Team apps */
@@ -5932,6 +6016,27 @@ export interface HerokuClient {
   /** Get a Certificate */
   info(identityProvidersIdentity: string, certificatesIdentity: string): Promise<IdentityProviderCertificate>
   }
+  /** Stripe hosted checkout session for payment method setup */
+  paymentMethodCheckoutSession: {
+  /** List actionable checkout sessions for account payment method setup */
+  list(): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for account payment method setup */
+  create(requestBody: PaymentMethodCheckoutSessionCreateOpts): Promise<PaymentMethodCheckoutSession>
+  /** Get an existing checkout session for account payment method */
+  info(paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSession>
+  /** List actionable checkout sessions for team payment method setup */
+  listForTeam(teamIdentity: string): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for team payment method setup */
+  createForTeam(teamIdentity: string, requestBody: PaymentMethodCheckoutSessionCreateForTeamOpts): Promise<PaymentMethodCheckoutSession>
+  /** List actionable checkout sessions for a team that has not been created yet */
+  listForNewTeam(): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for a team that has not been created yet */
+  createForNewTeam(requestBody: PaymentMethodCheckoutSessionCreateForNewTeamOpts): Promise<PaymentMethodCheckoutSession>
+  /** Get an existing checkout session for team payment method */
+  infoForTeam(teamIdentity: string, paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSession>
+  /** Create an e-mandate setup intent for a completed checkout session */
+  mandate(paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSessionMandateResult>
+  }
   /** The on file payment method for an account */
   paymentMethod: {
   /** Update an existing payment method for an account. */
@@ -5942,9 +6047,14 @@ export interface HerokuClient {
   /** A payment represents money collected for an account */
   payment: {
   /** Create a payment on an existing account */
-  createPost(requestBody: PaymentCreatePostOpts): Promise<Payment>
+  create(requestBody: PaymentCreateOpts): Promise<Payment>
   /** Create a payment on an existing team */
-  createPost(teamIdentity: string, requestBody: PaymentCreatePostOpts): Promise<Payment>
+  createForTeam(teamIdentity: string, requestBody: PaymentCreateForTeamOpts): Promise<Payment>
+  }
+  /** Payment method summary for a team that has not been created yet */
+  pendingTeamPaymentMethod: {
+  /** Get the payment method for the current user's pending team */
+  info(): Promise<PendingTeamPaymentMethod>
   }
   /** Plan meters describe how a metered add-on plan bills for usage. */
   planMeter: {
@@ -5952,6 +6062,11 @@ export interface HerokuClient {
   list(planIdentity: string): Promise<Array<PlanMeter>>
   /** Info for an existing plan meter. Meter identifier may be either the meter's uuid (unique across all meters) or name (unique within the plan). */
   info(planIdentity: string, planMeterIdentity: string): Promise<PlanMeter>
+  }
+  /** JWT for apps shared behind guest-idp */
+  shareTokens: {
+  /** Mints a JWT */
+  create(appIdentity: string, requestBody: ShareTokensCreateOpts): Promise<ShareTokens>
   }
   /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
   spaceHost: {

@@ -42,6 +42,15 @@ const schema: HerokuSchema = {
           href: '/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fid)}',
           targetSchema: { type: ['null'] },
         },
+        {
+          title: 'Lookup',
+          method: 'GET',
+          href: '/apps/lookup',
+          schema: {
+            properties: { name: { type: ['string'] } },
+            required: ['name'],
+          },
+        },
       ],
     },
     'config-var': {
@@ -69,6 +78,15 @@ describe('generateRoutesJS', () => {
     expect(app.info).toEqual({ method: 'GET', path: '/apps/{appId}' })
     expect(app.list).toEqual({ method: 'GET', path: '/apps' })
     expect(app.delete).toEqual({ method: 'DELETE', path: '/apps/{appId}' })
+  })
+
+  it('emits GET schema params as query, not a request body', () => {
+    // A GET link whose schema describes inputs sends them as query-string
+    // params; a GET request body is non-standard and dropped by many clients.
+    const js = generateRoutesJS(schema)
+    const app = parseExport(js, 'app')
+    expect(app.lookup).toEqual({ method: 'GET', path: '/apps/lookup', query: ['name'] })
+    expect(app.lookup).not.toHaveProperty('hasRequestBody')
   })
 
   it('skips resources with no links', () => {

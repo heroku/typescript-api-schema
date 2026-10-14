@@ -354,6 +354,11 @@ class HyperschemaNormalizer {
     return this.hasCustomProperties(node) || this.hasPatternProperties(node)
   }
 
+  private schemaPropertyNames(node: SchemaNode | undefined): string[] {
+    const resolved = this.resolveSchemaNode(node)
+    return resolved?.properties ? Object.keys(resolved.properties) : []
+  }
+
   private hasDistinctResultSchema(
     targetSchema: SchemaNode | undefined,
     resourceDef: ResourceDefinition,
@@ -497,7 +502,19 @@ class HyperschemaNormalizer {
         method: method as HttpMethod,
         path,
       }
-      if (this.hasRequestBodySchema(link.schema)) entry.hasRequestBody = true
+      if (this.hasRequestBodySchema(link.schema)) {
+        // GET links carry their schema as query-string parameters, not a body —
+        // a GET request body is non-standard and dropped by many HTTP clients.
+        // Emit the property names as `query` so the runtime registry sends them
+        // on the URL. Non-GET methods (and the GET-only-patternProperties edge
+        // case, which has no enumerable names) keep `hasRequestBody`.
+        const queryNames = method === 'GET' ? this.schemaPropertyNames(link.schema) : []
+        if (queryNames.length > 0) {
+          entry.query = queryNames
+        } else {
+          entry.hasRequestBody = true
+        }
+      }
       entries.push(entry)
     }
     return entries

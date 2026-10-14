@@ -586,7 +586,10 @@ export const enterpriseAccountDailyUsage = {
   "info": {
     "method": "GET",
     "path": "/enterprise-accounts/{enterpriseAccountId}/usage/daily",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -615,7 +618,10 @@ export const enterpriseAccountMonthlyUsage = {
   "info": {
     "method": "GET",
     "path": "/enterprise-accounts/{enterpriseAccountId}/usage/monthly",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -669,7 +675,11 @@ export const generation = {
     "method": "GET",
     "path": "/generations/{stackIdentity}"
   },
-  "listGet": {
+  "list": {
+    "method": "GET",
+    "path": "/generations"
+  },
+  "listAvailable": {
     "method": "GET",
     "path": "/teams/{teamIdentity}/available-generations"
   }
@@ -834,6 +844,13 @@ export const oauthClient = {
   "info": {
     "method": "GET",
     "path": "/oauth/clients/{oauthClientIdentity}"
+  },
+  "infoByClientID": {
+    "method": "GET",
+    "path": "/oauth/clients/lookup",
+    "query": [
+      "client_id"
+    ]
   },
   "list": {
     "method": "GET",
@@ -1277,7 +1294,11 @@ export const stack = {
     "method": "GET",
     "path": "/stacks/{stackIdentity}"
   },
-  "listGet": {
+  "list": {
+    "method": "GET",
+    "path": "/stacks"
+  },
+  "listAvailable": {
     "method": "GET",
     "path": "/apps/{appIdentity}/available-stacks"
   }
@@ -1357,7 +1378,10 @@ export const teamDailyUsage = {
   "info": {
     "method": "GET",
     "path": "/teams/{teamId}/usage/daily",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -1448,7 +1472,10 @@ export const teamMonthlyUsage = {
   "info": {
     "method": "GET",
     "path": "/teams/{teamId}/usage/monthly",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -1700,6 +1727,48 @@ export const identityProviderCertificate = {
   }
 }
 
+export const paymentMethodCheckoutSession = {
+  "list": {
+    "method": "GET",
+    "path": "/account/payment-method/checkout-session"
+  },
+  "create": {
+    "method": "POST",
+    "path": "/account/payment-method/checkout-session",
+    "hasRequestBody": true
+  },
+  "info": {
+    "method": "GET",
+    "path": "/account/payment-method/checkout-session/{paymentMethodCheckoutSessionIdentity}"
+  },
+  "listForTeam": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/payment-methods/checkout-session"
+  },
+  "createForTeam": {
+    "method": "POST",
+    "path": "/teams/{teamIdentity}/payment-methods/checkout-session",
+    "hasRequestBody": true
+  },
+  "listForNewTeam": {
+    "method": "GET",
+    "path": "/teams/payment-methods/checkout-session"
+  },
+  "createForNewTeam": {
+    "method": "POST",
+    "path": "/teams/payment-methods/checkout-session",
+    "hasRequestBody": true
+  },
+  "infoForTeam": {
+    "method": "GET",
+    "path": "/teams/{teamIdentity}/payment-methods/checkout-session/{paymentMethodCheckoutSessionIdentity}"
+  },
+  "mandate": {
+    "method": "POST",
+    "path": "/account/payment-method/checkout-session/{paymentMethodCheckoutSessionIdentity}/mandate"
+  }
+}
+
 export const paymentMethod = {
   "update": {
     "method": "PATCH",
@@ -1713,10 +1782,22 @@ export const paymentMethod = {
 }
 
 export const payment = {
-  "createPost": {
+  "create": {
+    "method": "POST",
+    "path": "/account/payments",
+    "hasRequestBody": true
+  },
+  "createForTeam": {
     "method": "POST",
     "path": "/teams/{teamIdentity}/payments",
     "hasRequestBody": true
+  }
+}
+
+export const pendingTeamPaymentMethod = {
+  "info": {
+    "method": "GET",
+    "path": "/account/pending-team/payment-method"
   }
 }
 
@@ -1728,6 +1809,14 @@ export const planMeter = {
   "info": {
     "method": "GET",
     "path": "/plans/{planIdentity}/meters/{planMeterIdentity}"
+  }
+}
+
+export const shareTokens = {
+  "create": {
+    "method": "POST",
+    "path": "/apps/{appIdentity}/share-tokens",
+    "hasRequestBody": true
   }
 }
 
@@ -1775,7 +1864,10 @@ export const usageHistory = {
   "info": {
     "method": "GET",
     "path": "/resource/{usageHistoryResourceId}/usage-history",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "duration"
+    ]
   }
 }
 
