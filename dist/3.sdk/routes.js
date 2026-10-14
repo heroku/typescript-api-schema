@@ -586,7 +586,10 @@ export const enterpriseAccountDailyUsage = {
   "info": {
     "method": "GET",
     "path": "/enterprise-accounts/{enterpriseAccountId}/usage/daily",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -615,7 +618,10 @@ export const enterpriseAccountMonthlyUsage = {
   "info": {
     "method": "GET",
     "path": "/enterprise-accounts/{enterpriseAccountId}/usage/monthly",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -842,7 +848,9 @@ export const oauthClient = {
   "infoByClientID": {
     "method": "GET",
     "path": "/oauth/clients/lookup",
-    "hasRequestBody": true
+    "query": [
+      "client_id"
+    ]
   },
   "list": {
     "method": "GET",
@@ -1370,7 +1378,10 @@ export const teamDailyUsage = {
   "info": {
     "method": "GET",
     "path": "/teams/{teamId}/usage/daily",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -1461,7 +1472,10 @@ export const teamMonthlyUsage = {
   "info": {
     "method": "GET",
     "path": "/teams/{teamId}/usage/monthly",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "end"
+    ]
   }
 }
 
@@ -1850,7 +1864,10 @@ export const usageHistory = {
   "info": {
     "method": "GET",
     "path": "/resource/{usageHistoryResourceId}/usage-history",
-    "hasRequestBody": true
+    "query": [
+      "start",
+      "duration"
+    ]
   }
 }
 
