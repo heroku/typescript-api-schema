@@ -17,6 +17,7 @@ import { writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { applyDataSpecPatches } from "./data/spec-patches.js";
 import { fetchDataApiSpec } from "./gen/data-schema.js";
 import { emitTypes } from "./gen/ts-emit.js";
 import {
@@ -37,7 +38,7 @@ export function generateDataTypes(
   routesByResource: Record<string, Record<string, RouteDefinition>>,
   spec: OpenApiDocument,
 ): string {
-  const model = normalizeOpenApi(routesByResource, spec);
+  const model = normalizeOpenApi(routesByResource, applyDataSpecPatches(spec));
   return BANNER + "\n" + emitTypes(model, { emitResourceShapes: false });
 }
 
