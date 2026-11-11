@@ -789,6 +789,23 @@ export interface PostgresDatabaseUpdateConfigOpts {
   track_functions?: string
   log_min_duration_statement?: number
   log_connections?: boolean
+  log_lock_waits?: boolean
+  log_statement?: string
+  log_min_error_statement?: string
+  pgbouncer_max_client_conn?: number
+  pgbouncer_max_db_connections?: number
+  pgbouncer_default_pool_size?: number
+  pgbouncer_server_idle_timeout?: number
+  pgbouncer_min_pool_size?: number
+  data_connector_details_logs?: boolean
+  auto_explain?: boolean
+  'auto_explain.log_format'?: string
+  'auto_explain.log_min_duration'?: number
+  'auto_explain.log_analyze'?: boolean
+  'auto_explain.log_triggers'?: boolean
+  'auto_explain.log_buffers'?: boolean
+  'auto_explain.log_verbose'?: boolean
+  'auto_explain.log_nested_statements'?: boolean
 }
 
 /**

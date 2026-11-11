@@ -56,7 +56,7 @@ function requireNonRef<T extends object>(value: T | OpenApiReference): T {
 }
 
 // Follows a $ref chain to the first non-$ref node (a Schema Object).
-function resolveSchema(spec: OpenApiDocument, schema: OpenApiSchemaOrRef): OpenApiSchema {
+export function resolveSchema(spec: OpenApiDocument, schema: OpenApiSchemaOrRef): OpenApiSchema {
   function resolveSchemaRef(ref: string): OpenApiSchemaOrRef {
     if (!ref.startsWith(SCHEMA_REF_PREFIX)) {
       throw new Error(`Unsupported $ref target (expected ${SCHEMA_REF_PREFIX}...): ${ref}`)
