@@ -15,6 +15,13 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [5.4.1](https://github.com/heroku/typescript-api-schema/compare/types-v5.4.0...types-v5.4.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **data:** list every writable setting in PostgresDatabaseUpdateConfigOpts ([#144](https://github.com/heroku/typescript-api-schema/issues/144)) ([d605378](https://github.com/heroku/typescript-api-schema/commit/d605378f7efedb7f109a19472db174102ef97851))
+
 ## [5.4.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.3.0...types-v5.4.0) (2026-10-14)
 
 
