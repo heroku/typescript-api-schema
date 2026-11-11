@@ -49,6 +49,32 @@ describe('applyDataSpecPatches', () => {
       })
     })
 
+    it('follows chained $ref settings', () => {
+      const spec = specWith({
+        Bool: { type: 'object', properties: { value: { type: 'boolean' } } },
+        LockWaits: { $ref: '#/components/schemas/Bool' },
+        PostgresDatabaseConfigResult: {
+          type: 'object',
+          properties: { log_lock_waits: { $ref: '#/components/schemas/LockWaits' } },
+        },
+        PostgresDatabaseUpdateConfigOpts: { type: 'object', properties: {} },
+      })
+
+      expect(optsOf(applyDataSpecPatches(spec))).toEqual({ log_lock_waits: { type: 'boolean' } })
+    })
+
+    it('throws when a setting $ref does not resolve', () => {
+      const spec = specWith({
+        PostgresDatabaseConfigResult: {
+          type: 'object',
+          properties: { log_lock_waits: { $ref: '#/components/schemas/Missing' } },
+        },
+        PostgresDatabaseUpdateConfigOpts: { type: 'object', properties: {} },
+      })
+
+      expect(() => applyDataSpecPatches(spec)).toThrow('Could not resolve $ref: #/components/schemas/Missing')
+    })
+
     it('does not modify the input spec', () => {
       const spec = specWith({
         PostgresDatabaseConfigResult: { type: 'object', properties: { a: { type: 'object', properties: { value: { type: 'integer' } } } } },

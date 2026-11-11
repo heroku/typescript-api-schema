@@ -3,9 +3,8 @@
  * normalization. Each patch fixes a known gap between the published spec and
  * what the API accepts. Remove a patch once the spec itself is fixed.
  */
-import type { OpenApiDocument, OpenApiSchema, OpenApiSchemaOrRef } from "../gen/openapi-types.js";
-
-const REF_PREFIX = "#/components/schemas/";
+import type { OpenApiDocument, OpenApiSchema } from "../gen/openapi-types.js";
+import { resolveSchema } from "../gen/normalize-openapi.js";
 
 /**
  * `PATCH /postgres/v0/databases/{name}/config` accepts any setting that
@@ -15,15 +14,16 @@ const REF_PREFIX = "#/components/schemas/";
  * the spec already lists are left alone. A spec without these schemas is left
  * unchanged; the golden test pins that the real spec gets patched.
  */
-function widenPostgresUpdateConfigOpts(schemas: Record<string, OpenApiSchemaOrRef>): void {
+function widenPostgresUpdateConfigOpts(spec: OpenApiDocument): void {
+  const schemas = spec.components?.schemas;
+  if (!schemas) return;
   const opts = schemas.PostgresDatabaseUpdateConfigOpts as OpenApiSchema | undefined;
   const config = schemas.PostgresDatabaseConfigResult as OpenApiSchema | undefined;
   if (!opts?.properties || !config?.properties) return;
 
   for (const [key, setting] of Object.entries(config.properties)) {
     if (key in opts.properties) continue;
-    const resolved = "$ref" in setting ? schemas[setting.$ref.slice(REF_PREFIX.length)] : setting;
-    const value = (resolved as OpenApiSchema | undefined)?.properties?.value;
+    const value = resolveSchema(spec, setting).properties?.value;
     if (!value) {
       throw new Error(`spec-patches: can't find the value type of PostgresDatabaseConfigResult.${key}`);
     }
@@ -34,7 +34,6 @@ function widenPostgresUpdateConfigOpts(schemas: Record<string, OpenApiSchemaOrRe
 /** Returns a copy of `spec` with every curated patch applied. */
 export function applyDataSpecPatches(spec: OpenApiDocument): OpenApiDocument {
   const patched = structuredClone(spec);
-  const schemas = patched.components?.schemas;
-  if (schemas) widenPostgresUpdateConfigOpts(schemas);
+  widenPostgresUpdateConfigOpts(patched);
   return patched;
 }
