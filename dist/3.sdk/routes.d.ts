@@ -96,6 +96,8 @@ export declare const oauthAuthorization: Record<string, RouteDefinition>
 
 export declare const oauthClient: Record<string, RouteDefinition>
 
+export declare const oauthSession: Record<string, RouteDefinition>
+
 export declare const oauthToken: Record<string, RouteDefinition>
 
 export declare const ociImage: Record<string, RouteDefinition>

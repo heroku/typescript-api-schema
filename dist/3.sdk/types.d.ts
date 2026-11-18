@@ -2083,7 +2083,7 @@ export interface LogSession {
 export interface LogSessionCreateOpts {
   /** dyno name to limit results to */
   dyno?: string
-  /** process type to limit results to (for Fir-generation apps only) */
+  /** process type to limit results to */
   type?: string
   /** number of log lines to stream at a time (for Cedar-generation apps only) */
   lines?: number
@@ -2241,6 +2241,20 @@ export interface OauthClientUpdateOpts {
 /** OAuth grants are used to obtain authorizations on behalf of a user. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
 export interface OauthGrant {
 
+}
+
+/** OAuth sessions group a user's access and refresh tokens so users can manage them together. */
+export interface OauthSession {
+  /** when OAuth session was created */
+  created_at: string
+  /** description of OAuth session */
+  description: string
+  /** seconds until OAuth session expires */
+  expires_in: number
+  /** unique identifier of OAuth session */
+  id: string
+  /** when OAuth session was updated */
+  updated_at: string
 }
 
 /** OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
@@ -3289,6 +3303,12 @@ export interface Source {
     /** URL to upload the source */
     put_url: string
   }
+}
+
+/** Create URLs for uploading and downloading source. */
+export interface SourceCreateOpts {
+  /** Seconds until the signed download URL and upload URL expire. The URL expiration time is the current time plus the expires_in value. The server rejects values less than 3600 or more than the configured maximum. */
+  expires_in?: number
 }
 
 /** Space access represents the permissions a particular user has on a particular space. */
@@ -5506,6 +5526,15 @@ export interface HerokuClient {
   /** Rotate credentials for an OAuth client */
   rotateCredentials(oauthClientIdentity: string): Promise<OauthClient>
   }
+  /** OAuth sessions group a user's access and refresh tokens so users can manage them together. */
+  oauthSession: {
+  /** Delete OAuth session */
+  delete(oauthSessionIdentity: string): Promise<OauthSession>
+  /** Get info for an OAuth session */
+  info(oauthSessionIdentity: string): Promise<OauthSession>
+  /** List OAuth sessions */
+  list(): Promise<Array<OauthSession>>
+  }
   /** OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
   oauthToken: {
   /** Create a new OAuth token. */
@@ -5709,7 +5738,7 @@ export interface HerokuClient {
   /** A source is a location for uploading and downloading an application's source code. */
   source: {
   /** Create URLs for uploading and downloading source. */
-  create(): Promise<Source>
+  create(requestBody: SourceCreateOpts): Promise<Source>
   /** Create URLs for uploading and downloading source. Deprecated in favor of `POST /sources` */
   createDeprecated(appIdentity: string): Promise<Source>
   }
