@@ -128,6 +128,13 @@ export interface Account {
     /** unique name of team */
     name: string
   } | null
+  /** the team this token belongs to; null unless authenticated with a team (service account) token */
+  service_account_team: {
+    /** unique identifier of team */
+    id: string
+    /** unique name of team */
+    name: string
+  } | null
 }
 
 /** Update account. */
@@ -502,6 +509,8 @@ export interface AddOn {
       name: string
       /** price in cents per billing unit (may be a rate like "0.015/1000") */
       price_cents: string
+      /** formatted display price for discrete meters (e.g. "$0.15/1M tokens"); null for continuous meters and unknown rate periods */
+      display_price: string | null
       /** human-readable description of how usage is billed */
       billing_description: string
     }>
@@ -971,6 +980,28 @@ export interface App {
   current_build_architecture: unknown[]
   /** the generation of the app */
   generation: string
+  /** the generation of the app */
+  generation_object: {
+    /** when generation was created */
+    created_at?: string
+    /** unique identifier of generation */
+    id?: string
+    /** unique name of generation */
+    name?: string
+    /** when generation was updated */
+    updated_at?: string
+    /** features unsupported by this generation */
+    unsupported_features?: Array<string>
+    /** features unsupported by this generation along with their metadata */
+    expanded_unsupported_features?: Array<{
+      /** name of unsupported feature */
+      name?: string
+      /** type of unsupported feature */
+      incompatible_type?: string
+      /** scope of unsupported feature */
+      scope?: string
+    }>
+  }
   /** git repo URL of app */
   git_url: string
   /** unique identifier of app */
@@ -981,6 +1012,8 @@ export interface App {
   maintenance: boolean
   /** unique name of app */
   name: string
+  /** Process tier for the app */
+  process_tier: 'fir'
   /** identity of app owner */
   owner: {
     /** unique email address of account */
@@ -1050,6 +1083,8 @@ export interface AppCreateOpts {
 /** Update an existing app. */
 export interface AppUpdateOpts {
   build_stack?: string
+  /** describes whether a Private Spaces app is externally routable or not */
+  internal_routing?: boolean | null
   /** maintenance status of app */
   maintenance?: boolean
   /** unique name of app */
@@ -1647,12 +1682,16 @@ export interface EnterpriseAccount {
       type: 'team' | 'enterprise-account'
     }
   } | null
+  /** email domains that members of the Enterprise Account and its teams are restricted to */
+  required_email_domains: Array<string>
 }
 
 /** Update enterprise account properties */
 export interface EnterpriseAccountUpdateOpts {
   /** unique name of the enterprise account */
   name?: string
+  /** email domains that members of the Enterprise Account and its teams are restricted to */
+  required_email_domains?: Array<string>
 }
 
 /** Filters are special endpoints to allow for API consumers to specify a subset of resources to consume in order to reduce the number of requests that are performed.  Each filter endpoint endpoint is responsible for determining its supported request format.  The endpoints are over POST in order to handle large request bodies without hitting request uri query length limitations, but the requests themselves are idempotent and will not have side effects. */
@@ -2040,7 +2079,7 @@ export interface LogSession {
 export interface LogSessionCreateOpts {
   /** dyno name to limit results to */
   dyno?: string
-  /** process type to limit results to (for Fir-generation apps only) */
+  /** process type to limit results to */
   type?: string
   /** number of log lines to stream at a time (for Cedar-generation apps only) */
   lines?: number
@@ -2142,10 +2181,13 @@ export interface OauthAuthorizationUpdateOpts {
 
 /** Create a new team OAuth authorization. */
 export interface OauthAuthorizationTeamCreateOpts {
+  client?: string
   /** human-friendly description of this OAuth authorization */
   description?: string
   /** seconds until OAuth token expires; may be `null` for tokens with indefinite lifetime */
   expires_in?: number | null
+  /** the OAuth response type for client authorizations */
+  response_type?: string
   /** The scope of access OAuth authorization allows */
   scope?: Array<string>
 }
@@ -2164,6 +2206,8 @@ export interface OauthClient {
   redirect_uri: string
   /** secret used to obtain OAuth authorizations under this client */
   secret: string
+  /** whether the client is a trusted (first-party) Heroku client */
+  trusted: boolean
   /** when OAuth client was updated */
   updated_at: string
 }
@@ -2174,6 +2218,12 @@ export interface OauthClientCreateOpts {
   name: string
   /** endpoint for redirection after authorization with OAuth client */
   redirect_uri: string
+}
+
+/** Info for an OAuth client looked up by its `client_id`. Unlike the path-based lookup, the `client_id` is supplied as a query parameter so that URL-shaped identifiers (such as a client ID metadata document URL) can be used. The output for unauthenticated requests excludes the `secret` parameter. */
+export interface OauthClientInfoByClientIDOpts {
+  /** identifier used to look up an OAuth client. This is either the client's UUID or a client ID metadata document (CIMD) URL. */
+  client_id: string
 }
 
 /** Update OAuth client */
@@ -2187,6 +2237,20 @@ export interface OauthClientUpdateOpts {
 /** OAuth grants are used to obtain authorizations on behalf of a user. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
 export interface OauthGrant {
 
+}
+
+/** OAuth sessions group a user's access and refresh tokens so users can manage them together. */
+export interface OauthSession {
+  /** when OAuth session was created */
+  created_at: string
+  /** description of OAuth session */
+  description: string
+  /** seconds until OAuth session expires */
+  expires_in: number
+  /** unique identifier of OAuth session */
+  id: string
+  /** when OAuth session was updated */
+  updated_at: string
 }
 
 /** OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
@@ -3237,6 +3301,12 @@ export interface Source {
   }
 }
 
+/** Create URLs for uploading and downloading source. */
+export interface SourceCreateOpts {
+  /** Seconds until the signed download URL and upload URL expire. The URL expiration time is the current time plus the expires_in value. The server rejects values less than 3600 or more than the configured maximum. */
+  expires_in?: number
+}
+
 /** Space access represents the permissions a particular user has on a particular space. */
 export interface SpaceAppAccess {
   /** space user belongs to */
@@ -3363,6 +3433,8 @@ export interface Space {
   data_cidr: string
   /** generation for space */
   generation: string
+  /** CPU architectures available for dynos in this space. */
+  supported_architectures: unknown[]
 }
 
 /** Update an existing space. */
@@ -3396,6 +3468,8 @@ export interface SpaceCreateOpts {
   supported_features?: unknown[]
   /** EKS version for the space infrastructure */
   eks_version?: string
+  /** CPU architecture for dynos in this space. Defaults to the space's generation default (arm64 for Fir, amd64 for Cedar/Evergreen). Set only at creation; immutable thereafter. */
+  architecture?: 'arm64' | 'amd64'
   kpi_url?: string
 }
 
@@ -3922,6 +3996,8 @@ export interface Team {
   } | null
   /** upper limit of members allowed in a team. */
   membership_limit: number | null
+  /** upper limit of team-owned OAuth authorizations (team tokens) for this team. */
+  max_team_tokens: number | null
   /** Time when team was consented into new pipeline costs */
   pipeline_cost_consent_at: string | null
   /** Email of team user that consented to new pipeline costs */
@@ -3944,6 +4020,8 @@ export interface TeamUpdateOpts {
   default?: boolean
   /** unique name of team */
   name?: string
+  /** Denotes whether or not to update a team's pipeline cost consent */
+  pipeline_cost_consent?: boolean
 }
 
 /** Create a new team. */
@@ -3980,6 +4058,12 @@ export interface TeamCreateOpts {
   nonce?: string | null
   /** Device data string generated by the client */
   device_data?: string | null
+}
+
+/** Transfer an existing direct team to an enterprise account. */
+export interface TeamTransferOpts {
+  /** unique identifier of the enterprise account */
+  enterprise_account: string
 }
 
 /** Create a team in an enterprise account. */
@@ -4534,6 +4618,46 @@ export interface IdentityProviderCertificateUpdateOpts {
   name?: string | null
 }
 
+/** Stripe hosted checkout session for payment method setup */
+export interface PaymentMethodCheckoutSession {
+  /** unique identifier of checkout session */
+  session_id: string
+  /** Stripe hosted checkout URL */
+  session_url: string
+  /** status of the checkout session */
+  status: 'success' | 'pending' | 'expired'
+  /** when checkout session expires (Unix timestamp) */
+  expires_at: number
+  /** when checkout session was created (Unix timestamp) */
+  created_at: number
+  /** whether the completed checkout session still needs an e-mandate step before the payment method is usable */
+  mandate_required: boolean
+}
+
+/** Create a new checkout session for account payment method setup */
+export interface PaymentMethodCheckoutSessionCreateOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create a new checkout session for team payment method setup */
+export interface PaymentMethodCheckoutSessionCreateForTeamOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create a new checkout session for a team that has not been created yet */
+export interface PaymentMethodCheckoutSessionCreateForNewTeamOpts {
+  /** path to return to after checkout completion */
+  return_path: string
+}
+
+/** Create an e-mandate setup intent for a completed checkout session */
+export interface PaymentMethodCheckoutSessionMandateResult {
+  mandate_client_secret?: string
+  mandate_status?: string
+}
+
 /** The on file payment method for an account */
 export interface PaymentMethod {
   /** street address line 1 */
@@ -4644,6 +4768,21 @@ export interface PaymentCreateForTeamOpts {
   uuid: string
 }
 
+/** Payment method summary for a team that has not been created yet */
+export interface PendingTeamPaymentMethod {
+  /** payment card summary, or null when no payment method is attached */
+  payment_method: {
+    /** last four digits of the payment card */
+    card_last4: string
+    /** payment card brand */
+    card_type: string
+    /** payment card expiration month */
+    exp_month: number
+    /** payment card expiration year */
+    exp_year: number
+  } | null
+}
+
 /** Plan meters describe how a metered add-on plan bills for usage. */
 export interface PlanMeter {
   /** unique identifier of this plan meter */
@@ -4652,6 +4791,8 @@ export interface PlanMeter {
   name: string
   /** price in cents per billing unit (may be a rate like "0.015/1000") */
   price_cents: string
+  /** formatted display price for discrete meters (e.g. "$0.15/1M tokens"); null for continuous meters and unknown rate periods */
+  display_price: string | null
   /** human-readable product name */
   product_description: string
   /** human-readable description of how usage is billed */
@@ -4674,6 +4815,18 @@ export interface PlanMeter {
   created_at: string
   /** when this meter was last updated */
   updated_at: string
+}
+
+/** JWT for apps shared behind guest-idp */
+export interface ShareTokens {
+  /** JWT for guest-idp */
+  jwt: string
+}
+
+/** Mints a JWT */
+export interface ShareTokensCreateOpts {
+  /** mode: bearer or session */
+  mode: string
 }
 
 /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
@@ -5360,12 +5513,23 @@ export interface HerokuClient {
   delete(oauthClientIdentity: string): Promise<OauthClient>
   /** Info for an OAuth client. The output for unauthenticated requests excludes the `secret` parameter. */
   info(oauthClientIdentity: string): Promise<OauthClient>
+  /** Info for an OAuth client looked up by its `client_id`. Unlike the path-based lookup, the `client_id` is supplied as a query parameter so that URL-shaped identifiers (such as a client ID metadata document URL) can be used. The output for unauthenticated requests excludes the `secret` parameter. */
+  infoByClientID(requestBody: OauthClientInfoByClientIDOpts): Promise<OauthClient>
   /** List OAuth clients */
   list(): Promise<Array<OauthClient>>
   /** Update OAuth client */
   update(oauthClientIdentity: string, requestBody: OauthClientUpdateOpts): Promise<OauthClient>
   /** Rotate credentials for an OAuth client */
   rotateCredentials(oauthClientIdentity: string): Promise<OauthClient>
+  }
+  /** OAuth sessions group a user's access and refresh tokens so users can manage them together. */
+  oauthSession: {
+  /** Delete OAuth session */
+  delete(oauthSessionIdentity: string): Promise<OauthSession>
+  /** Get info for an OAuth session */
+  info(oauthSessionIdentity: string): Promise<OauthSession>
+  /** List OAuth sessions */
+  list(): Promise<Array<OauthSession>>
   }
   /** OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth) */
   oauthToken: {
@@ -5570,7 +5734,7 @@ export interface HerokuClient {
   /** A source is a location for uploading and downloading an application's source code. */
   source: {
   /** Create URLs for uploading and downloading source. */
-  create(): Promise<Source>
+  create(requestBody: SourceCreateOpts): Promise<Source>
   /** Create URLs for uploading and downloading source. Deprecated in favor of `POST /sources` */
   createDeprecated(appIdentity: string): Promise<Source>
   }
@@ -5744,6 +5908,8 @@ export interface HerokuClient {
   create(requestBody: TeamCreateOpts): Promise<Team>
   /** Delete an existing team. */
   delete(teamIdentity: string): Promise<Team>
+  /** Transfer an existing direct team to an enterprise account. */
+  transfer(teamIdentity: string, requestBody: TeamTransferOpts): Promise<Team>
   /** List teams for an enterprise account. */
   listByEnterpriseAccount(enterpriseAccountIdentity: string): Promise<Array<Team>>
   /** Create a team in an enterprise account. */
@@ -5875,6 +6041,27 @@ export interface HerokuClient {
   /** Get a Certificate */
   info(identityProvidersIdentity: string, certificatesIdentity: string): Promise<IdentityProviderCertificate>
   }
+  /** Stripe hosted checkout session for payment method setup */
+  paymentMethodCheckoutSession: {
+  /** List actionable checkout sessions for account payment method setup */
+  list(): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for account payment method setup */
+  create(requestBody: PaymentMethodCheckoutSessionCreateOpts): Promise<PaymentMethodCheckoutSession>
+  /** Get an existing checkout session for account payment method */
+  info(paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSession>
+  /** List actionable checkout sessions for team payment method setup */
+  listForTeam(teamIdentity: string): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for team payment method setup */
+  createForTeam(teamIdentity: string, requestBody: PaymentMethodCheckoutSessionCreateForTeamOpts): Promise<PaymentMethodCheckoutSession>
+  /** List actionable checkout sessions for a team that has not been created yet */
+  listForNewTeam(): Promise<Array<PaymentMethodCheckoutSession>>
+  /** Create a new checkout session for a team that has not been created yet */
+  createForNewTeam(requestBody: PaymentMethodCheckoutSessionCreateForNewTeamOpts): Promise<PaymentMethodCheckoutSession>
+  /** Get an existing checkout session for team payment method */
+  infoForTeam(teamIdentity: string, paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSession>
+  /** Create an e-mandate setup intent for a completed checkout session */
+  mandate(paymentMethodCheckoutSessionIdentity: string): Promise<PaymentMethodCheckoutSessionMandateResult>
+  }
   /** The on file payment method for an account */
   paymentMethod: {
   /** Update an existing payment method for an account. */
@@ -5889,12 +6076,22 @@ export interface HerokuClient {
   /** Create a payment on an existing team */
   createForTeam(teamIdentity: string, requestBody: PaymentCreateForTeamOpts): Promise<Payment>
   }
+  /** Payment method summary for a team that has not been created yet */
+  pendingTeamPaymentMethod: {
+  /** Get the payment method for the current user's pending team */
+  info(): Promise<PendingTeamPaymentMethod>
+  }
   /** Plan meters describe how a metered add-on plan bills for usage. */
   planMeter: {
   /** List active meters for an existing plan. */
   list(planIdentity: string): Promise<Array<PlanMeter>>
   /** Info for an existing plan meter. Meter identifier may be either the meter's uuid (unique across all meters) or name (unique within the plan). */
   info(planIdentity: string, planMeterIdentity: string): Promise<PlanMeter>
+  }
+  /** JWT for apps shared behind guest-idp */
+  shareTokens: {
+  /** Mints a JWT */
+  create(appIdentity: string, requestBody: ShareTokensCreateOpts): Promise<ShareTokens>
   }
   /** [Space Hosts](https://devcenter.heroku.com/articles/private-spaces-dedicated-hosts?preview=1) lists dedicated hosts allocated to a space */
   spaceHost: {
