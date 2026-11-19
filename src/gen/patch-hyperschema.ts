@@ -161,17 +161,24 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
     // (api_v3/sources.rb#source_expires_in) treats it as optional and
     // defaults it when absent.
     //
-    // We clear `strictProperties` on this one link schema so the emitter falls
-    // back to its (empty) required array instead. The guard only fires while
-    // the schema still has `strictProperties: true` and no explicit required
-    // array, so this SELF-HEALS to a no-op if upstream either adds `required`
-    // itself or removes `strictProperties`.
+    // We mark `expires_in` as optional by clearing `strictProperties` when
+    // `expires_in` isn't in the `required` array. Then, we set `required` to 
+    // every other property on the schema so each one stays required, per 
+    // effectiveRequired()'s convention.
     const source = definitions['source']
     const sourceCreateLink = source?.links?.find(
       l => l.title === 'Create' && l.method?.toUpperCase() === 'POST',
     )
-    if (sourceCreateLink?.schema?.strictProperties && !sourceCreateLink.schema.required?.length) {
-      sourceCreateLink.schema.strictProperties = false
+    const sourceCreateSchema = sourceCreateLink?.schema
+    if (
+      sourceCreateSchema?.strictProperties &&
+      sourceCreateSchema.properties?.['expires_in'] &&
+      !sourceCreateSchema.required?.includes('expires_in')
+    ) {
+      sourceCreateSchema.required = Object.keys(sourceCreateSchema.properties).filter(
+        key => key !== 'expires_in',
+      )
+      sourceCreateSchema.strictProperties = false
     }
   }
 

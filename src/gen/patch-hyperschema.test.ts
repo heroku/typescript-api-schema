@@ -478,10 +478,10 @@ describe('patchHyperschema payment route de-collision', () => {
 // array. The emitter reads strictProperties as "every property is required"
 // for resource/response shapes, but the live controller
 // (api_v3/sources.rb#source_expires_in) treats `expires_in` as optional and
-// defaults it when absent. patchHyperschema clears strictProperties on this
-// one link schema so the emitter falls back to its (empty) required array.
+// defaults it when absent. patchHyperschema carves out only `expires_in`,
+// leaving every other property on the schema required.
 
-function schemaWithSourceCreateLink(): HerokuSchema {
+function schemaWithSourceCreateLink(extraProperties: Record<string, SchemaNode> = {}): HerokuSchema {
   return {
     definitions: {
       source: {
@@ -497,6 +497,7 @@ function schemaWithSourceCreateLink(): HerokuSchema {
               strictProperties: true,
               properties: {
                 expires_in: { type: ['integer'] },
+                ...extraProperties,
               },
             },
             targetSchema: { $ref: '#/definitions/source' },
@@ -520,7 +521,24 @@ describe('patchHyperschema source Create strictProperties clearing', () => {
     expect(types).toContain('expires_in?: number')
   })
 
-  it('leaves strictProperties untouched when an explicit required array is present', () => {
+  it('keeps other properties required when strictProperties is true', () => {
+    const schema = schemaWithSourceCreateLink({ foo: { type: ['string'] } })
+    patchHyperschema(schema)
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    expect(createLink.schema!.strictProperties).toBe(false)
+    expect(createLink.schema!.required).toEqual(['foo'])
+  })
+
+  it('keeps other properties required when the required array is non-empty', () => {
+    const schema = schemaWithSourceCreateLink({ foo: { type: ['string'] } })
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    createLink.schema!.required = ['foo']
+    patchHyperschema(schema)
+    expect(createLink.schema!.strictProperties).toBe(false)
+    expect(createLink.schema!.required).toEqual(['foo'])
+  })
+
+  it('leaves strictProperties untouched when an explicit required array includes expires_in', () => {
     const schema = schemaWithSourceCreateLink()
     const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
     createLink.schema!.required = ['expires_in']
