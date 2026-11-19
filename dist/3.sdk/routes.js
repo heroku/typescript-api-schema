@@ -867,6 +867,21 @@ export const oauthClient = {
   }
 }
 
+export const oauthSession = {
+  "delete": {
+    "method": "DELETE",
+    "path": "/oauth/sessions/{oauthSessionIdentity}"
+  },
+  "info": {
+    "method": "GET",
+    "path": "/oauth/sessions/{oauthSessionIdentity}"
+  },
+  "list": {
+    "method": "GET",
+    "path": "/oauth/sessions"
+  }
+}
+
 export const oauthToken = {
   "create": {
     "method": "POST",
@@ -1218,7 +1233,8 @@ export const sniEndpoint = {
 export const source = {
   "create": {
     "method": "POST",
-    "path": "/sources"
+    "path": "/sources",
+    "hasRequestBody": true
   },
   "createDeprecated": {
     "method": "POST",

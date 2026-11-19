@@ -152,6 +152,34 @@ export function patchHyperschema(schema: HerokuSchema): HerokuSchema {
     if (teamPaymentCreate && teamPaymentCreate.title !== 'Create For Team') {
       teamPaymentCreate.title = 'Create For Team'
     }
+
+    // WHY: The upstream hyperschema's `source` "Create" link (POST /sources)
+    // sets `strictProperties: true` on its request schema with no explicit
+    // `required` array. Our emitter reads `strictProperties` as "every
+    // property is required" (see normalize-hyperschema.ts effectiveRequired()),
+    // which would mark `expires_in` as required — but the live controller
+    // (api_v3/sources.rb#source_expires_in) treats it as optional and
+    // defaults it when absent.
+    //
+    // We mark `expires_in` as optional by clearing `strictProperties` when
+    // `expires_in` isn't in the `required` array. Then, we set `required` to 
+    // every other property on the schema so each one stays required, per 
+    // effectiveRequired()'s convention.
+    const source = definitions['source']
+    const sourceCreateLink = source?.links?.find(
+      l => l.title === 'Create' && l.method?.toUpperCase() === 'POST',
+    )
+    const sourceCreateSchema = sourceCreateLink?.schema
+    if (
+      sourceCreateSchema?.strictProperties &&
+      sourceCreateSchema.properties?.['expires_in'] &&
+      !sourceCreateSchema.required?.includes('expires_in')
+    ) {
+      sourceCreateSchema.required = Object.keys(sourceCreateSchema.properties).filter(
+        key => key !== 'expires_in',
+      )
+      sourceCreateSchema.strictProperties = false
+    }
   }
 
   return schema

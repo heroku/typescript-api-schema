@@ -788,6 +788,22 @@
             "object",
             "null"
           ]
+        },
+        "service_account_team": {
+          "description": "the team this token belongs to; null unless authenticated with a team (service account) token",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/team/definitions/id"
+            },
+            "name": {
+              "$ref": "#/definitions/team/definitions/name"
+            }
+          },
+          "strictProperties": true,
+          "type": [
+            "object",
+            "null"
+          ]
         }
       }
     },
@@ -2171,6 +2187,9 @@
               },
               "price_cents": {
                 "$ref": "#/definitions/plan-meter/definitions/price_cents"
+              },
+              "display_price": {
+                "$ref": "#/definitions/plan-meter/definitions/display_price"
               },
               "billing_description": {
                 "$ref": "#/definitions/plan-meter/definitions/billing_description"
@@ -4140,6 +4159,39 @@
             "string"
           ]
         },
+        "generation_object": {
+          "description": "the generation of the app",
+          "properties": {
+            "created_at": {
+              "$ref": "#/definitions/generation/definitions/created_at"
+            },
+            "id": {
+              "$ref": "#/definitions/generation/definitions/id"
+            },
+            "name": {
+              "$ref": "#/definitions/generation/definitions/name"
+            },
+            "updated_at": {
+              "$ref": "#/definitions/generation/definitions/updated_at"
+            },
+            "unsupported_features": {
+              "$ref": "#/definitions/generation/definitions/unsupported_features"
+            },
+            "expanded_unsupported_features": {
+              "description": "features unsupported by this generation along with their metadata",
+              "type": [
+                "array"
+              ],
+              "items": {
+                "$ref": "#/definitions/generation/definitions/unsupported_feature"
+              }
+            }
+          },
+          "readOnly": true,
+          "type": [
+            "object"
+          ]
+        },
         "git_url": {
           "description": "git repo URL of app",
           "example": "https://git.heroku.com/example.git",
@@ -4181,6 +4233,17 @@
           "description": "unique name of app",
           "example": "example",
           "pattern": "^[a-z][a-z0-9-]{1,28}[a-z0-9]$",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
+        },
+        "process_tier": {
+          "description": "Process tier for the app",
+          "enum": [
+            "fir"
+          ],
+          "example": "fir",
           "readOnly": false,
           "type": [
             "string"
@@ -4344,6 +4407,9 @@
               "build_stack": {
                 "$ref": "#/definitions/stack/definitions/identity"
               },
+              "internal_routing": {
+                "$ref": "#/definitions/team-app/definitions/internal_routing"
+              },
               "maintenance": {
                 "$ref": "#/definitions/app/definitions/maintenance"
               },
@@ -4419,6 +4485,9 @@
         "generation": {
           "$ref": "#/definitions/app/definitions/generation"
         },
+        "generation_object": {
+          "$ref": "#/definitions/app/definitions/generation_object"
+        },
         "git_url": {
           "$ref": "#/definitions/app/definitions/git_url"
         },
@@ -4433,6 +4502,9 @@
         },
         "name": {
           "$ref": "#/definitions/app/definitions/name"
+        },
+        "process_tier": {
+          "$ref": "#/definitions/app/definitions/process_tier"
         },
         "owner": {
           "description": "identity of app owner",
@@ -6631,7 +6703,7 @@
       "definitions": {
         "addons": {
           "description": "total add-on credits used",
-          "example": 250.0,
+          "example": 250,
           "readOnly": true,
           "type": [
             "number"
@@ -7134,7 +7206,7 @@
       "definitions": {
         "addons": {
           "description": "total add-on credits used",
-          "example": 250.0,
+          "example": 250,
           "readOnly": true,
           "type": [
             "number"
@@ -7436,6 +7508,19 @@
           "type": [
             "boolean"
           ]
+        },
+        "required_email_domains": {
+          "description": "email domains that members of the Enterprise Account and its teams are restricted to",
+          "readOnly": false,
+          "type": [
+            "array"
+          ],
+          "items": {
+            "example": "example.com",
+            "type": [
+              "string"
+            ]
+          }
         }
       },
       "links": [
@@ -7472,6 +7557,9 @@
             "properties": {
               "name": {
                 "$ref": "#/definitions/enterprise-account/definitions/name"
+              },
+              "required_email_domains": {
+                "$ref": "#/definitions/enterprise-account/definitions/required_email_domains"
               }
             },
             "type": [
@@ -7508,6 +7596,9 @@
         },
         "identity_provider": {
           "$ref": "#/definitions/enterprise-account/definitions/identity_provider"
+        },
+        "required_email_domains": {
+          "$ref": "#/definitions/enterprise-account/definitions/required_email_domains"
         }
       }
     },
@@ -8745,7 +8836,7 @@
       "definitions": {
         "charges_total": {
           "description": "total charges on this invoice",
-          "example": 100.0,
+          "example": 100,
           "readOnly": true,
           "type": [
             "number"
@@ -8762,7 +8853,7 @@
         },
         "credits_total": {
           "description": "total credits on this invoice",
-          "example": 100.0,
+          "example": 100,
           "readOnly": true,
           "type": [
             "number"
@@ -8818,7 +8909,7 @@
         },
         "total": {
           "description": "combined total of charges and credits on this invoice",
-          "example": 100.0,
+          "example": 100,
           "readOnly": true,
           "type": [
             "number"
@@ -9310,7 +9401,7 @@
           ]
         },
         "type": {
-          "description": "process type to limit results to (for Fir-generation apps only)",
+          "description": "process type to limit results to",
           "example": "web",
           "readOnly": false,
           "type": [
@@ -9629,11 +9720,21 @@
           "rel": "create",
           "schema": {
             "properties": {
+              "client": {
+                "$ref": "#/definitions/oauth-client/definitions/identity"
+              },
               "description": {
                 "$ref": "#/definitions/oauth-authorization/definitions/description"
               },
               "expires_in": {
                 "$ref": "#/definitions/oauth-token/definitions/expires_in"
+              },
+              "response_type": {
+                "description": "the OAuth response type for client authorizations",
+                "example": "code",
+                "type": [
+                  "string"
+                ]
               },
               "scope": {
                 "$ref": "#/definitions/oauth-authorization/definitions/scope"
@@ -9804,6 +9905,14 @@
             "string"
           ]
         },
+        "client_id": {
+          "description": "identifier used to look up an OAuth client. This is either the client's UUID or a client ID metadata document (CIMD) URL.",
+          "example": "https://example.com/oauth/client-metadata",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
         "identity": {
           "anyOf": [
             {
@@ -9842,6 +9951,14 @@
           "readOnly": true,
           "type": [
             "string"
+          ]
+        },
+        "trusted": {
+          "description": "whether the client is a trusted (first-party) Heroku client",
+          "example": false,
+          "readOnly": true,
+          "type": [
+            "boolean"
           ]
         },
         "updated_at": {
@@ -9897,7 +10014,33 @@
           "href": "/oauth/clients/{(%23%2Fdefinitions%2Foauth-client%2Fdefinitions%2Fidentity)}",
           "method": "GET",
           "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/oauth-client"
+          },
           "title": "Info"
+        },
+        {
+          "description": "Info for an OAuth client looked up by its `client_id`. Unlike the path-based lookup, the `client_id` is supplied as a query parameter so that URL-shaped identifiers (such as a client ID metadata document URL) can be used. The output for unauthenticated requests excludes the `secret` parameter.",
+          "href": "/oauth/clients/lookup",
+          "method": "GET",
+          "rel": "self",
+          "title": "Info By Client ID",
+          "schema": {
+            "properties": {
+              "client_id": {
+                "$ref": "#/definitions/oauth-client/definitions/client_id"
+              }
+            },
+            "required": [
+              "client_id"
+            ],
+            "type": [
+              "object"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/oauth-client"
+          }
         },
         {
           "description": "List OAuth clients",
@@ -9967,6 +10110,9 @@
         "secret": {
           "$ref": "#/definitions/oauth-client/definitions/secret"
         },
+        "trusted": {
+          "$ref": "#/definitions/oauth-client/definitions/trusted"
+        },
         "updated_at": {
           "$ref": "#/definitions/oauth-client/definitions/updated_at"
         }
@@ -10025,6 +10171,122 @@
       },
       "links": [],
       "properties": {}
+    },
+    "oauth-session": {
+      "description": "OAuth sessions group a user's access and refresh tokens so users can manage them together.",
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "stability": "production",
+      "strictProperties": true,
+      "title": "Heroku Platform API - OAuth Session",
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "created_at": {
+          "description": "when OAuth session was created",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "description": {
+          "description": "description of OAuth session",
+          "example": "Session @ 192.0.2.1",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "expires_in": {
+          "description": "seconds until OAuth session expires",
+          "example": 86400,
+          "readOnly": true,
+          "type": [
+            "integer"
+          ]
+        },
+        "id": {
+          "description": "unique identifier of OAuth session",
+          "example": "01234567-89ab-cdef-0123-456789abcdef",
+          "format": "uuid",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/oauth-session/definitions/id"
+            }
+          ]
+        },
+        "updated_at": {
+          "description": "when OAuth session was updated",
+          "example": "2012-01-01T12:00:00Z",
+          "format": "date-time",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        }
+      },
+      "links": [
+        {
+          "description": "Delete OAuth session",
+          "href": "/oauth/sessions/{(%23%2Fdefinitions%2Foauth-session%2Fdefinitions%2Fidentity)}",
+          "method": "DELETE",
+          "rel": "destroy",
+          "targetSchema": {
+            "$ref": "#/definitions/oauth-session"
+          },
+          "title": "Delete"
+        },
+        {
+          "description": "Get info for an OAuth session",
+          "href": "/oauth/sessions/{(%23%2Fdefinitions%2Foauth-session%2Fdefinitions%2Fidentity)}",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/oauth-session"
+          },
+          "title": "Info"
+        },
+        {
+          "description": "List OAuth sessions",
+          "href": "/oauth/sessions",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/oauth-session"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
+        }
+      ],
+      "properties": {
+        "created_at": {
+          "$ref": "#/definitions/oauth-session/definitions/created_at"
+        },
+        "description": {
+          "$ref": "#/definitions/oauth-session/definitions/description"
+        },
+        "expires_in": {
+          "$ref": "#/definitions/oauth-session/definitions/expires_in"
+        },
+        "id": {
+          "$ref": "#/definitions/oauth-session/definitions/id"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/oauth-session/definitions/updated_at"
+        }
+      }
     },
     "oauth-token": {
       "description": "OAuth tokens provide access for authorized clients to act on behalf of a Heroku user to automate, customize or extend their usage of the platform. For more information please refer to the [Heroku OAuth documentation](https://devcenter.heroku.com/articles/oauth)",
@@ -14654,6 +14916,14 @@
           "type": [
             "string"
           ]
+        },
+        "expires_in": {
+          "description": "Seconds until the signed download URL and upload URL expire. The URL expiration time is the current time plus the expires_in value. The server rejects values less than 3600 or more than the configured maximum.",
+          "example": 86400,
+          "minimum": 3600,
+          "type": [
+            "integer"
+          ]
         }
       },
       "links": [
@@ -14662,6 +14932,17 @@
           "href": "/sources",
           "method": "POST",
           "rel": "create",
+          "schema": {
+            "properties": {
+              "expires_in": {
+                "$ref": "#/definitions/source/definitions/expires_in"
+              }
+            },
+            "strictProperties": true,
+            "type": [
+              "object"
+            ]
+          },
           "targetSchema": {
             "$ref": "#/definitions/source"
           },
@@ -15226,6 +15507,26 @@
             "string"
           ]
         },
+        "architecture": {
+          "description": "CPU architecture for dynos in this space. Defaults to the space's generation default (arm64 for Fir, amd64 for Cedar/Evergreen). Set only at creation; immutable thereafter.",
+          "enum": [
+            "arm64",
+            "amd64"
+          ],
+          "example": "arm64",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
+        },
+        "supported_architectures": {
+          "description": "CPU architectures available for dynos in this space.",
+          "example": "[arm64]",
+          "readOnly": true,
+          "type": [
+            "array"
+          ]
+        },
         "features": {
           "description": "runtime features for the space",
           "example": "[feature-name]",
@@ -15349,6 +15650,9 @@
               },
               "eks_version": {
                 "$ref": "#/definitions/space/definitions/eks_version"
+              },
+              "architecture": {
+                "$ref": "#/definitions/space/definitions/architecture"
               }
             },
             "required": [
@@ -15432,6 +15736,9 @@
         },
         "generation": {
           "$ref": "#/definitions/space/definitions/generation"
+        },
+        "supported_architectures": {
+          "$ref": "#/definitions/space/definitions/supported_architectures"
         }
       }
     },
@@ -16161,7 +16468,7 @@
       "definitions": {
         "addons": {
           "description": "total add-on credits used",
-          "example": 250.0,
+          "example": 250,
           "readOnly": true,
           "type": [
             "number"
@@ -17288,7 +17595,7 @@
       "definitions": {
         "addons": {
           "description": "total add-on credits used",
-          "example": 250.0,
+          "example": 250,
           "readOnly": true,
           "type": [
             "number"
@@ -17789,6 +18096,15 @@
             "null"
           ]
         },
+        "max_team_tokens": {
+          "description": "upper limit of team-owned OAuth authorizations (team tokens) for this team.",
+          "example": 100,
+          "readOnly": true,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
         "name": {
           "description": "unique name of team",
           "example": "example",
@@ -17840,6 +18156,14 @@
           "readOnly": true,
           "type": [
             "string"
+          ]
+        },
+        "pipeline_cost_consent": {
+          "description": "Denotes whether or not to update a team's pipeline cost consent",
+          "example": true,
+          "readOnly": false,
+          "type": [
+            "boolean"
           ]
         },
         "pipeline_cost_consent_at": {
@@ -17900,6 +18224,9 @@
               },
               "name": {
                 "$ref": "#/definitions/team/definitions/name"
+              },
+              "pipeline_cost_consent": {
+                "$ref": "#/definitions/team/definitions/pipeline_cost_consent"
               }
             },
             "type": [
@@ -17990,6 +18317,24 @@
           "title": "Delete"
         },
         {
+          "description": "Transfer an existing direct team to an enterprise account.",
+          "href": "/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/actions/transfer",
+          "method": "POST",
+          "rel": "create",
+          "targetSchema": {},
+          "title": "Transfer",
+          "schema": {
+            "properties": {
+              "enterprise_account": {
+                "$ref": "#/definitions/enterprise-account/definitions/id"
+              }
+            },
+            "required": [
+              "enterprise_account"
+            ]
+          }
+        },
+        {
           "description": "List teams for an enterprise account.",
           "href": "/enterprise-accounts/{(%23%2Fdefinitions%2Fenterprise-account%2Fdefinitions%2Fidentity)}/teams",
           "method": "GET",
@@ -18049,6 +18394,9 @@
         },
         "membership_limit": {
           "$ref": "#/definitions/team/definitions/membership_limit"
+        },
+        "max_team_tokens": {
+          "$ref": "#/definitions/team/definitions/max_team_tokens"
         },
         "pipeline_cost_consent_at": {
           "$ref": "#/definitions/team/definitions/pipeline_cost_consent_at"
@@ -20720,6 +21068,264 @@
         }
       }
     },
+    "payment-method-checkout-session": {
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "description": "Stripe hosted checkout session for payment method setup",
+      "stability": "prototype",
+      "strictProperties": true,
+      "title": "Heroku Vault API - Payment Method Checkout Session",
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "session_id": {
+          "description": "unique identifier of checkout session",
+          "example": "cs_test_a1b2c3d4e5f6",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/payment-method-checkout-session/definitions/session_id"
+            }
+          ]
+        },
+        "session_url": {
+          "description": "Stripe hosted checkout URL",
+          "example": "https://pay.heroku.com/c/pay/cs_test_a1...",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "status": {
+          "description": "status of the checkout session",
+          "enum": [
+            "success",
+            "pending",
+            "expired"
+          ],
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "expires_at": {
+          "description": "when checkout session expires (Unix timestamp)",
+          "example": 1752517749,
+          "readOnly": true,
+          "type": [
+            "integer"
+          ]
+        },
+        "created_at": {
+          "description": "when checkout session was created (Unix timestamp)",
+          "example": 1752514149,
+          "readOnly": true,
+          "type": [
+            "integer"
+          ]
+        },
+        "mandate_required": {
+          "description": "whether the completed checkout session still needs an e-mandate step before the payment method is usable",
+          "example": false,
+          "readOnly": true,
+          "type": [
+            "boolean"
+          ]
+        },
+        "return_path": {
+          "description": "path to return to after checkout completion",
+          "example": "/account/billing",
+          "type": [
+            "string"
+          ]
+        }
+      },
+      "links": [
+        {
+          "description": "List actionable checkout sessions for account payment method setup",
+          "href": "/account/payment-method/checkout-session",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/payment-method-checkout-session"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List"
+        },
+        {
+          "description": "Create a new checkout session for account payment method setup",
+          "href": "/account/payment-method/checkout-session",
+          "method": "POST",
+          "rel": "create",
+          "schema": {
+            "type": [
+              "object"
+            ],
+            "properties": {
+              "return_path": {
+                "$ref": "#/definitions/payment-method-checkout-session/definitions/return_path"
+              }
+            },
+            "required": [
+              "return_path"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/payment-method-checkout-session"
+          },
+          "title": "Create"
+        },
+        {
+          "description": "Get an existing checkout session for account payment method",
+          "href": "/account/payment-method/checkout-session/{(%23%2Fdefinitions%2Fpayment-method-checkout-session%2Fdefinitions%2Fidentity)}",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/payment-method-checkout-session"
+          },
+          "title": "Info"
+        },
+        {
+          "description": "List actionable checkout sessions for team payment method setup",
+          "href": "/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/payment-methods/checkout-session",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/payment-method-checkout-session"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List for Team"
+        },
+        {
+          "description": "Create a new checkout session for team payment method setup",
+          "href": "/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/payment-methods/checkout-session",
+          "method": "POST",
+          "rel": "create",
+          "schema": {
+            "type": [
+              "object"
+            ],
+            "properties": {
+              "return_path": {
+                "$ref": "#/definitions/payment-method-checkout-session/definitions/return_path"
+              }
+            },
+            "required": [
+              "return_path"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/payment-method-checkout-session"
+          },
+          "title": "Create for Team"
+        },
+        {
+          "description": "List actionable checkout sessions for a team that has not been created yet",
+          "href": "/teams/payment-methods/checkout-session",
+          "method": "GET",
+          "rel": "instances",
+          "targetSchema": {
+            "items": {
+              "$ref": "#/definitions/payment-method-checkout-session"
+            },
+            "type": [
+              "array"
+            ]
+          },
+          "title": "List for New Team"
+        },
+        {
+          "description": "Create a new checkout session for a team that has not been created yet",
+          "href": "/teams/payment-methods/checkout-session",
+          "method": "POST",
+          "rel": "create",
+          "schema": {
+            "type": [
+              "object"
+            ],
+            "properties": {
+              "return_path": {
+                "$ref": "#/definitions/payment-method-checkout-session/definitions/return_path"
+              }
+            },
+            "required": [
+              "return_path"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/payment-method-checkout-session"
+          },
+          "title": "Create for New Team"
+        },
+        {
+          "description": "Get an existing checkout session for team payment method",
+          "href": "/teams/{(%23%2Fdefinitions%2Fteam%2Fdefinitions%2Fidentity)}/payment-methods/checkout-session/{(%23%2Fdefinitions%2Fpayment-method-checkout-session%2Fdefinitions%2Fidentity)}",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/payment-method-checkout-session"
+          },
+          "title": "Info for Team"
+        },
+        {
+          "description": "Create an e-mandate setup intent for a completed checkout session",
+          "href": "/account/payment-method/checkout-session/{(%23%2Fdefinitions%2Fpayment-method-checkout-session%2Fdefinitions%2Fidentity)}/mandate",
+          "method": "POST",
+          "rel": "create",
+          "targetSchema": {
+            "type": [
+              "object"
+            ],
+            "properties": {
+              "mandate_client_secret": {
+                "type": [
+                  "string"
+                ]
+              },
+              "mandate_status": {
+                "type": [
+                  "string"
+                ]
+              }
+            }
+          },
+          "title": "Mandate"
+        }
+      ],
+      "properties": {
+        "session_id": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/session_id"
+        },
+        "session_url": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/session_url"
+        },
+        "status": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/status"
+        },
+        "expires_at": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/expires_at"
+        },
+        "created_at": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/created_at"
+        },
+        "mandate_required": {
+          "$ref": "#/definitions/payment-method-checkout-session/definitions/mandate_required"
+        }
+      }
+    },
     "payment-method": {
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
       "description": "The on file payment method for an account",
@@ -21196,6 +21802,98 @@
         }
       }
     },
+    "pending-team-payment-method": {
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "description": "Payment method summary for a team that has not been created yet",
+      "stability": "prototype",
+      "strictProperties": true,
+      "title": "Heroku Vault API - Pending Team Payment Method",
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "card_last4": {
+          "description": "last four digits of the payment card",
+          "example": "4242",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "card_type": {
+          "description": "payment card brand",
+          "example": "Visa",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "exp_month": {
+          "description": "payment card expiration month",
+          "example": 12,
+          "readOnly": true,
+          "type": [
+            "integer"
+          ]
+        },
+        "exp_year": {
+          "description": "payment card expiration year",
+          "example": 2029,
+          "readOnly": true,
+          "type": [
+            "integer"
+          ]
+        },
+        "payment_method": {
+          "description": "payment card summary, or null when no payment method is attached",
+          "properties": {
+            "card_last4": {
+              "$ref": "#/definitions/pending-team-payment-method/definitions/card_last4"
+            },
+            "card_type": {
+              "$ref": "#/definitions/pending-team-payment-method/definitions/card_type"
+            },
+            "exp_month": {
+              "$ref": "#/definitions/pending-team-payment-method/definitions/exp_month"
+            },
+            "exp_year": {
+              "$ref": "#/definitions/pending-team-payment-method/definitions/exp_year"
+            }
+          },
+          "readOnly": true,
+          "required": [
+            "card_last4",
+            "card_type",
+            "exp_month",
+            "exp_year"
+          ],
+          "type": [
+            "null",
+            "object"
+          ]
+        }
+      },
+      "links": [
+        {
+          "description": "Get the payment method for the current user's pending team",
+          "href": "/account/pending-team/payment-method",
+          "method": "GET",
+          "rel": "self",
+          "targetSchema": {
+            "$ref": "#/definitions/pending-team-payment-method"
+          },
+          "title": "Info"
+        }
+      ],
+      "properties": {
+        "payment_method": {
+          "$ref": "#/definitions/pending-team-payment-method/definitions/payment_method"
+        }
+      },
+      "required": [
+        "payment_method"
+      ]
+    },
     "plan-meter": {
       "description": "Plan meters describe how a metered add-on plan bills for usage.",
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
@@ -21240,6 +21938,15 @@
           "readOnly": true,
           "type": [
             "string"
+          ]
+        },
+        "display_price": {
+          "description": "formatted display price for discrete meters (e.g. \"$0.15/1M tokens\"); null for continuous meters and unknown rate periods",
+          "example": "$0.15/1M tokens",
+          "readOnly": true,
+          "type": [
+            "string",
+            "null"
           ]
         },
         "product_description": {
@@ -21376,6 +22083,9 @@
         "price_cents": {
           "$ref": "#/definitions/plan-meter/definitions/price_cents"
         },
+        "display_price": {
+          "$ref": "#/definitions/plan-meter/definitions/display_price"
+        },
         "product_description": {
           "$ref": "#/definitions/plan-meter/definitions/product_description"
         },
@@ -21408,6 +22118,65 @@
         },
         "updated_at": {
           "$ref": "#/definitions/plan-meter/definitions/updated_at"
+        }
+      }
+    },
+    "share-tokens": {
+      "description": "JWT for apps shared behind guest-idp",
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "stability": "prototype",
+      "strictProperties": true,
+      "title": "Heroku Platform API - Share Tokens",
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "jwt": {
+          "description": "JWT for guest-idp",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcHAuZXhhbXBsZSIsImF1ZCI6ImFwcC5mcm9udCIsInN1YiI6InVzZXJfNTUiLCJleHAiOjE3MDAwMDAwMDAsImlhdCI6MTcwMDAwMDAwMCwic2NvcGUiOlsiZW1haWwiXX0.c2lnbmVkX2RlbW9fYWJjMTIz",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "mode": {
+          "description": "mode: bearer or session",
+          "example": "bearer",
+          "readOnly": false,
+          "type": [
+            "string"
+          ]
+        }
+      },
+      "links": [
+        {
+          "description": "Mints a JWT",
+          "href": "/apps/{(%23%2Fdefinitions%2Fapp%2Fdefinitions%2Fidentity)}/share-tokens",
+          "method": "POST",
+          "rel": "create",
+          "schema": {
+            "strictProperties": false,
+            "properties": {
+              "mode": {
+                "$ref": "#/definitions/share-tokens/definitions/mode"
+              }
+            },
+            "required": [
+              "mode"
+            ],
+            "type": [
+              "object"
+            ]
+          },
+          "targetSchema": {
+            "$ref": "#/definitions/share-tokens"
+          },
+          "title": "Create"
+        }
+      ],
+      "properties": {
+        "jwt": {
+          "$ref": "#/definitions/share-tokens/definitions/jwt"
         }
       }
     },
@@ -22237,6 +23006,9 @@
     "oauth-grant": {
       "$ref": "#/definitions/oauth-grant"
     },
+    "oauth-session": {
+      "$ref": "#/definitions/oauth-session"
+    },
     "oauth-token": {
       "$ref": "#/definitions/oauth-token"
     },
@@ -22417,14 +23189,23 @@
     "identity-provider-certificate": {
       "$ref": "#/definitions/identity-provider-certificate"
     },
+    "payment-method-checkout-session": {
+      "$ref": "#/definitions/payment-method-checkout-session"
+    },
     "payment-method": {
       "$ref": "#/definitions/payment-method"
     },
     "payment": {
       "$ref": "#/definitions/payment"
     },
+    "pending-team-payment-method": {
+      "$ref": "#/definitions/pending-team-payment-method"
+    },
     "plan-meter": {
       "$ref": "#/definitions/plan-meter"
+    },
+    "share-tokens": {
+      "$ref": "#/definitions/share-tokens"
     },
     "space-host": {
       "$ref": "#/definitions/space-host"

@@ -472,3 +472,101 @@ describe('patchHyperschema payment route de-collision', () => {
     expect(block).toMatch(/"createForTeam": \{[^}]*"path": "\/teams\/\{teamIdentity\}\/payments"/)
   })
 })
+
+// The upstream hyperschema's `source` "Create" link (POST /sources) sets
+// strictProperties: true on its request schema with no explicit `required`
+// array. The emitter reads strictProperties as "every property is required"
+// for resource/response shapes, but the live controller
+// (api_v3/sources.rb#source_expires_in) treats `expires_in` as optional and
+// defaults it when absent. patchHyperschema carves out only `expires_in`,
+// leaving every other property on the schema required.
+
+function schemaWithSourceCreateLink(extraProperties: Record<string, SchemaNode> = {}): HerokuSchema {
+  return {
+    definitions: {
+      source: {
+        links: [
+          {
+            title: 'Create',
+            description: 'Create URLs for uploading and downloading source.',
+            method: 'POST',
+            rel: 'create',
+            href: '/sources',
+            schema: {
+              type: ['object'],
+              strictProperties: true,
+              properties: {
+                expires_in: { type: ['integer'] },
+                ...extraProperties,
+              },
+            },
+            targetSchema: { $ref: '#/definitions/source' },
+          },
+        ],
+      },
+    },
+  }
+}
+
+describe('patchHyperschema source Create strictProperties clearing', () => {
+  it('clears strictProperties when true with no required array', () => {
+    const schema = schemaWithSourceCreateLink()
+    patchHyperschema(schema)
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    expect(createLink.schema!.strictProperties).toBe(false)
+  })
+
+  it('emits expires_in as optional on SourceCreateOpts after normalization', () => {
+    const types = generateTypes(schemaWithSourceCreateLink())
+    expect(types).toContain('expires_in?: number')
+  })
+
+  it('keeps other properties required when strictProperties is true', () => {
+    const schema = schemaWithSourceCreateLink({ foo: { type: ['string'] } })
+    patchHyperschema(schema)
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    expect(createLink.schema!.strictProperties).toBe(false)
+    expect(createLink.schema!.required).toEqual(['foo'])
+  })
+
+  it('keeps other properties required when the required array is non-empty', () => {
+    const schema = schemaWithSourceCreateLink({ foo: { type: ['string'] } })
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    createLink.schema!.required = ['foo']
+    patchHyperschema(schema)
+    expect(createLink.schema!.strictProperties).toBe(false)
+    expect(createLink.schema!.required).toEqual(['foo'])
+  })
+
+  it('leaves strictProperties untouched when an explicit required array includes expires_in', () => {
+    const schema = schemaWithSourceCreateLink()
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    createLink.schema!.required = ['expires_in']
+    patchHyperschema(schema)
+    expect(createLink.schema!.strictProperties).toBe(true)
+  })
+
+  it('self-heals to a no-op when strictProperties is already false', () => {
+    const schema = schemaWithSourceCreateLink()
+    const createLink = schema.definitions.source.links!.find(l => l.title === 'Create')!
+    createLink.schema!.strictProperties = false
+    patchHyperschema(schema)
+    expect(createLink.schema!.strictProperties).toBe(false)
+  })
+
+  it('does not throw when there is no source definition', () => {
+    const schema: HerokuSchema = { definitions: {} }
+    expect(() => patchHyperschema(schema)).not.toThrow()
+  })
+
+  it('does not throw when source has no Create link', () => {
+    const schema: HerokuSchema = {
+      definitions: {
+        source: {
+          links: [{ title: 'Info', method: 'GET', href: '/sources/{id}' }],
+        },
+      },
+    }
+    expect(() => patchHyperschema(schema)).not.toThrow()
+  })
+})
