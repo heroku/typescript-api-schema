@@ -15,6 +15,17 @@
 
 * Adopt the `@heroku/types` source pipeline as `@heroku/types` 3.0.0.
 
+## [6.0.0](https://github.com/heroku/typescript-api-schema/compare/types-v5.4.1...types-v6.0.0) (2026-11-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* regenerate dist/3.sdk types and routes ([#147](https://github.com/heroku/typescript-api-schema/issues/147))
+
+### Features
+
+* regenerate dist/3.sdk types and routes ([#147](https://github.com/heroku/typescript-api-schema/issues/147)) ([b0b8f4c](https://github.com/heroku/typescript-api-schema/commit/b0b8f4ce48ac0ed6bd87dc4ef41215d952a6d854))
+
 ## [5.4.1](https://github.com/heroku/typescript-api-schema/compare/types-v5.4.0...types-v5.4.1) (2026-11-11)
 
 
